@@ -134,7 +134,8 @@
 
   const RAID_TIME = 30;
   const ROOMS_PER_HOUSE = 5;
-  const GHOSTS_PER_ROOM = 8;
+  const GHOSTS_PER_ROOM = 22;
+  const MAX_ALIVE = 14;
   const BOSS_TIME = 30;
   const MAX_STARS = 5;
   const PRESTIGE_HOUSE = 10;
@@ -212,7 +213,7 @@
   const setMult = () => (Object.values(squadDistrictCounts()).some((n) => n >= 4) ? 1.25 : 1);
 
   const catDamage = () => 10 * Math.pow(1.16, S.lvPower - 1) * moonMult() * stoneMult() * bestiaryMult() * attachMult() * setMult() * skinMult('dmg');
-  const fireRate = () => Math.min((2 + 0.08 * (S.lvPull - 1)) * skinMult('rate'), 12);
+  const fireRate = () => Math.min((3 + 0.08 * (S.lvPull - 1)) * skinMult('rate'), 12);
   const captureChance = () => Math.min(0.4 + 0.012 * (S.lvPull - 1), 0.95);
   const critChance = () => 0.1 + Math.min(0.5, 0.04 * kindPower('brush'));
   const critMult = () => 3 + 0.25 * kindPower('brush');
@@ -252,9 +253,20 @@
   // =====================================================================
   // Мир
   // =====================================================================
-  const cat = { x: 180, y: 392, aim: -Math.PI / 2, bob: 0, fireCd: 0, recoil: 0, shots: 0, rocketCd: 1, hp: 100, hurt: 0, safeFor: 0, moving: 0, face: 1 };
+  // Карта больше экрана, вид сверху, камера следует за котом
+  const MAP_W = 1100, MAP_H = 1300, WALL = 28;
+  const VIEW = { x: 0, y: 70, w: 360, h: 442 };
+  const VIEW_CX = VIEW.w / 2, VIEW_CY = VIEW.y + VIEW.h / 2;
+  const ZOOM = 0.72; // камера отдалена, чтобы видеть больше карты
+  const HALF_W = VIEW.w / 2 / ZOOM, HALF_H = VIEW.h / 2 / ZOOM;
+  const cam = { x: MAP_W / 2, y: MAP_H / 2 };
+  const toScreen = (x, y) => ({ x: (x - cam.x) * ZOOM + VIEW_CX, y: (y - cam.y) * ZOOM + VIEW_CY });
+  const toWorld = (x, y) => ({ x: (x - VIEW_CX) / ZOOM + cam.x, y: (y - VIEW_CY) / ZOOM + cam.y });
+  let mapCanvas = null, mapKey = '', solids = [];
+
+  const cat = { x: MAP_W / 2, y: MAP_H / 2, aim: -Math.PI / 2, bob: 0, fireCd: 0, recoil: 0, shots: 0, rocketCd: 1, hp: 100, hurt: 0, safeFor: 0, moving: 0, face: 1 };
   const CAT_MAX_HP = 100;
-  const FIELD = { x1: 42, x2: 318, y1: 160, y2: 448 }; // где может ходить кот
+  const FIELD = { x1: WALL + 20, x2: MAP_W - WALL - 20, y1: WALL + 30, y2: MAP_H - WALL - 20 }; // где может ходить кот
   let shots = [], shards = [];
   let joy = null; // {sx, sy, x, y, id, drag}
   let manualUntil = 0;
@@ -271,7 +283,7 @@
   let bossContinued = false, jarOfferCd = 0;
 
   function resetRoom() {
-    ghosts = []; shots = []; roomSpawned = 0; S.cleared = 0; cat.hp = CAT_MAX_HP; bossContinued = false; spawnCd = 0.6; bossSpawned = false; bossTimer = 0; roomToken++;
+    ghosts = []; shots = []; shards = []; roomSpawned = 0; S.cleared = 0; cat.hp = CAT_MAX_HP; bossContinued = false; buildMap(); spawnCd = 0.6; bossSpawned = false; bossTimer = 0; roomToken++;
   }
 
   function pickType() {
@@ -286,12 +298,21 @@
     const hp = ghostHp(def.rarity);
     ghosts.push({
       type, boss, hp, maxHp: hp,
-      x: 40 + Math.random() * 280, y: boss ? 170 : 90 + Math.random() * 30,
+      ...spawnPoint(boss ? 300 : 430),
       vx: (Math.random() - 0.5) * 30, vy: (boss ? 0.6 : 1) * (28 + Math.random() * 14),
       r: boss ? 40 : def.rarity === 2 ? 22 : 19,
       phase: Math.random() * 6, hit: 0, alpha: 0, dying: 0, capturing: 0,
       shootCd: 2 + Math.random() * 2,
     });
+  }
+
+  function spawnPoint(dist) {
+    for (let i = 0; i < 10; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const x = cat.x + Math.cos(a) * dist, y = cat.y + Math.sin(a) * dist;
+      if (x > WALL + 20 && x < MAP_W - WALL - 20 && y > WALL + 20 && y < MAP_H - WALL - 20) return { x, y };
+    }
+    return { x: Math.max(WALL + 20, Math.min(MAP_W - WALL - 20, cat.x + (Math.random() - 0.5) * 600)), y: Math.max(WALL + 20, Math.min(MAP_H - WALL - 20, cat.y - 300)) };
   }
 
   const lowHp = (g) => !g.raid && g.hp > 0 && g.hp / g.maxHp <= 0.3;
@@ -325,6 +346,7 @@
     }
     g.hp -= amount;
     g.hit = 0.12;
+    if (!g.boss) { const kx = g.x - cat.x, ky = g.y - cat.y, kd = Math.hypot(kx, ky) || 1; g.x += (kx / kd) * 5; g.y += (ky / kd) * 5; }
     floaters.push({ x: g.x + (Math.random() - 0.5) * 24, y: g.y - g.r, text: fmt(amount), life: 0.9, color: crit ? '#ffdd55' : '#ffffff', size: crit ? 17 : 13 });
     if (g.hp <= 0) killGhost(g);
   }
@@ -332,16 +354,17 @@
   function killGhost(g) {
     g.hp = 0;
     const rar = GHOSTS[g.type].rarity;
-    const reward = ghostReward(rar);
-    const n = g.boss ? 14 : 4;
+    const reward = ghostReward(rar) * (g.boss ? 1 : 0.45);
+    const n = g.boss ? 14 : 3;
     for (let i = 0; i < n; i++) {
-      drops.push({ x: g.x, y: g.y, vx: (Math.random() - 0.5) * 160, vy: -60 - Math.random() * 120, t: 0, value: reward / n });
+      const sp = toScreen(g.x, g.y);
+      drops.push({ x: sp.x, y: sp.y, vx: (Math.random() - 0.5) * 160, vy: -60 - Math.random() * 120, t: 0, value: reward / n });
     }
     burst(g.x, g.y, g.boss ? 40 : 14, GHOSTS[g.type].body);
     S.stats.kills++;
     if (Math.random() < (g.boss ? 1 : 0.08)) {
       const n = g.boss ? 3 : 1;
-      for (let i = 0; i < n; i++) shards.push({ x: Math.max(FIELD.x1, Math.min(FIELD.x2, g.x + (Math.random() - 0.5) * 60)), y: FIELD.y1 + 60 + Math.random() * (FIELD.y2 - FIELD.y1 - 60), life: 9 });
+      for (let i = 0; i < n; i++) shards.push({ x: Math.max(FIELD.x1, Math.min(FIELD.x2, g.x + (Math.random() - 0.5) * 80)), y: Math.max(FIELD.y1, Math.min(FIELD.y2, g.y + (Math.random() - 0.5) * 80)), life: 12 });
     }
     // обычных призраков кот иногда ловит сам
     if (!g.boss && rar === 0 && S.jars > 0 && Math.random() < captureChance() * 0.2) capture(g.type, g.x, g.y, true);
@@ -775,7 +798,7 @@
     ghosts = []; shots = []; cat.hp = CAT_MAX_HP; roomToken++;
     raid = { t: RAID_TIME, floor: 0 };
     const hp = ghostHp(3) * 1.5;
-    ghosts.push({ type: 'mansion', boss: false, raid: true, hp, maxHp: hp, x: 180, y: 170, vx: 20, vy: 14, r: 46, phase: 0, hit: 0, alpha: 0, dying: 0, capturing: 0, shootCd: 2 });
+    ghosts.push({ type: 'mansion', boss: false, raid: true, hp, maxHp: hp, ...spawnPoint(220), vx: 20, vy: 14, r: 46, phase: 0, hit: 0, alpha: 0, dying: 0, capturing: 0, shootCd: 2 });
     showToast('Рейд! Пробей как можно больше этажей');
   }
   function endRaid() {
@@ -843,7 +866,7 @@
       const b = buttons[i];
       if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) { b.on(); return; }
     }
-    if (panel || y < 70 || y > 470) return;
+    if (panel || y < VIEW.y || y > VIEW.y + VIEW.h) return;
     // в боевой зоне: либо тап (поимка/удар), либо свайп-джойстик
     joy = { sx: x, sy: y, x, y, id: e.pointerId, drag: false };
     try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* старые браузеры */ }
@@ -865,7 +888,8 @@
   canvas.addEventListener('pointerup', endJoy);
   canvas.addEventListener('pointercancel', endJoy);
 
-  function tapField(x, y) {
+  function tapField(sx, sy) {
+    const { x, y } = toWorld(sx, sy);
     if (gold && Math.hypot(gold.x - x, gold.y + Math.sin(gold.t * 3) * 14 - y) < 34) {
       const reward = ghostReward(0) * 40;
       burst(gold.x, gold.y, 30, '#ffd84d');
@@ -904,13 +928,25 @@
       if (!ax && !ay) {
         const sh = shards[0];
         if (sh) { ax = sh.x - cat.x; ay = sh.y - cat.y; }
-        else { ax = (180 - cat.x) * 0.02; ay = (392 - cat.y) * 0.02; }
+        else {
+          const t = nearestGhost(cat.x, cat.y);
+          if (t && Math.hypot(t.x - cat.x, t.y - cat.y) > 260) { ax = (t.x - cat.x) * 0.01; ay = (t.y - cat.y) * 0.01; }
+          else if (!t) { ax = (MAP_W / 2 - cat.x) * 0.004; ay = (MAP_H / 2 - cat.y) * 0.004; }
+        }
       }
       const len = Math.hypot(ax, ay);
       if (len > 0.05) { dx = ax / len; dy = ay / len; speed = 110 * Math.min(1, len); }
     }
     cat.x = Math.max(FIELD.x1, Math.min(FIELD.x2, cat.x + dx * speed * dt));
     cat.y = Math.max(FIELD.y1, Math.min(FIELD.y2, cat.y + dy * speed * dt));
+    for (const o of solids) {
+      const nx = Math.max(o.x, Math.min(o.x + o.w, cat.x)), ny = Math.max(o.y, Math.min(o.y + o.h, cat.y));
+      const ddx = cat.x - nx, ddy = cat.y - ny, dd = Math.hypot(ddx, ddy);
+      if (dd < 18) {
+        if (dd > 0.01) { cat.x = nx + (ddx / dd) * 18; cat.y = ny + (ddy / dd) * 18; }
+        else cat.y = o.y - 18;
+      }
+    }
     cat.moving = speed > 10 ? 1 : 0;
     if (Math.abs(dx) > 0.2) cat.face = dx > 0 ? 1 : -1;
   }
@@ -952,12 +988,12 @@
       // золотой призрак пролетает раз в 1–2 минуты
       if (!raid) {
         goldCd -= dt;
-        if (!gold && goldCd <= 0) gold = { x: -30, y: 130 + Math.random() * 120, t: 0 };
+        if (!gold && goldCd <= 0) gold = { x: cam.x - HALF_W - 30, y: cam.y - HALF_H * 0.6 + Math.random() * HALF_H, t: 0 };
       }
       if (gold) {
         gold.t += dt; gold.x += 62 * dt;
         if (Math.random() < 0.3) particles.push({ x: gold.x, y: gold.y + Math.sin(gold.t * 3) * 14, vx: 0, vy: 20, life: 0.6, color: '#ffe680', r: 2.5 });
-        if (gold.x > 400) { gold = null; goldCd = 60 + Math.random() * 60; }
+        if (gold.x > cam.x + HALF_W + 40) { gold = null; goldCd = 60 + Math.random() * 60; }
       }
 
       if (raid) {
@@ -972,8 +1008,9 @@
       } else {
         spawnCd -= dt;
         const alive = ghosts.filter((g) => g.hp > 0).length;
-        if (spawnCd <= 0 && roomSpawned < GHOSTS_PER_ROOM && alive < 5) {
-          spawnGhost(pickType()); roomSpawned++; spawnCd = 0.7 + Math.random() * 0.6;
+        if (spawnCd <= 0 && roomSpawned < GHOSTS_PER_ROOM && alive < MAX_ALIVE) {
+          spawnGhost(pickType()); roomSpawned++; spawnCd = 0.5 + Math.random() * 0.5;
+          if (Math.random() < 0.3 && roomSpawned < GHOSTS_PER_ROOM) { spawnGhost(pickType()); roomSpawned++; } // иногда парой
         }
         if (S.cleared >= GHOSTS_PER_ROOM && alive === 0) nextRoom();
       }
@@ -986,7 +1023,7 @@
       if (cat.safeFor <= 0) cat.hp = Math.min(CAT_MAX_HP, cat.hp + 12 * dt);
       for (const g of ghosts) {
         if (!targetable(g)) continue;
-        if (Math.hypot(g.x - cat.x, g.y - (cat.y - 10)) < g.r + 18) hurtCat((g.boss ? 30 : 14) * dt);
+        if (Math.hypot(g.x - cat.x, g.y - (cat.y - 10)) < g.r + 18) hurtCat((g.boss ? 25 : 8) * dt);
         // редкие и сильнее стреляют сгустками эктоплазмы
         if (GHOSTS[g.type].rarity >= 1) {
           g.shootCd -= dt;
@@ -1003,7 +1040,7 @@
         p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
         if (Math.hypot(p.x - cat.x, p.y - (cat.y - 8)) < 20) { hurtCat(p.dmg); p.life = 0; burst(p.x, p.y, 6, '#b48cff'); }
       }
-      shots = shots.filter((p) => p.life > 0 && p.y < 480 && p.y > 60 && p.x > -10 && p.x < 370);
+      shots = shots.filter((p) => p.life > 0 && p.x > 0 && p.x < MAP_W && p.y > 0 && p.y < MAP_H);
       for (const sh of shards) {
         sh.life -= dt;
         if (Math.hypot(sh.x - cat.x, sh.y - cat.y) < 28) { sh.life = 0; S.crystals++; floaters.push({ x: sh.x, y: sh.y - 10, text: '+1 💎', life: 1, color: '#9ff3ff', size: 14 }); }
@@ -1016,14 +1053,14 @@
       if (target) {
         const want = Math.atan2(target.y - (cat.y - 18), target.x - cat.x);
         cat.aim += (want - cat.aim) * Math.min(1, dt * 14);
-        if (cat.fireCd <= 0) { cat.fireCd = 1 / fireRate(); catShoot(target); }
+        if (cat.fireCd <= 0 && Math.hypot(target.x - cat.x, target.y - cat.y) < 400) { cat.fireCd = 1 / fireRate(); catShoot(target); }
       }
       // ракеты
       const pRocket = kindPower('rocket');
       if (pRocket > 0) {
         cat.rocketCd -= dt;
         if (cat.rocketCd <= 0) {
-          const alive = ghosts.filter(targetable);
+          const alive = ghosts.filter((g) => targetable(g) && Math.hypot(g.x - cat.x, g.y - cat.y) < 420);
           if (alive.length) {
             const t = alive[Math.floor(Math.random() * alive.length)];
             cat.rocketCd = Math.max(0.4, 1.5 / (1 + 0.3 * pRocket));
@@ -1042,7 +1079,7 @@
         o.cd -= dt;
         if (o.cd <= 0) {
           const t = nearestGhost(o.x, o.y);
-          if (t) {
+          if (t && Math.hypot(t.x - o.x, t.y - o.y) < 340) {
             o.cd = 0.9;
             beams.push({ x1: o.x, y1: o.y, x2: t.x, y2: t.y, life: 0.08, color: RARITY[GHOSTS[it.type].rarity].color, w: 3 });
             damage(t, squadDamage(it), false);
@@ -1071,10 +1108,23 @@
       const d = Math.hypot(dx, dy);
       if (d > g.r + 14) { g.x += (dx / d) * g.vy * dt + g.vx * dt; g.y += (dy / d) * g.vy * dt; }
       g.x += Math.sin(g.phase * 0.7) * 12 * dt;
-      if (g.x < 25 || g.x > 335) g.vx = -g.vx;
-      g.x = Math.max(25, Math.min(335, g.x));
-      g.y = Math.max(100, Math.min(450, g.y));
+      g.x = Math.max(WALL, Math.min(MAP_W - WALL, g.x));
+      g.y = Math.max(WALL, Math.min(MAP_H - WALL, g.y));
     }
+    // призраки расталкивают друг друга, чтобы не слипаться в одну точку
+    for (let i = 0; i < ghosts.length; i++) {
+      const a = ghosts[i]; if (a.capturing || a.dying) continue;
+      for (let j = i + 1; j < ghosts.length; j++) {
+        const b = ghosts[j]; if (b.capturing || b.dying) continue;
+        const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy), min = (a.r + b.r) * 0.8;
+        if (d > 0.01 && d < min) { const push = (min - d) / 2 / d; a.x -= dx * push; a.y -= dy * push; b.x += dx * push; b.y += dy * push; }
+      }
+    }
+    // камера мягко следует за котом
+    cam.x += (cat.x - cam.x) * Math.min(1, dt * 6);
+    cam.y += (cat.y - cam.y) * Math.min(1, dt * 6);
+    cam.x = Math.max(HALF_W, Math.min(MAP_W - HALF_W, cam.x));
+    cam.y = Math.max(HALF_H, Math.min(MAP_H - HALF_H, cam.y));
     ghosts = ghosts.filter((g) => g.hp > 0 || (g.dying && g.dying > 0) || g.capturing > 0);
 
     for (const b of beams) b.life -= dt;
@@ -1189,24 +1239,121 @@
   // =====================================================================
   // Отрисовка: сцена
   // =====================================================================
-  function drawRoom() {
-    const top = 70, bottom = 470;
-    const hue = district().hue + ((S.house % HOUSES_PER_DISTRICT) * 6);
-    ctx.fillStyle = `hsl(${hue}, 35%, 82%)`; ctx.fillRect(0, top, W, 250);
-    ctx.fillStyle = `hsl(${hue}, 35%, 77%)`;
-    for (let x = 0; x < W; x += 36) ctx.fillRect(x, top, 14, 250);
-    rr(240, top + 30, 80, 90, 10); ctx.fillStyle = '#3a2f5c'; ctx.fill(); ctx.lineWidth = 5; ctx.strokeStyle = '#8a6a55'; ctx.stroke();
-    ctx.fillStyle = moonActive() ? '#fff1a8' : '#f4ecd0';
-    ctx.beginPath(); ctx.arc(282, top + 66, moonActive() ? 20 : 15, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#8a6a55'; ctx.fillRect(278, top + 30, 5, 90); ctx.fillRect(240, top + 72, 80, 5);
-    rr(36, top + 40, 64, 50, 6); ctx.fillStyle = '#fbe3c8'; ctx.fill(); ctx.strokeStyle = '#c99a5b'; ctx.lineWidth = 4; ctx.stroke();
-    ctx.fillStyle = '#b8d8a8'; ctx.beginPath(); ctx.moveTo(42, top + 84); ctx.lineTo(62, top + 58); ctx.lineTo(80, top + 84); ctx.fill();
-    ctx.fillStyle = `hsl(${hue + 20}, 40%, 60%)`; ctx.fillRect(0, top + 250, W, bottom - top - 250);
-    ctx.fillStyle = `hsl(${hue + 20}, 40%, 54%)`;
-    for (let y = top + 262; y < bottom; y += 22) ctx.fillRect(0, y, W, 3);
-    ctx.fillStyle = '#e88aa5'; ctx.beginPath(); ctx.ellipse(180, 410, 130, 34, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#f3b0c3'; ctx.beginPath(); ctx.ellipse(180, 410, 100, 24, 0, 0, Math.PI * 2); ctx.fill();
-    if (moonActive()) { ctx.fillStyle = 'rgba(255,240,150,0.10)'; ctx.fillRect(0, top, W, bottom - top); }
+  // Детерминированный генератор, чтобы планировка дома не менялась при перезаходе
+  function rng(seed) { let t = seed >>> 0; return () => { t += 0x6D2B79F5; let r = Math.imul(t ^ (t >>> 15), 1 | t); r ^= r + Math.imul(r ^ (r >>> 7), 61 | r); return ((r ^ (r >>> 14)) >>> 0) / 4294967296; }; }
+
+  const FLOORS = [
+    { base: '#d9a877', line: '#c49364', wall: '#7a5a48', style: 'planks' },   // спальный квартал
+    { base: '#b7a9cf', line: '#a597bf', wall: '#4e4466', style: 'checker' },  // старый город
+    { base: '#9cc3cf', line: '#86afbd', wall: '#3f5f73', style: 'deck' },     // порт
+    { base: '#f2d4df', line: '#e4c0ce', wall: '#8a5a72', style: 'tiles' },    // универмаг
+    { base: '#9fcf92', line: '#8bbd7e', wall: '#4d6b4a', style: 'grass' },    // кладбище
+  ];
+  const DECOR = [
+    ['rug', 'bed', 'table', 'plant', 'box', 'lamp', 'sofa'],
+    ['rug', 'table', 'armor', 'plant', 'lamp', 'shelf', 'box'],
+    ['barrel', 'box', 'rope', 'net', 'lamp', 'barrel', 'anchor'],
+    ['rack', 'rug', 'box', 'plant', 'lamp', 'rack', 'table'],
+    ['grave', 'grave', 'tree', 'pumpkin', 'lamp', 'grave', 'bush'],
+  ];
+  const SOLID = { bed: 1, table: 1, box: 1, sofa: 1, shelf: 1, armor: 1, barrel: 1, rack: 1, grave: 1, tree: 1, anchor: 1 };
+
+  function buildMap() {
+    const key = S.house + ':' + districtIndex();
+    if (key === mapKey) return;
+    mapKey = key;
+    const d = districtIndex(), F = FLOORS[d];
+    const R = rng(S.house * 7919 + 13);
+    const k = 2; // рисуем в 2x для чёткости
+    mapCanvas = mapCanvas || document.createElement('canvas');
+    mapCanvas.width = MAP_W * k; mapCanvas.height = MAP_H * k;
+    const c = mapCanvas.getContext('2d');
+    c.setTransform(k, 0, 0, k, 0, 0);
+    // пол
+    c.fillStyle = F.base; c.fillRect(0, 0, MAP_W, MAP_H);
+    c.fillStyle = F.line;
+    if (F.style === 'planks' || F.style === 'deck') {
+      const h = F.style === 'deck' ? 34 : 26;
+      for (let y = 0; y < MAP_H; y += h) { c.fillRect(0, y, MAP_W, 3); for (let x = ((y / h) % 2) * 60; x < MAP_W; x += 120) c.fillRect(x, y, 3, h); }
+    } else if (F.style === 'checker' || F.style === 'tiles') {
+      const t = F.style === 'tiles' ? 50 : 64;
+      for (let y = 0; y < MAP_H; y += t) for (let x = 0; x < MAP_W; x += t) if (((x + y) / t) % 2 === 0) c.fillRect(x, y, t, t);
+      if (F.style === 'tiles') { c.fillStyle = 'rgba(255,255,255,0.35)'; for (let y = 0; y < MAP_H; y += t) for (let x = 0; x < MAP_W; x += t) c.fillRect(x + 6, y + 6, 10, 4); }
+    } else {
+      for (let i = 0; i < 900; i++) { const x = R() * MAP_W, y = R() * MAP_H; c.fillRect(x, y, 3, 8); c.fillRect(x + 4, y + 2, 3, 6); }
+      c.fillStyle = '#c9b48a';
+      for (let i = 0; i < 6; i++) { c.beginPath(); c.ellipse(R() * MAP_W, R() * MAP_H, 60 + R() * 60, 30 + R() * 20, R() * 3, 0, 7); c.fill(); }
+    }
+    // стены по краю
+    c.fillStyle = F.wall; c.fillRect(0, 0, MAP_W, WALL); c.fillRect(0, MAP_H - WALL, MAP_W, WALL); c.fillRect(0, 0, WALL, MAP_H); c.fillRect(MAP_W - WALL, 0, WALL, MAP_H);
+    c.fillStyle = 'rgba(0,0,0,0.12)'; c.fillRect(WALL, WALL, MAP_W - WALL * 2, 10);
+    // мебель
+    solids = [];
+    const kinds = DECOR[d];
+    const placed = [];
+    for (let i = 0; i < 34; i++) {
+      const kind = kinds[Math.floor(R() * kinds.length)];
+      const big = kind === 'rug' || kind === 'net' || kind === 'bed' || kind === 'sofa' || kind === 'tree';
+      const w = big ? 90 + R() * 50 : 34 + R() * 24, h = big ? 60 + R() * 40 : 34 + R() * 20;
+      const x = WALL + 30 + R() * (MAP_W - WALL * 2 - 60 - w), y = WALL + 30 + R() * (MAP_H - WALL * 2 - 60 - h);
+      if (Math.hypot(x + w / 2 - MAP_W / 2, y + h / 2 - MAP_H / 2) < 140) continue; // центр свободен для старта
+      if (placed.some((p) => x < p.x + p.w + 30 && x + w + 30 > p.x && y < p.y + p.h + 30 && y + h + 30 > p.y)) continue;
+      placed.push({ x, y, w, h });
+      drawDecor(c, kind, x, y, w, h, R, F);
+      if (SOLID[kind]) solids.push({ x: x + 4, y: y + 4, w: w - 8, h: h - 8 });
+    }
+    cat.x = MAP_W / 2; cat.y = MAP_H / 2; cam.x = cat.x; cam.y = cat.y;
+  }
+
+  function drawDecor(c, kind, x, y, w, h, R, F) {
+    const ink = INK;
+    const box = (fill, rad) => { c.beginPath(); c.moveTo(x + rad, y); c.arcTo(x + w, y, x + w, y + h, rad); c.arcTo(x + w, y + h, x, y + h, rad); c.arcTo(x, y + h, x, y, rad); c.arcTo(x, y, x + w, y, rad); c.closePath(); c.fillStyle = fill; c.fill(); c.lineWidth = 3; c.strokeStyle = ink; c.stroke(); };
+    const shadow = () => { c.fillStyle = 'rgba(0,0,0,0.15)'; c.fillRect(x + 5, y + 6, w, h); };
+    const cx = x + w / 2, cy = y + h / 2;
+    switch (kind) {
+      case 'rug': c.fillStyle = ['#e88aa5', '#8fb8e8', '#f0c46b'][Math.floor(R() * 3)]; c.beginPath(); c.ellipse(cx, cy, w / 2, h / 2, 0, 0, 7); c.fill(); c.fillStyle = 'rgba(255,255,255,0.3)'; c.beginPath(); c.ellipse(cx, cy, w / 3, h / 3, 0, 0, 7); c.fill(); break;
+      case 'net': c.strokeStyle = 'rgba(60,60,80,0.5)'; c.lineWidth = 2; for (let i = 0; i <= w; i += 12) { c.beginPath(); c.moveTo(x + i, y); c.lineTo(x + i, y + h); c.stroke(); } for (let i = 0; i <= h; i += 12) { c.beginPath(); c.moveTo(x, y + i); c.lineTo(x + w, y + i); c.stroke(); } break;
+      case 'bed': shadow(); box('#f7f3ff', 10); c.fillStyle = '#9fb4e8'; c.fillRect(x + 3, y + h * 0.35, w - 6, h * 0.65 - 3); c.fillStyle = '#ffffff'; c.fillRect(x + 8, y + 6, w * 0.35, h * 0.22); c.fillRect(x + w * 0.55, y + 6, w * 0.35, h * 0.22); break;
+      case 'sofa': shadow(); box('#c98fb0', 12); c.fillStyle = '#e0a9c6'; c.fillRect(x + 8, y + 12, w - 16, h - 20); break;
+      case 'table': shadow(); box('#b07a4f', 8); c.fillStyle = '#ffffff'; c.beginPath(); c.arc(cx - 6, cy, 5, 0, 7); c.fill(); c.fillStyle = '#ff9a5a'; c.beginPath(); c.arc(cx + 8, cy + 2, 4, 0, 7); c.fill(); break;
+      case 'box': shadow(); box('#d9a35f', 4); c.strokeStyle = '#a8763c'; c.beginPath(); c.moveTo(x, y); c.lineTo(x + w, y + h); c.moveTo(x + w, y); c.lineTo(x, y + h); c.stroke(); break;
+      case 'shelf': case 'rack': shadow(); box(kind === 'rack' ? '#c9c3e6' : '#8a6a55', 4); for (let i = 1; i < 4; i++) { c.fillStyle = ['#ff9fbf', '#7fd1ff', '#8ee08a'][i - 1]; c.fillRect(x + 6 + (i - 1) * (w - 12) / 3, y + 6, (w - 12) / 3 - 4, h - 12); } break;
+      case 'armor': shadow(); box('#d9dde6', 12); c.fillStyle = INK; c.fillRect(cx - 8, cy - 2, 16, 4); break;
+      case 'barrel': c.fillStyle = 'rgba(0,0,0,0.15)'; c.beginPath(); c.arc(cx + 4, cy + 5, w / 2, 0, 7); c.fill(); c.fillStyle = '#b07a4f'; c.beginPath(); c.arc(cx, cy, w / 2, 0, 7); c.fill(); c.lineWidth = 3; c.strokeStyle = ink; c.stroke(); c.beginPath(); c.arc(cx, cy, w / 3, 0, 7); c.stroke(); break;
+      case 'anchor': c.strokeStyle = '#5b6578'; c.lineWidth = 6; c.beginPath(); c.moveTo(cx, y); c.lineTo(cx, y + h); c.moveTo(x, cy + 6); c.quadraticCurveTo(cx, y + h + 10, x + w, cy + 6); c.stroke(); break;
+      case 'rope': c.strokeStyle = '#c9a26b'; c.lineWidth = 5; c.beginPath(); for (let i = 0; i < 3; i++) c.arc(cx, cy, 6 + i * 6, 0, 7); c.stroke(); break;
+      case 'plant': case 'bush': c.fillStyle = 'rgba(0,0,0,0.15)'; c.beginPath(); c.arc(cx + 4, cy + 5, w / 2, 0, 7); c.fill(); c.fillStyle = kind === 'bush' ? '#6fae62' : '#7cc47a'; for (let i = 0; i < 5; i++) { const a = i * 1.25; c.beginPath(); c.arc(cx + Math.cos(a) * w / 5, cy + Math.sin(a) * w / 5, w / 3.2, 0, 7); c.fill(); } c.lineWidth = 2; c.strokeStyle = ink; c.beginPath(); c.arc(cx, cy, w / 2.2, 0, 7); c.stroke(); break;
+      case 'tree': c.fillStyle = 'rgba(0,0,0,0.2)'; c.beginPath(); c.ellipse(cx + 8, cy + 10, w / 2, h / 2, 0, 0, 7); c.fill(); c.fillStyle = '#5a8f5a'; c.beginPath(); c.ellipse(cx, cy, w / 2, h / 2, 0, 0, 7); c.fill(); c.lineWidth = 3; c.strokeStyle = ink; c.stroke(); c.fillStyle = '#6fa86b'; c.beginPath(); c.ellipse(cx - 8, cy - 8, w / 4, h / 4, 0, 0, 7); c.fill(); break;
+      case 'grave': shadow(); c.beginPath(); c.moveTo(x, y + h); c.lineTo(x, y + w / 2); c.arc(cx, y + w / 2, w / 2, Math.PI, 0); c.lineTo(x + w, y + h); c.closePath(); c.fillStyle = '#b8b4c4'; c.fill(); c.lineWidth = 3; c.strokeStyle = ink; c.stroke(); c.fillStyle = '#8a8698'; c.fillRect(cx - 2, y + w / 2 - 8, 4, 16); c.fillRect(cx - 7, y + w / 2 - 3, 14, 4); break;
+      case 'pumpkin': c.fillStyle = '#ff9a3d'; c.beginPath(); c.ellipse(cx, cy, w / 2.2, h / 2.6, 0, 0, 7); c.fill(); c.lineWidth = 3; c.strokeStyle = ink; c.stroke(); c.fillStyle = '#5a8f5a'; c.fillRect(cx - 2, cy - h / 2.6 - 5, 4, 8); break;
+      case 'lamp': c.fillStyle = 'rgba(255,240,170,0.35)'; c.beginPath(); c.arc(cx, cy, 40, 0, 7); c.fill(); c.fillStyle = '#ffe9a0'; c.beginPath(); c.arc(cx, cy, 10, 0, 7); c.fill(); c.lineWidth = 2; c.strokeStyle = ink; c.stroke(); break;
+    }
+  }
+
+  function drawMap() {
+    if (!mapCanvas) buildMap();
+    ctx.drawImage(mapCanvas, 0, 0, MAP_W, MAP_H);
+    if (moonActive()) { ctx.fillStyle = 'rgba(255,240,150,0.10)'; ctx.fillRect(0, 0, MAP_W, MAP_H); }
+  }
+
+  // Стрелки к важным целям за пределами экрана
+  function drawOffscreenArrows() {
+    const targets = [];
+    for (const g of ghosts) if ((g.boss || g.raid) && g.hp > 0) targets.push({ x: g.x, y: g.y, color: '#ffc94d' });
+    if (gold) targets.push({ x: gold.x, y: gold.y, color: '#ffd84d' });
+    for (const sh of shards) targets.push({ x: sh.x, y: sh.y, color: '#9ff3ff', small: true });
+    for (const t of targets) {
+      const p = toScreen(t.x, t.y);
+      if (p.x > 10 && p.x < VIEW.w - 10 && p.y > VIEW.y + 10 && p.y < VIEW.y + VIEW.h - 10) continue;
+      const a = Math.atan2(p.y - VIEW_CY, p.x - VIEW_CX);
+      const ex = Math.max(18, Math.min(VIEW.w - 18, VIEW_CX + Math.cos(a) * 400));
+      const ey = Math.max(VIEW.y + 18, Math.min(VIEW.y + VIEW.h - 18, VIEW_CY + Math.sin(a) * 400));
+      const r = t.small ? 7 : 11;
+      ctx.save(); ctx.translate(ex, ey); ctx.rotate(a);
+      ctx.fillStyle = t.color; ctx.strokeStyle = INK; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(r, 0); ctx.lineTo(-r, -r * 0.8); ctx.lineTo(-r * 0.4, 0); ctx.lineTo(-r, r * 0.8); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.restore();
+    }
   }
 
   function drawGhost(g) {
@@ -1404,18 +1551,17 @@
   ];
 
   function drawBottom() {
-    ctx.fillStyle = '#3a2f55'; ctx.fillRect(0, 470, W, 170);
+    ctx.fillStyle = '#3a2f55'; ctx.fillRect(0, 512, W, 128);
     UPGRADES.forEach((u, i) => {
-      const x = 8 + i * 116, y = 478, w = 112, h = 92;
+      const x = 8 + i * 116, y = 517, w = 112, h = 58;
       const cost = upgradeCost(S[u.key], u.base);
       const can = S.ecto >= cost;
       rr(x, y, w, h, 12); ctx.fillStyle = can ? u.color : '#6b5f86'; ctx.fill();
       ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
-      text(u.name, x + w / 2, y + 16, 14, '#ffffff');
-      text('ур. ' + S[u.key], x + w / 2, y + 34, 11, INK, 'center', '700');
-      text(u.desc(), x + w / 2, y + 50, 11, INK, 'center', '700');
-      rr(x + 8, y + 62, w - 16, 22, 8); ctx.fillStyle = 'rgba(43,35,64,0.85)'; ctx.fill();
-      text(fmt(cost), x + w / 2, y + 73, 13, can ? '#7dff9e' : '#ff9aa9');
+      text(u.name + ' ' + S[u.key], x + w / 2, y + 12, 12, '#ffffff');
+      text(u.desc(), x + w / 2, y + 27, 10, INK, 'center', '700');
+      rr(x + 8, y + 35, w - 16, 18, 7); ctx.fillStyle = 'rgba(43,35,64,0.85)'; ctx.fill();
+      text(fmt(cost), x + w / 2, y + 44, 12, can ? '#7dff9e' : '#ff9aa9');
       btn(x, y, w, h, () => buyUpgrade(u));
     });
     TABS.forEach((t, i) => {
@@ -1771,9 +1917,12 @@
     buttons.length = 0;
     ctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#1d1729'; ctx.fillRect(0, 0, W, H);
     ctx.save();
+    ctx.beginPath(); ctx.rect(VIEW.x, VIEW.y, VIEW.w, VIEW.h); ctx.clip();
     if (shake > 0) ctx.translate((Math.random() - 0.5) * 8 * shake, (Math.random() - 0.5) * 8 * shake);
-    drawRoom();
+    ctx.translate(VIEW_CX, VIEW_CY); ctx.scale(ZOOM, ZOOM); ctx.translate(-cam.x, -cam.y);
+    drawMap();
     for (const g of ghosts) drawGhost(g);
     orbiters.forEach((o) => o && o.y < cat.y - 10 && drawOrbiter(o));
     drawCat();
@@ -1803,6 +1952,7 @@
     for (const f of floaters) { ctx.globalAlpha = Math.min(1, f.life * 2); text(f.text, f.x, f.y, f.size, f.color); }
     ctx.globalAlpha = 1;
     ctx.restore();
+    drawOffscreenArrows();
     for (const d of drops) { ctx.fillStyle = '#7dff9e'; ctx.strokeStyle = INK; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(d.x, d.y, 4, 0, 7); ctx.fill(); ctx.stroke(); }
     drawJoystick();
     drawTopBar();
@@ -1844,7 +1994,7 @@
 
   // Для отладки в консоли браузера.
   window.__game = {
-    state: () => S, ghosts: () => ghosts, open: (p) => { panel = p; }, gold: () => { goldCd = 0; }, goldObj: () => gold,
+    state: () => S, ghosts: () => ghosts, open: (p) => { panel = p; }, gold: () => { goldCd = 0; }, goldObj: () => gold, toScreen,
     reset: () => { localStorage.removeItem(SAVE_KEY); S = defaultState(); ensureQuests(); resetRoom(); },
   };
 })();
