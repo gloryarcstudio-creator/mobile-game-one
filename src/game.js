@@ -97,13 +97,33 @@
   GHOSTS.mansion = { name: 'Призрачный особняк', rarity: 3, body: '#c9b8ff', shape: 'king', d: -1 };
 
   // Скины: бонус действует, пока скин есть в коллекции (даже если не надет)
+  // Скины по уровням редкости. Бонусы всех купленных скинов складываются, даже если скин не надет.
+  const TIERS = [
+    { name: 'Обычные', one: 'ОБЫЧНЫЙ', short: 'Обыч.', color: '#8fa3b8' },
+    { name: 'Редкие', one: 'РЕДКИЙ', short: 'Редк.', color: '#4d9bff' },
+    { name: 'Эпические', one: 'ЭПИК', short: 'Эпик', color: '#a86bff' },
+    { name: 'Легендарные', one: 'ЛЕГЕНДА', short: 'Леген.', color: '#ff9f1a' },
+    { name: 'Мифические', one: 'МИФ', short: 'Миф.', color: '#ff4d8a' },
+  ];
   const SKINS = {
-    ginger: { name: 'Рыжик', body: '#f2a65a', dark: '#d9853a', bonus: {}, text: 'Стартовый' },
-    black: { name: 'Уголёк', body: '#5d566e', dark: '#3f3a4f', bonus: { rate: 1.15 }, text: '+15% скорострельность', crystals: 300 },
-    white: { name: 'Снежок', body: '#f4f1ea', dark: '#d8d2c4', bonus: { income: 1.25 }, text: '+25% эктоплазмы', crystals: 500 },
-    ninja: { name: 'Ниндзя', body: '#8a8fa8', dark: '#5c6078', mask: true, bonus: { dmg: 1.2, rate: 1.1 }, text: '+20% урон, +10% скорость', crystals: 1200 },
-    vampire: { name: 'Граф Мурракула', body: '#c7b3e6', dark: '#8f6fc4', cape: true, bonus: { dmg: 1.35 }, text: '+35% урона', usd: '$2.99' },
-    golden: { name: 'Золотой кот', body: '#ffd24d', dark: '#e0a91f', sparkle: true, bonus: { dmg: 1.5, income: 1.5 }, text: '+50% урон и доход', usd: '$9.99' },
+    ginger: { tier: 0, name: 'Рыжик', body: '#f2a65a', dark: '#d9853a', pat: 'tabby', collar: '#e8304f', charm: 'bell', bonus: {}, text: 'Стартовый' },
+    spotty: { tier: 0, name: 'Пятнышко', body: '#f4efe6', dark: '#8a5a3c', pat: 'spots', collar: '#4d9bff', charm: 'bell', eyes: ['#8ad05a', '#8ad05a'], bonus: { income: 1.08 }, text: '+8% эктоплазмы', crystals: 150 },
+    tabby: { tier: 0, name: 'Полосатик', body: '#a8a4b4', dark: '#6e6a7c', pat: 'tabby', hat: 'beanie', hatC: '#ff5c5c', bonus: { dmg: 1.08 }, text: '+8% урона', crystals: 250 },
+    peach: { tier: 0, name: 'Персик', body: '#ffe6cc', dark: '#f29a5a', pat: 'calico', hat: 'flower', eyes: ['#5fa8ff', '#5fa8ff'], collar: '#8ee08a', charm: 'heart', bonus: { rate: 1.06 }, text: '+6% скорости', crystals: 300 },
+    black: { tier: 1, name: 'Уголёк', body: '#5d566e', dark: '#3f3a4f', pat: 'tuxedo', eyes: ['#d6f25a', '#d6f25a'], slit: true, ear: '#a77fb3', collar: '#8a5ad6', charm: 'star', tail: 'white', bonus: { rate: 1.15 }, text: '+15% скорости', crystals: 600 },
+    white: { tier: 1, name: 'Снежок', body: '#f4f1ea', dark: '#d8d2c4', pat: 'fluffy', eyes: ['#6ec3ff', '#ffc94d'], scarf: '#6ec3ff', tail: 'fluff', bonus: { income: 1.2 }, text: '+20% эктоплазмы', crystals: 700 },
+    siam: { tier: 1, name: 'Сапфир', body: '#f3e6d2', dark: '#5a4038', pat: 'points', eyes: ['#4d9bff', '#4d9bff'], hat: 'headphones', hatC: '#ff8fb1', bonus: { dmg: 1.15 }, text: '+15% урона', crystals: 800 },
+    pirate: { tier: 1, name: 'Капитан Мяу', body: '#c98a5a', dark: '#8a5a36', pat: 'tabby', hat: 'pirate', patch: true, collar: '#e8304f', charm: 'gem', tank: '#8a5a36', bonus: { dmg: 1.1, income: 1.1 }, text: '+10% урон и доход', crystals: 900 },
+    ninja: { tier: 2, name: 'Ниндзя', body: '#8a8fa8', dark: '#5c6078', pat: 'tabby', mask: true, tail: 'ribbon', tank: '#3f3a4f', bonus: { dmg: 1.2, rate: 1.1 }, text: '+20% урон, +10% скорость', crystals: 1200, req: 10 },
+    wizard: { tier: 2, name: 'Мурлин', body: '#9fb0ee', dark: '#6577cc', pat: 'none', hat: 'wizard', hatC: '#5a3fb0', eyes: ['#ffd24d', '#ffd24d'], sparkle: '#fff3a6', tank: '#5a3fb0', liquid: '#c9a0ff', bonus: { dmg: 1.3 }, text: '+30% урона', crystals: 1500, req: 15 },
+    chef: { tier: 2, name: 'Пирожок', body: '#f7d9a8', dark: '#e0b070', pat: 'tabby', hat: 'chef', scarf: '#ff5c5c', bonus: { income: 1.35 }, text: '+35% эктоплазмы', crystals: 1600, req: 20 },
+    astro: { tier: 2, name: 'Космокот', body: '#c8c4d8', dark: '#8a86a0', pat: 'none', helmet: true, tank: '#e8e8f0', eyes: ['#3ddc97', '#3ddc97'], bonus: { dmg: 1.15, rate: 1.15 }, text: '+15% урон и скорость', crystals: 2000, req: 25 },
+    vampire: { tier: 3, name: 'Граф Мурракула', body: '#c7b3e6', dark: '#8f6fc4', pat: 'none', cape: true, fangs: true, eyes: ['#ff4d6d', '#ff4d6d'], slit: true, tail: 'heart', tank: '#6a2a50', liquid: '#ff5c7a', bonus: { dmg: 1.35 }, text: '+35% урона', usd: '$2.99' },
+    devil: { tier: 3, name: 'Чертёнок', body: '#ff7b7b', dark: '#c43c4c', pat: 'none', hat: 'horns', eyes: ['#ffd24d', '#ffd24d'], slit: true, fangs: true, tail: 'arrow', aura: '255,90,60', tank: '#3f2a3a', liquid: '#ff9a3d', bonus: { dmg: 1.4 }, text: '+40% урона', usd: '$3.99' },
+    angel: { tier: 3, name: 'Пушинка', body: '#fffaf0', dark: '#e8dcc4', pat: 'fluffy', hat: 'halo', wings: true, eyes: ['#7fd1ff', '#7fd1ff'], tail: 'fluff', aura: '255,240,180', tank: '#f2e6c4', liquid: '#fff3a6', bonus: { income: 1.4 }, text: '+40% эктоплазмы', usd: '$3.99' },
+    santa: { tier: 3, name: 'Дед Мурмороз', body: '#e8e4ee', dark: '#b8b4c8', pat: 'fluffy', hat: 'santa', beard: true, tank: '#e8304f', bonus: { dmg: 1.25, income: 1.25 }, text: '+25% урон и доход', usd: '$4.99' },
+    golden: { tier: 4, name: 'Золотой кот', body: '#ffd24d', dark: '#e0a91f', pat: 'none', metal: true, hat: 'crown', gem: true, pearls: true, eyes: ['#3ddc97', '#3ddc97'], ear: '#ff9f5a', aura: '255,220,90', sparkle: '#fff6c0', tank: '#ffc94d', bonus: { dmg: 1.5, income: 1.5 }, text: '+50% урон и доход', usd: '$9.99' },
+    phantom: { tier: 4, name: 'Фантом', body: '#a8f0ff', dark: '#5fc8e0', pat: 'none', ghost: true, eyes: ['#ffffff', '#ffffff'], aura: '120,240,255', sparkle: '#d6fbff', tank: '#5fc8e0', liquid: '#ffffff', bonus: { dmg: 1.6, rate: 1.2 }, text: '+60% урон, +20% скорость', usd: '$12.99' },
   };
 
   const CRYSTAL_PACKS = [
@@ -156,7 +176,7 @@
     stats: { kills: 0, captures: 0, upgrades: 0, rooms: 0, summons: 0, merges: 0 },
     quests: [], questLevel: 0,
     stones: 0, prestiges: 0, auto: true,
-    skins: ['ginger'], skin: 'ginger',
+    skins: ['ginger'], skin: 'ginger', maxHouse: 1,
     vipUntil: 0, noAds: false, starter: false, weekly: false,
     daily: { count: 0, last: '' },
     wheel: { day: '', free: 1, ads: 3 },
@@ -175,6 +195,8 @@
       const s = Object.assign(defaultState(), JSON.parse(raw));
       s.stats = Object.assign(defaultState().stats, s.stats);
       ['daily', 'wheel', 'raid', 'settings'].forEach((k) => { s[k] = Object.assign(defaultState()[k], s[k]); });
+      s.maxHouse = Math.max(s.maxHouse || 1, s.house);
+      s.skins = s.skins.filter((k) => SKINS[k]); if (!SKINS[s.skin]) s.skin = 'ginger';
       return s;
     } catch (e) { return null; }
   }
@@ -195,7 +217,7 @@
   const moonActive = () => Date.now() < S.moonUntil;
   const vipActive = () => Date.now() < S.vipUntil;
   const moonMult = () => (moonActive() || vipActive() ? 2 : 1);
-  const skinMult = (kind) => S.skins.reduce((m, k) => m * (SKINS[k].bonus[kind] || 1), 1);
+  const skinMult = (kind) => 1 + S.skins.reduce((m, k) => m + ((SKINS[k] && SKINS[k].bonus[kind]) || 1) - 1, 0);
   const attachSlots = () => (vipActive() ? 4 : 3);
   const today = () => new Date().toDateString();
   const stoneMult = () => 1 + 0.1 * S.stones;
@@ -276,7 +298,7 @@
   let spawnCd = 0.5, roomSpawned = 0, bossTimer = 0, bossSpawned = false;
   let panel = null; // squad | attach | bestiary | quests | prestige | offline
   let selectedJar = null, selectedAttach = null, bestPage = 0, prestigeConfirm = 0;
-  let toast = null, shake = 0, time = 0, roomToken = 0, press = null;
+  let toast = null, shake = 0, time = 0, roomToken = 0, press = null, skinTier = 0;
   let modal = null; // {title, lines, buttons} или {ad: {t, cb}}
   let shopTab = 'offers';
   let gold = null, goldCd = 40 + Math.random() * 30;
@@ -609,7 +631,7 @@
 
   function nextRoom() {
     const prevDistrict = districtIndex();
-    if (S.room === ROOMS_PER_HOUSE) { S.house++; S.room = 1; }
+    if (S.room === ROOMS_PER_HOUSE) { S.house++; S.room = 1; S.maxHouse = Math.max(S.maxHouse || 1, S.house); }
     else S.room++;
     S.jars += 2;
     S.stats.rooms++;
@@ -1013,9 +1035,10 @@
   function buySkin(k) {
     const sk = SKINS[k];
     if (S.skins.includes(k)) { S.skin = k; showToast('Надет скин: ' + sk.name); return; }
+    if (sk.req && (S.maxHouse || 1) < sk.req) { showToast('Откроется на доме ' + sk.req); SFX.play('deny'); return; }
     if (sk.crystals) {
       if (S.crystals < sk.crystals) { showToast('Нужно ' + sk.crystals + ' 💎'); return; }
-      S.crystals -= sk.crystals; S.skins.push(k); S.skin = k; showToast('Новый скин: ' + sk.name);
+      S.crystals -= sk.crystals; S.skins.push(k); S.skin = k; showToast('Новый скин: ' + sk.name); SFX.play('reward');
     } else purchase('Скин «' + sk.name + '»', sk.usd, () => { S.skins.push(k); S.skin = k; });
   }
   function syncSlots() {
@@ -2051,23 +2074,36 @@
   function catSprite(x, gy, o) {
     const k = SKINS[o.skin] ? o.skin : 'ginger', SK = SKINS[k];
     const walk = o.walk || 0, y = gy + (o.bobY || 0), aim = o.aim === undefined ? -Math.PI / 2 : o.aim, rec = o.recoil || 0;
-    const PI = Math.PI;
-    const metal = k === 'golden';
+    const PI = Math.PI, pat = SK.pat || 'none', metal = !!SK.metal, ghost = !!SK.ghost;
     const fur = (cx, cy, rad) => {
       const g = ctx.createRadialGradient(cx - rad * 0.35, cy - rad * 0.45, rad * 0.1, cx, cy, rad * 1.3);
       g.addColorStop(0, shade(SK.body, metal ? 0.7 : 0.4)); g.addColorStop(metal ? 0.4 : 0.55, SK.body); g.addColorStop(1, shade(SK.body, metal ? -0.35 : -0.25)); return g;
     };
     const tri = (ax, ay, bx, by, cx, cy) => { ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.lineTo(cx, cy); ctx.closePath(); };
+    const star = (sx, sy, s, col) => { ctx.fillStyle = col; ctx.beginPath(); for (let i = 0; i < 8; i++) { const r = i % 2 ? s * 0.35 : s, a = -PI / 2 + (i * PI) / 4; ctx.lineTo(sx + Math.cos(a) * r, sy + Math.sin(a) * r); } ctx.closePath(); ctx.fill(); };
     const hy = y - 22;
+    const light = pat === 'tuxedo' || pat === 'points';
     // тень
-    ctx.fillStyle = 'rgba(30,15,50,0.25)'; ctx.beginPath(); ctx.ellipse(x, gy + 28, 30 - Math.abs(walk) * 3, 8, 0, 0, PI * 2); ctx.fill();
-    // аура золотого кота
-    if (metal) {
+    ctx.fillStyle = 'rgba(30,15,50,0.25)'; ctx.beginPath(); ctx.ellipse(x, gy + 28, (ghost ? 22 : 30) - Math.abs(walk) * 3, 8, 0, 0, PI * 2); ctx.fill();
+    // аура
+    if (SK.aura) {
       const ar = 50 + Math.sin(time * 3) * 4, ag = ctx.createRadialGradient(x, y - 8, 10, x, y - 8, ar);
-      ag.addColorStop(0, 'rgba(255,220,90,0.45)'); ag.addColorStop(1, 'rgba(255,220,90,0)'); ctx.fillStyle = ag; ctx.beginPath(); ctx.arc(x, y - 8, ar, 0, 7); ctx.fill();
+      ag.addColorStop(0, `rgba(${SK.aura},0.45)`); ag.addColorStop(1, `rgba(${SK.aura},0)`); ctx.fillStyle = ag; ctx.beginPath(); ctx.arc(x, y - 8, ar, 0, 7); ctx.fill();
     }
-    // плащ вампира сзади
-    if (k === 'vampire') {
+    if (ghost) { ctx.save(); ctx.globalAlpha = 0.82 + Math.sin(time * 4) * 0.08; }
+    // крылья ангела
+    if (SK.wings) {
+      const fl = Math.sin(time * 6) * 0.15;
+      for (const sx of [-1, 1]) {
+        ctx.save(); ctx.translate(x + sx * 14, y - 4); ctx.rotate(sx * (-0.3 + fl)); ctx.scale(sx, 1);
+        ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(22, -26, 34, -14); ctx.quadraticCurveTo(30, -8, 34, -2); ctx.quadraticCurveTo(26, 2, 28, 8); ctx.quadraticCurveTo(14, 10, 0, 6); ctx.closePath();
+        ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = INK; ctx.stroke();
+        ctx.strokeStyle = '#d8e4f5'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(6, 2); ctx.quadraticCurveTo(18, -6, 28, -6); ctx.stroke();
+        ctx.restore();
+      }
+    }
+    // плащ сзади
+    if (SK.cape) {
       const fl = Math.sin(time * 3) * 3;
       ctx.beginPath(); ctx.moveTo(x - 18, y - 10); ctx.quadraticCurveTo(x - 36, y + 10, x - 34 - fl, y + 32);
       for (let i = 0; i < 4; i++) ctx.quadraticCurveTo(x - 34 + i * 17 + 8.5, y + 24 + (i % 2) * 2, x - 34 + (i + 1) * 17 + (i === 3 ? fl : 0), y + 32);
@@ -2081,73 +2117,89 @@
     ctx.lineCap = 'round';
     ctx.strokeStyle = INK; ctx.lineWidth = 12; tail();
     ctx.strokeStyle = SK.body; ctx.lineWidth = 7; tail();
-    if (k === 'ginger' || k === 'ninja') { ctx.setLineDash([4, 6]); ctx.strokeStyle = SK.dark; ctx.lineWidth = 7; tail(); ctx.setLineDash([]); }
+    if (pat === 'tabby') { ctx.setLineDash([4, 6]); ctx.strokeStyle = SK.dark; ctx.lineWidth = 7; tail(); ctx.setLineDash([]); }
+    if (pat === 'points') { ctx.setLineDash([0, 26, 40]); ctx.strokeStyle = SK.dark; ctx.lineWidth = 7; tail(); ctx.setLineDash([]); }
     if (metal) { ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 2; tail(); }
     ctx.lineCap = 'butt';
-    const tipX = x + 36, tipY = y - 16;
-    if (k === 'black') { ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(tipX, tipY, 4.5, 0, 7); ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke(); }
-    if (k === 'white') { ctx.fillStyle = '#ffffff'; for (const [dx, dy] of [[0, 0], [-4, 3], [4, 2], [0, -4]]) { ctx.beginPath(); ctx.arc(tipX + dx, tipY + dy, 4.5, 0, 7); ctx.fill(); } }
-    if (k === 'ninja') { ctx.fillStyle = '#ff4d6d'; tri(tipX - 1, tipY + 6, tipX - 9, tipY + 1, tipX - 9, tipY + 11); ctx.fill(); tri(tipX - 1, tipY + 6, tipX + 7, tipY + 1, tipX + 7, tipY + 11); ctx.fill(); }
-    if (k === 'vampire') { ctx.fillStyle = '#c2264b'; ctx.beginPath(); ctx.moveTo(tipX, tipY + 4); ctx.bezierCurveTo(tipX - 9, tipY - 4, tipX - 3, tipY - 10, tipX, tipY - 5); ctx.bezierCurveTo(tipX + 3, tipY - 10, tipX + 9, tipY - 4, tipX, tipY + 4); ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke(); }
-    // лапки
+    const tipX = x + 36, tipY = y - 16, TT = SK.tail;
+    if (TT === 'white') { ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(tipX, tipY, 4.5, 0, 7); ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke(); }
+    if (TT === 'fluff') { ctx.fillStyle = SK.body; for (const [dx, dy] of [[0, 0], [-4, 3], [4, 2], [0, -4]]) { ctx.beginPath(); ctx.arc(tipX + dx, tipY + dy, 4.5, 0, 7); ctx.fill(); } }
+    if (TT === 'ribbon') { ctx.fillStyle = '#ff4d6d'; tri(tipX - 1, tipY + 6, tipX - 9, tipY + 1, tipX - 9, tipY + 11); ctx.fill(); tri(tipX - 1, tipY + 6, tipX + 7, tipY + 1, tipX + 7, tipY + 11); ctx.fill(); }
+    if (TT === 'heart') { ctx.fillStyle = '#c2264b'; ctx.beginPath(); ctx.moveTo(tipX, tipY + 4); ctx.bezierCurveTo(tipX - 9, tipY - 4, tipX - 3, tipY - 10, tipX, tipY - 5); ctx.bezierCurveTo(tipX + 3, tipY - 10, tipX + 9, tipY - 4, tipX, tipY + 4); ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke(); }
+    if (TT === 'arrow') { ctx.fillStyle = SK.dark; tri(tipX, tipY - 10, tipX - 7, tipY + 3, tipX + 7, tipY + 3); ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke(); }
+    // лапки (у призрака вместо них волнистый низ)
     ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
-    for (const [fx, ph] of [[-11, 1], [11, -1]]) {
-      ctx.fillStyle = k === 'black' ? '#ffffff' : shade(SK.body, -0.1);
-      ctx.beginPath(); ctx.ellipse(x + fx, gy + 25 + walk * ph * 3, 8, 5, 0, 0, 7); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = 'rgba(255,150,170,0.7)'; ctx.beginPath(); ctx.arc(x + fx, gy + 26 + walk * ph * 3, 1.8, 0, 7); ctx.fill();
+    if (ghost) {
+      ctx.fillStyle = fur(x, y + 18, 22); ctx.beginPath(); ctx.moveTo(x - 22, y + 12);
+      for (let i = 0; i <= 6; i++) ctx.lineTo(x - 22 + i * 7.3, gy + 24 + (i % 2 ? 6 : 0) + Math.sin(time * 6 + i) * 2);
+      ctx.lineTo(x + 22, y + 12); ctx.closePath(); ctx.fill(); ctx.stroke();
+    } else {
+      for (const [fx, ph] of [[-11, 1], [11, -1]]) {
+        ctx.fillStyle = pat === 'tuxedo' ? '#ffffff' : pat === 'points' ? SK.dark : shade(SK.body, -0.1);
+        ctx.beginPath(); ctx.ellipse(x + fx, gy + 25 + walk * ph * 3, 8, 5, 0, 0, 7); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = 'rgba(255,150,170,0.7)'; ctx.beginPath(); ctx.arc(x + fx, gy + 26 + walk * ph * 3, 1.8, 0, 7); ctx.fill();
+      }
     }
     // тело
     ctx.strokeStyle = INK; ctx.lineWidth = 3;
     ctx.fillStyle = fur(x, y + 8, 24); ctx.beginPath(); ctx.ellipse(x, y + 8, 24, 20, 0, 0, PI * 2); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = k === 'black' ? '#f4f1ea' : shade(SK.body, 0.5); ctx.beginPath(); ctx.ellipse(x + 3, y + 13, k === 'black' ? 9 : 12, k === 'black' ? 8 : 10, 0, 0, 7); ctx.fill();
-    if (k === 'white') { ctx.fillStyle = '#ffffff'; ctx.beginPath(); for (let i = 0; i <= 6; i++) ctx.lineTo(x - 9 + i * 3, y + 2 + (i % 2 ? 6 : 0)); ctx.lineTo(x + 9, y + 14); ctx.lineTo(x - 9, y + 14); ctx.closePath(); ctx.fill(); }
-    if (k === 'ginger' || k === 'ninja') {
+    ctx.save(); ctx.beginPath(); ctx.ellipse(x, y + 8, 23, 19, 0, 0, PI * 2); ctx.clip();
+    if (pat === 'spots') { ctx.fillStyle = SK.dark; for (const [dx, dy, r] of [[-14, 0, 5], [10, -4, 4], [-6, 18, 4], [16, 12, 5]]) { ctx.beginPath(); ctx.ellipse(x + dx, y + 8 + dy, r, r * 0.8, 0.4, 0, 7); ctx.fill(); } }
+    if (pat === 'calico') { ctx.fillStyle = SK.dark; ctx.beginPath(); ctx.ellipse(x - 14, y + 4, 10, 8, 0.3, 0, 7); ctx.fill(); ctx.fillStyle = '#5a4a48'; ctx.beginPath(); ctx.ellipse(x + 15, y + 16, 8, 6, -0.3, 0, 7); ctx.fill(); }
+    ctx.restore();
+    ctx.fillStyle = light || pat === 'spots' ? '#fbf7ef' : shade(SK.body, 0.5); ctx.beginPath(); ctx.ellipse(x + 3, y + 13, pat === 'tuxedo' ? 9 : 12, pat === 'tuxedo' ? 8 : 10, 0, 0, 7); ctx.fill();
+    if (pat === 'fluffy') { ctx.fillStyle = '#ffffff'; ctx.beginPath(); for (let i = 0; i <= 6; i++) ctx.lineTo(x - 9 + i * 3, y + 2 + (i % 2 ? 6 : 0)); ctx.lineTo(x + 9, y + 14); ctx.lineTo(x - 9, y + 14); ctx.closePath(); ctx.fill(); }
+    if (pat === 'tabby') {
       ctx.strokeStyle = SK.dark; ctx.lineWidth = 3; ctx.lineCap = 'round';
       for (const sx of [-1, 1]) for (let i = 0; i < 2; i++) { ctx.beginPath(); ctx.moveTo(x + sx * 22, y + 2 + i * 8); ctx.lineTo(x + sx * 15, y + 4 + i * 8); ctx.stroke(); }
       ctx.lineCap = 'butt';
     }
-    if (k === 'ninja') { ctx.fillStyle = '#2b2340'; ctx.fillRect(x - 23, y + 10, 46, 6); ctx.fillStyle = '#ff4d6d'; ctx.fillRect(x + 6, y + 9, 7, 8); }
-    if (k === 'vampire') { // жилет
+    if (SK.mask) { ctx.fillStyle = '#2b2340'; ctx.fillRect(x - 23, y + 10, 46, 6); ctx.fillStyle = '#ff4d6d'; ctx.fillRect(x + 6, y + 9, 7, 8); }
+    if (SK.cape) {
       ctx.fillStyle = '#2e1028'; tri(x - 15, y - 2, x - 2, y - 2, x - 2, y + 24); ctx.fill(); tri(x + 15, y - 2, x + 2, y - 2, x + 2, y + 24); ctx.fill();
       ctx.fillStyle = '#ffd24d'; for (const by of [y + 6, y + 13]) { ctx.beginPath(); ctx.arc(x, by, 1.8, 0, 7); ctx.fill(); }
     }
+    if (SK.hat === 'chef') { ctx.fillStyle = '#ffffff'; rr(x - 12, y - 2, 24, 26, 6); ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke(); ctx.fillStyle = '#ff5c5c'; for (const by of [y + 6, y + 14]) { ctx.beginPath(); ctx.arc(x - 5, by, 1.6, 0, 7); ctx.arc(x + 5, by, 1.6, 0, 7); ctx.fill(); } }
     if (metal) { ctx.fillStyle = 'rgba(255,255,255,0.45)'; ctx.beginPath(); ctx.ellipse(x - 10, y, 5, 9, 0.5, 0, 7); ctx.fill(); }
     ctx.strokeStyle = INK; ctx.lineWidth = 3;
     // бак-ловушка с эктоплазмой
     if (o.tool !== false) {
-      rr(x - 35, y - 7, 18, 30, 6); ctx.fillStyle = o.rocket ? ATTACH.rocket.color : (k === 'golden' ? '#ffc94d' : k === 'vampire' ? '#6a2a50' : '#8a7bd1'); ctx.fill(); ctx.stroke();
+      rr(x - 35, y - 7, 18, 30, 6); ctx.fillStyle = o.rocket ? ATTACH.rocket.color : (SK.tank || '#8a7bd1'); ctx.fill(); ctx.stroke();
       rr(x - 31, y - 2, 10, 20, 4); ctx.fillStyle = '#243042'; ctx.fill();
       const lvl = 0.55 + Math.sin(time * 2) * 0.08;
-      rr(x - 31, y - 2 + 20 * (1 - lvl), 10, 20 * lvl, 4); ctx.fillStyle = k === 'vampire' ? '#ff5c7a' : '#7dff9e'; ctx.fill();
+      rr(x - 31, y - 2 + 20 * (1 - lvl), 10, 20 * lvl, 4); ctx.fillStyle = SK.liquid || '#7dff9e'; ctx.fill();
       ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.beginPath(); ctx.arc(x - 26, y + 14 - ((time * 18) % 12), 1.6, 0, 7); ctx.fill();
       ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.fillRect(x - 30, y, 2, 15);
       rr(x - 31, y - 2, 10, 20, 4); ctx.lineWidth = 2; ctx.stroke(); ctx.lineWidth = 3;
     }
-    // воротник вампира стоит за головой
-    if (k === 'vampire') {
+    if (SK.cape) {
       ctx.fillStyle = '#2e1028'; tri(x - 12, hy + 14, x - 34, hy - 18, x - 22, hy + 18); ctx.fill(); ctx.stroke(); tri(x + 12, hy + 14, x + 34, hy - 18, x + 22, hy + 18); ctx.fill(); ctx.stroke();
       ctx.fillStyle = '#c2264b'; tri(x - 14, hy + 12, x - 30, hy - 12, x - 22, hy + 14); ctx.fill(); tri(x + 14, hy + 12, x + 30, hy - 12, x + 22, hy + 14); ctx.fill();
     }
-    // пушистые щёки Снежка
-    if (k === 'white') { ctx.fillStyle = SK.body; for (const sx of [-1, 1]) { tri(x + sx * 22, hy - 2, x + sx * 31, hy + 6, x + sx * 21, hy + 10); ctx.fill(); ctx.lineWidth = 2.5; ctx.stroke(); tri(x + sx * 22, hy + 6, x + sx * 29, hy + 14, x + sx * 18, hy + 15); ctx.fill(); ctx.stroke(); } }
+    if (pat === 'fluffy') { ctx.fillStyle = SK.body; for (const sx of [-1, 1]) { tri(x + sx * 22, hy - 2, x + sx * 31, hy + 6, x + sx * 21, hy + 10); ctx.fill(); ctx.lineWidth = 2.5; ctx.stroke(); tri(x + sx * 22, hy + 6, x + sx * 29, hy + 14, x + sx * 18, hy + 15); ctx.fill(); ctx.stroke(); } }
     // уши
-    ctx.lineWidth = 3; ctx.fillStyle = SK.body;
+    ctx.lineWidth = 3; ctx.fillStyle = pat === 'points' ? SK.dark : SK.body;
     tri(x - 22, hy - 6, x - 18, hy - 30, x - 4, hy - 16); ctx.fill(); ctx.stroke();
     tri(x + 22, hy - 6, x + 18, hy - 30, x + 4, hy - 16); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = k === 'black' ? '#a77fb3' : k === 'golden' ? '#ff9f5a' : '#ffb3c6';
+    if (pat === 'calico') { ctx.fillStyle = SK.dark; tri(x - 21, hy - 7, x - 18, hy - 29, x - 8, hy - 15); ctx.fill(); }
+    ctx.fillStyle = SK.ear || '#ffb3c6';
     tri(x - 18, hy - 10, x - 17, hy - 24, x - 9, hy - 16); ctx.fill(); tri(x + 18, hy - 10, x + 17, hy - 24, x + 9, hy - 16); ctx.fill();
-    if (k === 'white') { ctx.fillStyle = '#ffffff'; for (const sx of [-1, 1]) { ctx.beginPath(); ctx.arc(x + sx * 14, hy - 15, 2.5, 0, 7); ctx.fill(); } }
+    if (pat === 'fluffy') { ctx.fillStyle = '#ffffff'; for (const sx of [-1, 1]) { ctx.beginPath(); ctx.arc(x + sx * 14, hy - 15, 2.5, 0, 7); ctx.fill(); } }
     // голова
     ctx.fillStyle = fur(x, hy, 26); ctx.beginPath(); ctx.ellipse(x, hy, 26, 21, 0, 0, PI * 2); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = k === 'black' ? '#6e6680' : shade(SK.body, 0.45); ctx.beginPath(); ctx.ellipse(x, hy + 8, 13, 8, 0, 0, 7); ctx.fill();
+    ctx.save(); ctx.beginPath(); ctx.ellipse(x, hy, 25, 20, 0, 0, PI * 2); ctx.clip();
+    if (pat === 'points') { const mg = ctx.createRadialGradient(x, hy + 5, 4, x, hy + 5, 20); mg.addColorStop(0, alpha(SK.dark, 0.95)); mg.addColorStop(1, alpha(SK.dark, 0)); ctx.fillStyle = mg; ctx.beginPath(); ctx.arc(x, hy + 5, 20, 0, 7); ctx.fill(); }
+    if (pat === 'calico') { ctx.fillStyle = SK.dark; ctx.beginPath(); ctx.ellipse(x - 14, hy - 10, 13, 10, 0.4, 0, 7); ctx.fill(); ctx.fillStyle = '#5a4a48'; ctx.beginPath(); ctx.ellipse(x + 16, hy - 12, 9, 8, -0.3, 0, 7); ctx.fill(); }
+    if (pat === 'spots') { ctx.fillStyle = SK.dark; ctx.beginPath(); ctx.ellipse(x + 12, hy - 8, 7, 9, 0.3, 0, 7); ctx.fill(); ctx.beginPath(); ctx.arc(x - 16, hy - 12, 3.5, 0, 7); ctx.fill(); }
+    ctx.restore();
+    ctx.fillStyle = pat === 'tuxedo' ? '#6e6680' : pat === 'points' ? 'rgba(0,0,0,0)' : shade(SK.body, 0.45); ctx.beginPath(); ctx.ellipse(x, hy + 8, 13, 8, 0, 0, 7); ctx.fill();
     if (metal) { ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.beginPath(); ctx.ellipse(x - 13, hy - 10, 6, 3, -0.6, 0, 7); ctx.fill(); }
     // рисунок на лбу
     ctx.fillStyle = SK.dark;
-    if (k === 'ginger' || k === 'ninja') { ctx.fillRect(x - 3, hy - 20, 6, 8); ctx.fillRect(x - 11, hy - 18, 4, 6); ctx.fillRect(x + 7, hy - 18, 4, 6); }
-    if (k === 'vampire') { ctx.beginPath(); ctx.moveTo(x - 16, hy - 17); ctx.quadraticCurveTo(x - 6, hy - 14, x, hy - 6); ctx.quadraticCurveTo(x + 6, hy - 14, x + 16, hy - 17); ctx.quadraticCurveTo(x, hy - 24, x - 16, hy - 17); ctx.fill(); }
-    if (metal) { ctx.fillStyle = '#ff4d6d'; tri(x, hy - 19, x - 4, hy - 13, x + 4, hy - 13); ctx.fill(); tri(x - 4, hy - 13, x + 4, hy - 13, x, hy - 8); ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = INK; ctx.beginPath(); ctx.moveTo(x, hy - 19); ctx.lineTo(x - 4, hy - 13); ctx.lineTo(x, hy - 8); ctx.lineTo(x + 4, hy - 13); ctx.closePath(); ctx.stroke(); ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.fillRect(x - 2, hy - 15, 1.5, 2); }
-    // маска ниндзя и повязка с развевающимися лентами
-    if (k === 'ninja') {
+    if (pat === 'tabby') { ctx.fillRect(x - 3, hy - 20, 6, 8); ctx.fillRect(x - 11, hy - 18, 4, 6); ctx.fillRect(x + 7, hy - 18, 4, 6); }
+    if (SK.cape) { ctx.beginPath(); ctx.moveTo(x - 16, hy - 17); ctx.quadraticCurveTo(x - 6, hy - 14, x, hy - 6); ctx.quadraticCurveTo(x + 6, hy - 14, x + 16, hy - 17); ctx.quadraticCurveTo(x, hy - 24, x - 16, hy - 17); ctx.fill(); }
+    if (SK.gem) { ctx.fillStyle = '#ff4d6d'; tri(x, hy - 19, x - 4, hy - 13, x + 4, hy - 13); ctx.fill(); tri(x - 4, hy - 13, x + 4, hy - 13, x, hy - 8); ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = INK; ctx.beginPath(); ctx.moveTo(x, hy - 19); ctx.lineTo(x - 4, hy - 13); ctx.lineTo(x, hy - 8); ctx.lineTo(x + 4, hy - 13); ctx.closePath(); ctx.stroke(); ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.fillRect(x - 2, hy - 15, 1.5, 2); }
+    if (SK.mask) {
       ctx.fillStyle = '#2b2340'; ctx.beginPath(); ctx.ellipse(x, hy - 1, 25, 7, 0, 0, 7); ctx.fill();
       ctx.fillStyle = '#ff4d6d'; ctx.fillRect(x - 25, hy - 13, 50, 5);
       const fl = Math.sin(time * 8);
@@ -2158,52 +2210,122 @@
     // глаза
     const elx = Math.cos(aim) * 1.6, ely = Math.sin(aim) * 1.2;
     const blink = Math.sin(time * 0.9 + (o.blinkSeed || 0)) > 0.99;
-    const IRIS = { black: ['#d6f25a', '#d6f25a'], white: ['#6ec3ff', '#ffc94d'], vampire: ['#ff4d6d', '#ff4d6d'], golden: ['#3ddc97', '#3ddc97'] }[k];
     for (const [i, ex] of [[0, x - 9], [1, x + 9]]) {
       const px = ex + elx, py = hy - 1 + ely;
-      if (blink) { ctx.fillStyle = k === 'ninja' ? '#ffffff' : INK; ctx.fillRect(ex - 4, hy - 1, 8, 2.5); continue; }
-      if (k === 'ninja') {
+      if (SK.patch && i === 0) {
+        ctx.fillStyle = INK; ctx.beginPath(); ctx.ellipse(ex, hy - 1, 6, 5.5, 0, 0, 7); ctx.fill();
+        ctx.strokeStyle = INK; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(ex - 5, hy - 4); ctx.lineTo(x + 22, hy - 14); ctx.moveTo(ex - 5, hy + 2); ctx.lineTo(x - 25, hy + 4); ctx.stroke();
+        continue;
+      }
+      if (blink) { ctx.fillStyle = SK.mask ? '#ffffff' : INK; ctx.fillRect(ex - 4, hy - 1, 8, 2.5); continue; }
+      if (SK.mask) {
         ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.ellipse(px, py, 4.5, 3.6, 0, 0, 7); ctx.fill();
         ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(px + elx * 0.5, py, 2, 0, 7); ctx.fill();
         ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(ex - (i ? -6 : 6), hy - 7); ctx.lineTo(ex + (i ? -2 : 2), hy - 5); ctx.stroke();
         continue;
       }
-      if (IRIS) {
-        ctx.fillStyle = IRIS[i]; ctx.beginPath(); ctx.ellipse(px, py, 4.6, 5.2, 0, 0, 7); ctx.fill(); ctx.lineWidth = 1.8; ctx.strokeStyle = INK; ctx.stroke();
-        ctx.fillStyle = INK;
-        if (k === 'black' || k === 'vampire') { ctx.beginPath(); ctx.ellipse(px, py, 1.4, 4.2, 0, 0, 7); ctx.fill(); }
+      if (SK.eyes) {
+        ctx.fillStyle = SK.eyes[i]; ctx.beginPath(); ctx.ellipse(px, py, 4.6, 5.2, 0, 0, 7); ctx.fill(); ctx.lineWidth = 1.8; ctx.strokeStyle = INK; ctx.stroke();
+        ctx.fillStyle = ghost ? '#5fc8e0' : INK;
+        if (SK.slit) { ctx.beginPath(); ctx.ellipse(px, py, 1.4, 4.2, 0, 0, 7); ctx.fill(); }
         else { ctx.beginPath(); ctx.arc(px, py + 0.5, 2.6, 0, 7); ctx.fill(); }
       } else { ctx.fillStyle = INK; ctx.beginPath(); ctx.ellipse(px, py, 4, 4.8, 0, 0, PI * 2); ctx.fill(); }
       ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(px - 1.5, py - 2, 1.6, 0, 7); ctx.fill();
-      if (metal) { ctx.beginPath(); ctx.arc(px + 1.5, py + 2, 0.9, 0, 7); ctx.fill(); }
+      if (metal || ghost) { ctx.beginPath(); ctx.arc(px + 1.5, py + 2, 0.9, 0, 7); ctx.fill(); }
     }
     // нос, усы, щёки, рот
-    ctx.fillStyle = k === 'black' ? '#c48aa0' : '#ff8fa8'; tri(x - 3, hy + 3, x + 3, hy + 3, x, hy + 6); ctx.fill();
-    ctx.strokeStyle = k === 'black' ? 'rgba(255,255,255,0.6)' : 'rgba(43,35,64,0.55)'; ctx.lineWidth = 1.3;
+    ctx.fillStyle = pat === 'tuxedo' ? '#c48aa0' : pat === 'points' ? '#3a2a28' : '#ff8fa8'; tri(x - 3, hy + 3, x + 3, hy + 3, x, hy + 6); ctx.fill();
+    ctx.strokeStyle = light ? 'rgba(255,255,255,0.6)' : 'rgba(43,35,64,0.55)'; ctx.lineWidth = 1.3;
     for (const sx of [-1, 1]) for (const dy of [-2, 2]) { ctx.beginPath(); ctx.moveTo(x + sx * 14, hy + 5 + dy * 0.5); ctx.lineTo(x + sx * 33, hy + 3 + dy * 2); ctx.stroke(); }
-    if (k !== 'ninja') { ctx.fillStyle = 'rgba(255,110,140,0.55)'; ctx.beginPath(); ctx.ellipse(x - 16, hy + 7, 5, 3, 0, 0, PI * 2); ctx.ellipse(x + 16, hy + 7, 5, 3, 0, 0, PI * 2); ctx.fill(); }
-    ctx.strokeStyle = k === 'black' ? '#f4f1ea' : INK; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(x - 3, hy + 6); ctx.quadraticCurveTo(x, hy + 9, x, hy + 6); ctx.quadraticCurveTo(x, hy + 9, x + 3, hy + 6); ctx.stroke();
-    if (k === 'vampire') { ctx.fillStyle = '#ffffff'; tri(x - 3, hy + 7, x - 1, hy + 7, x - 2, hy + 11); ctx.fill(); tri(x + 1, hy + 7, x + 3, hy + 7, x + 2, hy + 11); ctx.fill(); }
-    // ошейники и шарфы
-    if (k === 'ginger') { ctx.strokeStyle = '#e8304f'; ctx.lineWidth = 4; ctx.beginPath(); ctx.ellipse(x, hy + 18, 15, 4, 0, 0.15, PI - 0.15); ctx.stroke(); ctx.fillStyle = '#ffd24d'; ctx.beginPath(); ctx.arc(x, hy + 23, 4, 0, 7); ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = INK; ctx.stroke(); ctx.fillStyle = INK; ctx.fillRect(x - 0.7, hy + 23, 1.4, 3); }
-    if (k === 'black') { ctx.strokeStyle = '#8a5ad6'; ctx.lineWidth = 4; ctx.beginPath(); ctx.ellipse(x, hy + 18, 15, 4, 0, 0.15, PI - 0.15); ctx.stroke(); ctx.fillStyle = '#ffd24d'; ctx.save(); ctx.translate(x, hy + 24); ctx.beginPath(); for (let i = 0; i < 10; i++) { const r = i % 2 ? 2 : 4.5, a = -PI / 2 + (i * PI) / 5; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); } ctx.closePath(); ctx.fill(); ctx.lineWidth = 1.2; ctx.strokeStyle = INK; ctx.stroke(); ctx.restore(); }
-    if (k === 'white') {
-      ctx.fillStyle = '#6ec3ff'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+    if (!SK.mask) { ctx.fillStyle = 'rgba(255,110,140,0.55)'; ctx.beginPath(); ctx.ellipse(x - 16, hy + 7, 5, 3, 0, 0, PI * 2); ctx.ellipse(x + 16, hy + 7, 5, 3, 0, 0, PI * 2); ctx.fill(); }
+    if (SK.beard) {
+      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.moveTo(x - 16, hy + 5);
+      for (let i = 0; i <= 6; i++) ctx.quadraticCurveTo(x - 16 + i * 5.3 - 2.6, hy + 22 + (i === 3 ? 4 : 0), x - 16 + i * 5.3, hy + 16 + (i % 2 ? 0 : 3));
+      ctx.lineTo(x + 16, hy + 5); ctx.quadraticCurveTo(x, hy + 10, x - 16, hy + 5); ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke();
+      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.ellipse(x - 5, hy + 6, 6, 3, 0.3, 0, 7); ctx.ellipse(x + 5, hy + 6, 6, 3, -0.3, 0, 7); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#ff8fa8'; tri(x - 3, hy + 2, x + 3, hy + 2, x, hy + 5); ctx.fill();
+    } else {
+      ctx.strokeStyle = pat === 'tuxedo' ? '#f4f1ea' : INK; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(x - 3, hy + 6); ctx.quadraticCurveTo(x, hy + 9, x, hy + 6); ctx.quadraticCurveTo(x, hy + 9, x + 3, hy + 6); ctx.stroke();
+    }
+    if (SK.fangs) { ctx.fillStyle = '#ffffff'; tri(x - 3, hy + 7, x - 1, hy + 7, x - 2, hy + 11); ctx.fill(); tri(x + 1, hy + 7, x + 3, hy + 7, x + 2, hy + 11); ctx.fill(); }
+    // ошейник, шарф, жемчуг
+    if (SK.collar) {
+      ctx.strokeStyle = SK.collar; ctx.lineWidth = 4; ctx.beginPath(); ctx.ellipse(x, hy + 18, 15, 4, 0, 0.15, PI - 0.15); ctx.stroke();
+      const cx2 = x, cy2 = hy + 24;
+      if (SK.charm === 'bell') { ctx.fillStyle = '#ffd24d'; ctx.beginPath(); ctx.arc(cx2, cy2 - 1, 4, 0, 7); ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = INK; ctx.stroke(); ctx.fillStyle = INK; ctx.fillRect(cx2 - 0.7, cy2 - 1, 1.4, 3); }
+      if (SK.charm === 'star') { star(cx2, cy2, 4.5, '#ffd24d'); ctx.lineWidth = 1.2; ctx.strokeStyle = INK; ctx.stroke(); }
+      if (SK.charm === 'heart') { ctx.fillStyle = '#ff5c8a'; ctx.beginPath(); ctx.moveTo(cx2, cy2 + 3); ctx.bezierCurveTo(cx2 - 6, cy2 - 2, cx2 - 2, cy2 - 6, cx2, cy2 - 2); ctx.bezierCurveTo(cx2 + 2, cy2 - 6, cx2 + 6, cy2 - 2, cx2, cy2 + 3); ctx.fill(); ctx.lineWidth = 1.2; ctx.strokeStyle = INK; ctx.stroke(); }
+      if (SK.charm === 'gem') { ctx.fillStyle = '#ffd24d'; tri(cx2 - 4, cy2 - 3, cx2 + 4, cy2 - 3, cx2, cy2 + 4); ctx.fill(); ctx.lineWidth = 1.2; ctx.strokeStyle = INK; ctx.stroke(); }
+    }
+    if (SK.scarf) {
+      ctx.fillStyle = SK.scarf; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
       ctx.beginPath(); ctx.ellipse(x, hy + 19, 18, 5.5, 0, 0, 7); ctx.fill(); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(x + 8, hy + 20); ctx.lineTo(x + 14, hy + 36 + Math.sin(time * 3) * 2); ctx.lineTo(x + 6, hy + 37); ctx.lineTo(x + 3, hy + 21); ctx.closePath(); ctx.fill(); ctx.stroke();
-      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; for (let i = -12; i <= 12; i += 6) { ctx.beginPath(); ctx.moveTo(x + i, hy + 16); ctx.lineTo(x + i, hy + 22); ctx.stroke(); }
+      ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 1.5; for (let i = -12; i <= 12; i += 6) { ctx.beginPath(); ctx.moveTo(x + i, hy + 16); ctx.lineTo(x + i, hy + 22); ctx.stroke(); }
     }
-    if (metal) { ctx.fillStyle = '#ffffff'; for (let i = -4; i <= 4; i++) { const a = PI / 2 + i * 0.28; ctx.beginPath(); ctx.arc(x + Math.cos(a) * 15, hy + 16 + Math.sin(a) * 5, 2, 0, 7); ctx.fill(); } }
-    // корона золотого кота
-    if (metal) {
-      ctx.fillStyle = '#ffd24d'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+    if (SK.pearls) { ctx.fillStyle = '#ffffff'; for (let i = -4; i <= 4; i++) { const a = PI / 2 + i * 0.28; ctx.beginPath(); ctx.arc(x + Math.cos(a) * 15, hy + 16 + Math.sin(a) * 5, 2, 0, 7); ctx.fill(); } }
+    // головные уборы
+    const H = SK.hat, hc = SK.hatC;
+    ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+    if (H === 'crown') {
+      ctx.fillStyle = '#ffd24d';
       ctx.beginPath(); ctx.moveTo(x - 12, hy - 18); ctx.lineTo(x - 13, hy - 31); ctx.lineTo(x - 6, hy - 24); ctx.lineTo(x, hy - 34); ctx.lineTo(x + 6, hy - 24); ctx.lineTo(x + 13, hy - 31); ctx.lineTo(x + 12, hy - 18); ctx.closePath(); ctx.fill(); ctx.stroke();
       ctx.fillStyle = '#7fd1ff'; ctx.beginPath(); ctx.arc(x, hy - 22, 2.5, 0, 7); ctx.fill(); ctx.fillStyle = '#ff4d6d'; ctx.beginPath(); ctx.arc(x - 7, hy - 21, 1.8, 0, 7); ctx.arc(x + 7, hy - 21, 1.8, 0, 7); ctx.fill();
-      for (let i = 0; i < 3; i++) { const a = time * 2 + (i * PI * 2) / 3, sx = x + Math.cos(a) * 34, sy = y - 10 + Math.sin(a) * 26, s = 2 + Math.sin(time * 6 + i) * 1.5; ctx.fillStyle = '#fff6c0'; ctx.beginPath(); ctx.moveTo(sx, sy - s * 2); ctx.lineTo(sx + s * 0.6, sy - s * 0.6); ctx.lineTo(sx + s * 2, sy); ctx.lineTo(sx + s * 0.6, sy + s * 0.6); ctx.lineTo(sx, sy + s * 2); ctx.lineTo(sx - s * 0.6, sy + s * 0.6); ctx.lineTo(sx - s * 2, sy); ctx.lineTo(sx - s * 0.6, sy - s * 0.6); ctx.closePath(); ctx.fill(); }
     }
+    if (H === 'beanie') {
+      ctx.fillStyle = hc; ctx.beginPath(); ctx.moveTo(x - 20, hy - 10); ctx.quadraticCurveTo(x - 20, hy - 32, x, hy - 32); ctx.quadraticCurveTo(x + 20, hy - 32, x + 20, hy - 10); ctx.closePath(); ctx.fill(); ctx.stroke();
+      rr(x - 22, hy - 14, 44, 8, 4); ctx.fillStyle = shade(hc, -0.2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(x, hy - 34, 5, 0, 7); ctx.fill(); ctx.stroke();
+    }
+    if (H === 'flower') {
+      for (let i = 0; i < 5; i++) { const a = (i / 5) * PI * 2; ctx.fillStyle = '#ff8fb1'; ctx.beginPath(); ctx.arc(x + 15 + Math.cos(a) * 4.5, hy - 18 + Math.sin(a) * 4.5, 3.6, 0, 7); ctx.fill(); }
+      ctx.fillStyle = '#ffd24d'; ctx.beginPath(); ctx.arc(x + 15, hy - 18, 2.6, 0, 7); ctx.fill();
+    }
+    if (H === 'headphones') {
+      ctx.strokeStyle = INK; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x, hy - 2, 24, PI * 1.1, PI * 1.9); ctx.stroke();
+      ctx.strokeStyle = hc; ctx.lineWidth = 3; ctx.stroke();
+      for (const sx of [-1, 1]) { rr(x + sx * 26 - 5, hy - 8, 10, 15, 4); ctx.fillStyle = hc; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = INK; ctx.stroke(); }
+    }
+    if (H === 'pirate') {
+      ctx.fillStyle = '#2b2340'; ctx.beginPath(); ctx.moveTo(x - 30, hy - 14); ctx.quadraticCurveTo(x, hy - 22, x + 30, hy - 14); ctx.quadraticCurveTo(x + 20, hy - 40, x, hy - 38); ctx.quadraticCurveTo(x - 20, hy - 40, x - 30, hy - 14); ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = '#ffd24d'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x - 26, hy - 16); ctx.quadraticCurveTo(x, hy - 23, x + 26, hy - 16); ctx.stroke();
+      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(x, hy - 29, 4, 0, 7); ctx.fill(); ctx.fillStyle = INK; ctx.fillRect(x - 2.5, hy - 30, 1.6, 1.6); ctx.fillRect(x + 1, hy - 30, 1.6, 1.6);
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x - 5, hy - 22); ctx.lineTo(x + 5, hy - 25); ctx.moveTo(x + 5, hy - 22); ctx.lineTo(x - 5, hy - 25); ctx.stroke();
+    }
+    if (H === 'wizard') {
+      const sw = Math.sin(time * 2) * 3;
+      ctx.fillStyle = hc; ctx.beginPath(); ctx.moveTo(x - 20, hy - 14); ctx.quadraticCurveTo(x - 4, hy - 30, x + 8 + sw, hy - 54); ctx.quadraticCurveTo(x + 6, hy - 30, x + 20, hy - 14); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(x, hy - 14, 26, 6, 0, 0, 7); ctx.fillStyle = shade(hc, -0.2); ctx.fill(); ctx.stroke();
+      star(x - 4, hy - 28, 4, '#ffd24d'); star(x + 5, hy - 38, 3, '#ffd24d'); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(x + 8 + sw, hy - 54, 3, 0, 7); ctx.fill();
+    }
+    if (H === 'chef') {
+      ctx.fillStyle = '#ffffff';
+      for (const [dx, dy, r] of [[-10, -32, 9], [0, -37, 10], [10, -32, 9]]) { ctx.beginPath(); ctx.arc(x + dx, hy + dy, r, 0, 7); ctx.fill(); ctx.stroke(); }
+      rr(x - 15, hy - 30, 30, 14, 3); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(x - 13, hy - 33, 26, 6);
+    }
+    if (H === 'horns') {
+      for (const sx of [-1, 1]) { ctx.fillStyle = '#3f2a3a'; ctx.beginPath(); ctx.moveTo(x + sx * 8, hy - 17); ctx.quadraticCurveTo(x + sx * 12, hy - 34, x + sx * 6, hy - 38); ctx.quadraticCurveTo(x + sx * 18, hy - 32, x + sx * 16, hy - 16); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+    }
+    if (H === 'halo') { const hy2 = hy - 34 + Math.sin(time * 3) * 2; ctx.strokeStyle = INK; ctx.lineWidth = 6; ctx.beginPath(); ctx.ellipse(x, hy2, 16, 5, 0, 0, 7); ctx.stroke(); ctx.strokeStyle = '#ffe28a'; ctx.lineWidth = 3.5; ctx.stroke(); }
+    if (H === 'santa') {
+      ctx.fillStyle = '#e8304f'; ctx.beginPath(); ctx.moveTo(x - 22, hy - 12); ctx.quadraticCurveTo(x - 6, hy - 40, x + 18, hy - 36 + Math.sin(time * 3) * 2); ctx.quadraticCurveTo(x + 12, hy - 24, x + 22, hy - 12); ctx.closePath(); ctx.fill(); ctx.stroke();
+      rr(x - 24, hy - 16, 48, 9, 4.5); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(x + 20, hy - 36 + Math.sin(time * 3) * 2, 5, 0, 7); ctx.fill(); ctx.stroke();
+    }
+    if (SK.helmet) {
+      const g = ctx.createRadialGradient(x - 10, hy - 14, 4, x, hy - 2, 34); g.addColorStop(0, 'rgba(255,255,255,0.45)'); g.addColorStop(1, 'rgba(170,220,255,0.18)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, hy - 4, 33, 0, 7); ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, hy - 4, 27, PI * 1.15, PI * 1.45); ctx.stroke();
+      rr(x - 22, hy + 22, 44, 8, 4); ctx.fillStyle = '#e8e8f0'; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = INK; ctx.stroke();
+      ctx.fillStyle = '#ff5c5c'; ctx.beginPath(); ctx.arc(x - 12, hy + 26, 2, 0, 7); ctx.fill(); ctx.fillStyle = '#3ddc97'; ctx.beginPath(); ctx.arc(x - 6, hy + 26, 2, 0, 7); ctx.fill();
+    }
+    // искры
+    if (SK.sparkle) for (let i = 0; i < 3; i++) { const a = time * 2 + (i * PI * 2) / 3, sx = x + Math.cos(a) * 34, sy = y - 10 + Math.sin(a) * 26, s = 2 + Math.sin(time * 6 + i) * 1.5; star(sx, sy, s * 2, SK.sparkle); }
+    if (ghost) ctx.restore();
     // нимб за Освящения
-    if (o.halo) { ctx.strokeStyle = '#fff1a8'; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(x, hy - (metal ? 40 : 30), 14, 4, 0, 0, PI * 2); ctx.stroke(); }
+    if (o.halo && H !== 'halo') { ctx.strokeStyle = '#fff1a8'; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(x, hy - (H ? 46 : 30), 14, 4, 0, 0, PI * 2); ctx.stroke(); }
     // пылесос
     if (o.tool !== false) {
       const len = 30 - rec * 4, nx = x + Math.cos(aim) * len, ny = y - 18 + Math.sin(aim) * len;
@@ -2660,31 +2782,51 @@
         button(x + 16, y + 84, 120, 32, c.price, c.free ? '#ffc94d' : '#8ee08a', on, 13, !c.free || freeReady);
       });
     } else {
-      Object.keys(SKINS).forEach((k, i) => {
+      // вкладки по уровням редкости
+      TIERS.forEach((t, ti) => {
+        const keys = Object.keys(SKINS).filter((kk) => SKINS[kk].tier === ti), have = keys.filter((kk) => S.skins.includes(kk)).length;
+        const bx = 24 + ti * 63, sel = skinTier === ti;
+        const dn = pressOff(bx, 138, 59, 30);
+        ctx.save(); ctx.translate(0, sel ? -2 : dn);
+        plate(bx, 138, 59, 30, 10, sel ? t.color : shade(t.color, -0.35), { lw: 2.5 });
+        text(t.short, bx + 29.5, 148, 10, '#ffffff'); text(have + '/' + keys.length, bx + 29.5, 160, 8, '#ffffff', 'center', '700');
+        ctx.restore();
+        btn(bx, 138, 59, 30, () => { skinTier = ti; });
+      });
+      const tier = TIERS[skinTier];
+      Object.keys(SKINS).filter((kk) => SKINS[kk].tier === skinTier).forEach((k, i) => {
         const sk = SKINS[k];
-        const x = 24 + (i % 2) * 160, y = 142 + Math.floor(i / 2) * 136;
-        const owned = S.skins.includes(k);
-        rr(x, y, 152, 128, 12); ctx.fillStyle = S.skin === k ? '#fff3c4' : '#ffffff'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = sk.usd ? '#ffc94d' : '#c9c3e6'; ctx.stroke();
+        const x = 24 + (i % 2) * 160, y = 176 + Math.floor(i / 2) * 136;
+        const owned = S.skins.includes(k), locked = !owned && sk.req && (S.maxHouse || 1) < sk.req;
+        card(x, y, 152, 128, 12, tier.color);
+        if (S.skin === k) { rr(x + 3, y + 3, 146, 122, 10); ctx.fillStyle = 'rgba(255,230,150,0.35)'; ctx.fill(); }
         // кот целиком в этом скине
-        if (S.skin === k) { const gg = ctx.createRadialGradient(x + 42, y + 50, 6, x + 42, y + 50, 48); gg.addColorStop(0, 'rgba(255,210,100,0.5)'); gg.addColorStop(1, 'rgba(255,210,100,0)'); ctx.fillStyle = gg; ctx.fillRect(x + 2, y + 4, 84, 84); }
+        if (S.skin === k || skinTier >= 3) { const gg = ctx.createRadialGradient(x + 42, y + 50, 6, x + 42, y + 50, 48); gg.addColorStop(0, alpha(tier.color, 0.45)); gg.addColorStop(1, alpha(tier.color, 0)); ctx.fillStyle = gg; ctx.fillRect(x + 2, y + 4, 84, 84); }
         ctx.save(); ctx.beginPath(); ctx.rect(x + 3, y + 3, 84, 82); ctx.clip();
-        ctx.translate(x + 40, y + 60); ctx.scale(0.72, 0.72);
+        ctx.translate(x + 40, y + 60); ctx.scale(0.66, 0.66);
+        if (locked) ctx.globalAlpha = 0.45;
         catSprite(0, 0, { skin: k, aim: 0.35, bobY: Math.sin(time * 2 + i) * 1.5, blinkSeed: i * 1.7, eqColor: '#ff7a9c' });
         ctx.restore();
         ctx.font = '800 10px system-ui, sans-serif';
-        text(sk.name, x + 116, y + 22, ctx.measureText(sk.name).width > 62 ? 8 : 10, INK, 'center', '800');
-        text(owned ? 'есть' : sk.usd ? 'донат' : '', x + 116, y + 36, 9, '#6b5f86', 'center', '700');
+        text(sk.name, x + 116, y + 18, ctx.measureText(sk.name).width > 62 ? 8 : 10, INK, 'center', '800');
+        rr(x + 92, y + 27, 48, 13, 6.5); ctx.fillStyle = tier.color; ctx.fill();
+        text(tier.one, x + 116, y + 34, 7, '#ffffff', 'center', '800');
         { // бонус в 1–3 строки справа от кота
           ctx.font = '700 9px system-ui, sans-serif';
           const lines = []; let line = '';
           for (const wd of sk.text.split(' ')) { const t = line ? line + ' ' + wd : wd; if (ctx.measureText(t).width > 60 && line) { lines.push(line); line = wd; } else line = t; }
           lines.push(line);
-          lines.forEach((l, j) => text(l, x + 116, y + 52 + j * 11, ctx.measureText(l).width > 62 ? 7.5 : 9, '#2f8f4e', 'center', '700'));
+          lines.forEach((l, j) => text(l, x + 116, y + 50 + j * 11, Math.min(9, (9 * 56) / ctx.measureText(l).width), '#2f8f4e', 'center', '700'));
         }
-        const label = owned ? (S.skin === k ? 'Надето' : 'Надеть') : sk.crystals ? sk.crystals + ' 💎' : sk.usd;
-        button(x + 16, y + 88, 120, 30, label, owned ? '#7fd1ff' : sk.usd ? '#ffc94d' : '#8ee08a', () => buySkin(k), 12, !(owned && S.skin === k));
+        if (locked) { orb(x + 18, y + 18, 11, '#6b5f86'); text('🔒', x + 18, y + 19, 10, '#ffffff'); }
+        const label = owned ? (S.skin === k ? 'Надето' : 'Надеть') : locked ? '🔒 Дом ' + sk.req + ' · ' + sk.crystals + '💎' : sk.crystals ? sk.crystals + ' 💎' : sk.usd;
+        button(x + 16, y + 92, 120, 28, label, owned ? '#7fd1ff' : sk.usd ? '#ffc94d' : '#8ee08a', () => buySkin(k), locked ? 10 : 12, !(owned && S.skin === k) && !locked);
       });
-      text('Бонусы скинов работают, даже если скин не надет', 180, 556, 9, '#6b5f86', 'center', '700');
+      const TIER_INFO = ['150–300 💎, бонус +6–8%', '600–900 💎, бонус +10–20%', '1200–2000 💎, открываются на домах 10–25', 'донат $2.99–4.99, бонус +25–40%', 'донат $9.99–12.99, бонус +50–60%'];
+      text(tier.name + ': ' + TIER_INFO[skinTier], 180, 456, 9, '#6b5f86', 'center', '700');
+      const pc = (kd) => Math.round((skinMult(kd) - 1) * 100);
+      text('Собрано ' + S.skins.length + ' из ' + Object.keys(SKINS).length + ' · урон +' + pc('dmg') + '% · скорость +' + pc('rate') + '% · доход +' + pc('income') + '%', 180, 476, 9, '#2f8f4e', 'center', '800');
+      text('Бонусы всех купленных скинов складываются, даже если скин не надет', 180, 496, 8.5, '#6b5f86', 'center', '700');
     }
   }
 
