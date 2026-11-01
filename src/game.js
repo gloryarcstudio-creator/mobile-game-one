@@ -160,6 +160,7 @@
     wheel: { day: '', free: 1, ads: 3 },
     raid: { day: '', tickets: 3, adUsed: false },
     adSummonAt: 0, adCrystalsAt: 0, purchases: 0, adsWatched: 0,
+    autoUpUntil: 0, autoMergeUntil: 0, autoUpForever: false, autoMergeForever: false, autoUpOn: true, autoMergeOn: true,
     moonUntil: 0, moonReadyAt: 0,
     lastSeen: Date.now(),
   });
@@ -505,12 +506,13 @@
     return merged;
   }
 
-  function mergeSquad() {
+  function mergeSquad(silent) {
     const n = mergeList('inventory', (i) => i.type + ':' + i.stars, (i) => i.stars >= MAX_STARS, (a) => a.stars++, () => { S.jars += 2; });
     const ids = new Set(S.inventory.map((i) => i.id));
     S.squad = S.squad.map((id) => (ids.has(id) ? id : null));
     bestSquad();
-    showToast(n ? 'Слито: ' + n + ' ✨' : 'Нужно 3 одинаковых призрака');
+    if (!silent) showToast(n ? 'Слито: ' + n + ' ✨' : 'Нужно 3 одинаковых призрака');
+    return n;
   }
 
   function releaseJar(id) {
@@ -550,12 +552,56 @@
     S.equipped = S.equipped.map((_, i) => (sorted[i] ? sorted[i].id : null));
   }
 
-  function mergeAttach() {
+  function mergeAttach(silent) {
     const n = mergeList('attach', (a) => a.kind + ':' + a.rank, (a) => a.rank >= RANKS.length - 1, (a) => a.rank++);
     autoEquipAttach();
     selectedAttach = null;
-    showToast(n ? 'Слито насадок: ' + n + ' ✨' : 'Нужно 3 одинаковые насадки одного ранга');
+    if (!silent) showToast(n ? 'Слито насадок: ' + n + ' ✨' : 'Нужно 3 одинаковые насадки одного ранга');
+    return n;
   }
+
+  // =====================================================================
+  // Автоматизация: 10 минут за рекламу, навсегда за донат, входит в VIP
+  // =====================================================================
+  const AUTO = {
+    up: { name: 'Автопрокачка', icon: '⚙', until: 'autoUpUntil', forever: 'autoUpForever', on: 'autoUpOn', price: '$2.99', desc: 'сама покупает самое дешёвое улучшение' },
+    merge: { name: 'Автослияние', icon: '🔁', until: 'autoMergeUntil', forever: 'autoMergeForever', on: 'autoMergeOn', price: '$2.99', desc: 'сама сливает духов и насадки' },
+  };
+  const autoOwned = (k) => S[AUTO[k].forever] || vipActive();
+  const autoAvailable = (k) => autoOwned(k) || Date.now() < S[AUTO[k].until];
+  const autoRunning = (k) => autoAvailable(k) && S[AUTO[k].on];
+  let autoUpCd = 0, autoMergeCd = 0;
+
+  function autoTick(dt) {
+    autoUpCd -= dt; autoMergeCd -= dt;
+    if (autoUpCd <= 0 && autoRunning('up')) {
+      autoUpCd = 0.25;
+      for (let n = 0; n < 25; n++) {
+        let best = null, bc = Infinity;
+        for (const u of UPGRADES) { const c = upgradeCost(S[u.key], u.base); if (c < bc) { bc = c; best = u; } }
+        if (!best || S.ecto < bc) break;
+        S.ecto -= bc; S[best.key]++; S.stats.upgrades++;
+      }
+    }
+    if (autoMergeCd <= 0 && autoRunning('merge')) {
+      autoMergeCd = 2;
+      let n = 0;
+      if (squadMergeable()) n += mergeSquad(true);
+      if (attachMergeable()) n += mergeAttach(true);
+      if (n) floaters.push({ x: cat.x, y: cat.y - 60, text: 'Авто-слияние ✨', life: 1.2, color: '#8ee08a', size: 13 });
+    }
+  }
+
+  function autoButton(k) {
+    const a = AUTO[k];
+    if (autoAvailable(k)) { S[a.on] = !S[a.on]; showToast(a.name + (S[a.on] ? ' включена' : ' на паузе')); return; }
+    ask(a.name, ['Она ' + a.desc + '.', '10 минут за рекламу или навсегда.', 'В VIP включена всегда.'], [
+      { label: '🎬 10 мин', color: '#ffc94d', on: () => { closeModal(); showAd(a.name + ' на 10 минут', () => { S[a.until] = Math.max(Date.now(), S[a.until]) + 10 * 60000; S[a.on] = true; showToast(a.name + ' на 10 минут'); }); } },
+      { label: 'Навсегда ' + a.price, color: '#8ee08a', on: () => { closeModal(); purchase(a.name + ' навсегда', a.price, () => { S[a.forever] = true; S[a.on] = true; }); } },
+      { label: 'Закрыть', color: '#ff9aa9', on: closeModal },
+    ]);
+  }
+  function buyAutoBundle() { purchase('Автоматизация навсегда', '$4.99', () => { S.autoUpForever = true; S.autoMergeForever = true; S.autoUpOn = true; S.autoMergeOn = true; }); }
 
   // =====================================================================
   // Бестиарий и задания
@@ -932,6 +978,7 @@
         if (S.cleared >= GHOSTS_PER_ROOM && alive === 0) nextRoom();
       }
 
+      autoTick(dt);
       moveCat(dt);
       // смелость кота: урон от касаний и снарядов, восстановление
       cat.hurt = Math.max(0, cat.hurt - dt);
@@ -1311,6 +1358,19 @@
     text(sub, 330, 158, 11, '#ffffff');
     if (ready) badge(346, 110);
     btn(304, 102, 52, 66, activateMoon);
+    // автопрокачка и автослияние
+    ['up', 'merge'].forEach((k, i) => {
+      const a = AUTO[k], x = 306, y = 176 + i * 58;
+      const avail = autoAvailable(k), run = autoRunning(k);
+      rr(x, y, 48, 50, 12); ctx.fillStyle = run ? '#8ee08a' : avail ? '#9b93b3' : '#8a7bd1'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
+      ctx.save(); ctx.translate(x + 24, y + 18); if (run) ctx.rotate(time * 2); text(a.icon, 0, 0, 16, '#ffffff'); ctx.restore();
+      let sub;
+      if (autoOwned(k)) sub = run ? '∞' : 'пауза';
+      else if (avail) { const ms = S[a.until] - Date.now(); sub = run ? Math.floor(ms / 60000) + ':' + String(Math.floor(ms / 1000) % 60).padStart(2, '0') : 'пауза'; }
+      else sub = '🎬';
+      text(sub, x + 24, y + 39, 10, '#ffffff');
+      btn(x, y, 48, 50, () => autoButton(k));
+    });
     // переключатель автопилота
     ctx.fillStyle = S.auto ? '#8ee08a' : '#6b5f86';
     rr(132, 8, 92, 28, 14); ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
@@ -1568,17 +1628,18 @@
     if (shopTab === 'offers') {
       const offers = [];
       if (!S.starter) offers.push({ t: 'Стартовый набор', d: 'Эпик-дух ★★, 300 💎, насадка A, 5-й слот отряда', p: '$1.99', c: '#ff9fbf', on: buyStarter, hot: 'x10 выгода' });
-      offers.push({ t: vipActive() ? 'VIP активен: ' + Math.ceil((S.vipUntil - now) / 864e5) + ' дн.' : 'VIP на 7 дней', d: 'Вечное x2, 4-й слот насадок, без рекламы, +100 💎/день', p: '$6.99', c: '#ffc94d', on: buyVip });
+      offers.push({ t: vipActive() ? 'VIP активен: ' + Math.ceil((S.vipUntil - now) / 864e5) + ' дн.' : 'VIP на 7 дней', d: 'Вечное x2, автоматизация, 4-й слот насадок, без рекламы, +100 💎/день', p: '$6.99', c: '#ffc94d', on: buyVip });
       if (!S.noAds) offers.push({ t: 'Без рекламы', d: 'Все награды за рекламу выдаются сразу', p: '$4.99', c: '#7fd1ff', on: buyNoAds });
+      if (!(S.autoUpForever && S.autoMergeForever)) offers.push({ t: 'Автоматизация', d: 'Автопрокачка и автослияние навсегда', p: '$4.99', c: '#8ee08a', on: buyAutoBundle, hot: 'Удобно' });
       if (!S.weekly) offers.push({ t: 'Набор недели', d: 'Насадка S, 500 💎, 20 банок', p: '$14.99', c: '#d68cff', on: buyWeekly, hot: 'Ограничено' });
       offers.push({ t: '20 банок', d: 'Больше места для пойманных духов', p: '50 💎', c: '#8ee08a', on: () => { if (S.crystals >= 50) { S.crystals -= 50; S.jars += 20; showToast('+20 🫙'); } else showToast('Нужно 50 💎'); } });
-      offers.slice(0, 5).forEach((o, i) => {
-        const y = 142 + i * 84;
-        rr(24, y, 312, 76, 12); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = o.c; ctx.stroke();
-        text(o.t, 38, y + 20, 14, INK, 'left', '800');
-        wrapText(o.d, 38, y + 38, 196, 9, '#6b5f86', 12);
-        if (o.hot) { rr(250, y + 10, 72, 18, 9); ctx.fillStyle = '#ff4d6d'; ctx.fill(); text(o.hot, 286, y + 19, 9, '#ffffff'); }
-        button(246, y + 40, 80, 28, o.p, o.c, o.on, 13);
+      offers.slice(0, 6).forEach((o, i) => {
+        const y = 140 + i * 71;
+        rr(24, y, 312, 65, 12); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = o.c; ctx.stroke();
+        text(o.t, 38, y + 17, 13, INK, 'left', '800');
+        wrapText(o.d, 38, y + 35, 196, 9, '#6b5f86', 12);
+        if (o.hot) { rr(250, y + 7, 72, 18, 9); ctx.fillStyle = '#ff4d6d'; ctx.fill(); text(o.hot, 286, y + 16, 9, '#ffffff'); }
+        button(246, y + 31, 80, 26, o.p, o.c, o.on, 13);
       });
     } else if (shopTab === 'crystals') {
       const freeReady = now >= S.adCrystalsAt;
@@ -1691,7 +1752,7 @@
     text(modal.title, 180, y0 + 30, 17, '#ffffff');
     modal.lines.forEach((l, i) => text(l, 180, y0 + 60 + i * 20, 12, INK, 'center', '700'));
     const n = modal.buttons.length, bw = (264 - (n - 1) * 8) / n;
-    modal.buttons.forEach((b, i) => button(48 + i * (bw + 8), y0 + h - 50, bw, 38, b.label, b.color, b.on, n > 2 ? 11 : 13));
+    modal.buttons.forEach((b, i) => button(48 + i * (bw + 8), y0 + h - 50, bw, 38, b.label, b.color, b.on, n > 2 ? 10 : 13));
   }
 
   function drawOfflinePanel() {
