@@ -178,10 +178,21 @@
   const CIRCLE = HOUSES_PER_DISTRICT * DISTRICTS.length; // 80 домов, дальше «Круг 2»
 
   // Путь открытий: что даёт рекорд по домам
+  // room — комната внутри дома (по умолчанию 1); открытие засчитывается по рекорду комнат
   const UNLOCKS = [
+    { house: 1, room: 2, id: 'pull', icon: '🧲', name: 'Прокачка «Тяга»', text: 'Выше шанс поймать ослабленного призрака' },
+    { house: 1, room: 2, id: 'squad', icon: '👻', name: 'Отряд призраков', text: 'Пойманные духи сражаются рядом с котом' },
+    { house: 1, room: 3, id: 'collect', icon: '💚', name: 'Прокачка «Сборник»', text: 'Больше эктоплазмы с каждого призрака' },
+    { house: 1, room: 4, id: 'quests', icon: '📜', name: 'Задания', text: 'Задания дня, пропуск и Путь открытий' },
+    { house: 2, id: 'moon', icon: '🌕', name: 'Полнолуние', text: 'x2 урона и дохода на 60 секунд' },
+    { house: 2, id: 'daily', icon: '🎁', name: 'Награды за вход', text: 'Подарок каждый день, неделя по кругу' },
+    { house: 2, room: 3, id: 'attach', icon: '🧹', name: 'Насадки пылесоса', text: 'Призыв насадок за кристаллы с боссов' },
+    { house: 3, id: 'shop', icon: '🛒', name: 'Магазин', text: 'Скины, наборы и кристаллы' },
+    { house: 3, room: 3, id: 'auto', icon: '⚙', name: 'Автопрокачка и автослияние', text: 'Кнопки справа: качают и сливают сами' },
+    { house: 4, id: 'bestiary', icon: '📖', name: 'Бестиарий', text: 'Вехи поимок дают кристаллы и +3% урона' },
     { house: 3, id: 'wheel', icon: '🎡', name: 'Колесо удачи', text: 'Бесплатное вращение каждый день' },
     { house: 5, id: 'raid', icon: '🏚', name: 'Рейды', text: '3 билета в день на Призрачный особняк' },
-    { house: 10, id: 'prestige', icon: '✨', name: 'Освящение и Лунный алтарь', text: 'Лунные камни и вечные таланты' },
+    { house: PRESTIGE_HOUSE, id: 'prestige', icon: '✨', name: 'Освящение и Лунный алтарь', text: 'Лунные камни и вечные таланты' },
     { house: 15, id: 'squad5', icon: '👻', name: '5-й слот отряда', text: 'Ещё один дух бьётся рядом с котом' },
     { house: 20, id: 'elite', icon: '👑', name: 'Элитные призраки', text: 'Золотые призраки: x6 эктоплазмы и кристаллы' },
     { house: 25, id: 'slot4', icon: '🧹', name: '4-й слот насадок', text: 'Ещё одна насадка на пылесосе' },
@@ -192,6 +203,11 @@
     { house: 71, id: 'palace', icon: '🌙', name: 'Лунный дворец', text: 'Новый район и 4 новых призрака' },
     { house: CIRCLE + 1, id: 'circle2', icon: '🔁', name: 'Круг 2', text: 'Город заново: сильнее призраки, x2 💎 с боссов' },
   ];
+  UNLOCKS.forEach((u) => { u.stage = (u.house - 1) * 5 + ((u.room || 1) - 1); });
+  UNLOCKS.sort((a, b) => a.stage - b.stage);
+  const UNLOCK = Object.fromEntries(UNLOCKS.map((u) => [u.id, u]));
+  const ROAD_PER_PAGE = 12;
+  const unlockWhere = (u) => 'Дом ' + u.house + (u.room > 1 ? ', комн. ' + u.room : '');
 
   // Лунный алтарь: таланты за лунные камни
   const ALTAR = {
@@ -258,7 +274,7 @@
     stats: { kills: 0, captures: 0, upgrades: 0, rooms: 0, summons: 0, merges: 0, bosses: 0, ads: 0, spins: 0, raids: 0, elites: 0 },
     quests: [], questLevel: 0,
     stones: 0, prestiges: 0, auto: true,
-    stonesSpent: 0, altar: {}, boostPrest: 0, seenUnlocks: [],
+    stonesSpent: 0, altar: {}, boostPrest: 0, seenUnlocks: [], maxStage: 0, fresh: [],
     dm: { day: '', list: [], chest: false }, streak: { count: 0, last: '' },
     pass: { season: -1, xp: 0, premium: false, free: [], prem: [] },
     skins: ['ginger'], skin: 'ginger', maxHouse: 1,
@@ -281,7 +297,9 @@
       s.stats = Object.assign(defaultState().stats, s.stats);
       ['daily', 'wheel', 'raid', 'settings', 'dm', 'streak', 'pass'].forEach((k) => { s[k] = Object.assign(defaultState()[k], s[k]); });
       s.maxHouse = Math.max(s.maxHouse || 1, s.house);
-      if (!s.seenUnlocks.length) s.seenUnlocks = UNLOCKS.filter((u) => s.maxHouse >= u.house).map((u) => u.id);
+      s.maxStage = Math.max(s.maxStage || 0, (s.maxHouse - 1) * 5 + (s.house === s.maxHouse ? s.room - 1 : 4));
+      // старые сохранения: всё, что уже пройдено, считается открытым без окон
+      UNLOCKS.forEach((u) => { if (s.maxStage >= u.stage && !s.seenUnlocks.includes(u.id)) s.seenUnlocks.push(u.id); });
       s.skins = s.skins.filter((k) => SKINS[k]); if (!SKINS[s.skin]) s.skin = 'ginger';
       return s;
     } catch (e) { return null; }
@@ -304,7 +322,7 @@
   const vipActive = () => Date.now() < S.vipUntil;
   const moonMult = () => (moonActive() || vipActive() ? 2 : 1);
   const skinMult = (kind) => 1 + S.skins.reduce((m, k) => m + ((SKINS[k] && SKINS[k].bonus[kind]) || 1) - 1, 0);
-  const unlocked = (id) => (S.maxHouse || 1) >= UNLOCKS.find((u) => u.id === id).house;
+  const unlocked = (id) => (S.maxStage || 0) >= UNLOCK[id].stage;
   const talent = (k) => S.altar[k] || 0;
   const stonesFree = () => Math.max(0, S.stones - S.stonesSpent);
   const attachSlots = () => 3 + (unlocked('slot4') ? 1 : 0) + (vipActive() ? 1 : 0);
@@ -353,8 +371,8 @@
 
   const UPGRADES = [
     { key: 'lvPower', name: 'Мощность', base: 10, color: '#ff7a9c', desc: () => fmt(catDamage()) + ' урон' },
-    { key: 'lvPull', name: 'Тяга', base: 14, color: '#7fd1ff', desc: () => Math.round(captureChance() * 100) + '% поимка' },
-    { key: 'lvCollect', name: 'Сборник', base: 12, color: '#8ee08a', desc: () => 'x' + fmt(incomeMult(), 2) + ' эктопл.' },
+    { key: 'lvPull', lock: 'pull', name: 'Тяга', base: 14, color: '#7fd1ff', desc: () => Math.round(captureChance() * 100) + '% поимка' },
+    { key: 'lvCollect', lock: 'collect', name: 'Сборник', base: 12, color: '#8ee08a', desc: () => 'x' + fmt(incomeMult(), 2) + ' эктопл.' },
   ];
 
   // Форматирование больших чисел: K, M, B, T, затем aa, ab, ...
@@ -397,7 +415,7 @@
   let ghosts = [], beams = [], floaters = [], particles = [], drops = [], orbiters = [], rings = [];
   let spawnCd = 0.5, roomSpawned = 0, bossTimer = 0, bossSpawned = false;
   let panel = null; // squad | attach | bestiary | quests | prestige | offline
-  let selectedJar = null, selectedAttach = null, bestPage = 0, dayCheck = 5, questTab = 'daily', prestTab = 'main', passPage = -1;
+  let selectedJar = null, selectedAttach = null, bestPage = 0, dayCheck = 5, roadPage = -1, questTab = 'daily', prestTab = 'main', passPage = -1;
   let toast = null, shake = 0, time = 0, roomToken = 0, press = null, skinTier = 0;
   let modal = null; // {title, lines, buttons} или {ad: {t, cb}}
   let shopTab = 'offers';
@@ -743,8 +761,10 @@
 
   function nextRoom() {
     const prevDistrict = districtIndex();
-    if (S.room === ROOMS_PER_HOUSE) { S.house++; S.room = 1; S.maxHouse = Math.max(S.maxHouse || 1, S.house); checkUnlocks(); }
+    if (S.room === ROOMS_PER_HOUSE) { S.house++; S.room = 1; S.maxHouse = Math.max(S.maxHouse || 1, S.house); }
     else S.room++;
+    S.maxStage = Math.max(S.maxStage || 0, stageIndex());
+    checkUnlocks();
     S.jars += 2;
     S.stats.rooms++;
     resetRoom();
@@ -755,16 +775,16 @@
 
   // Новые открытия по рекорду домов
   function checkUnlocks() {
-    const fresh = UNLOCKS.filter((u) => S.maxHouse >= u.house && !S.seenUnlocks.includes(u.id));
+    const fresh = UNLOCKS.filter((u) => S.maxStage >= u.stage && !S.seenUnlocks.includes(u.id));
     if (!fresh.length) return;
-    fresh.forEach((u) => S.seenUnlocks.push(u.id));
+    fresh.forEach((u) => { S.seenUnlocks.push(u.id); S.fresh.push(u.id); });
     syncSlots();
     const u = fresh[fresh.length - 1];
     SFX.play('reward'); burst(cat.x, cat.y - 20, 50, '#ffd84d');
-    ask('Открыто!', [u.icon + ' ' + u.name, u.text].concat(fresh.length > 1 ? ['и ещё ' + (fresh.length - 1) + ' на Пути открытий'] : []), [
+    const more = fresh.slice(0, -1).map((f) => '+ ' + f.name);
+    ask('Открыто!', [u.icon + ' ' + u.name, u.text].concat(more.slice(0, 2)), [
       { label: 'Ура!', color: '#8ee08a', on: closeModal },
-      { label: 'Путь открытий', color: '#ffc94d', on: () => { closeModal(); panel = 'quests'; questTab = 'road'; } },
-    ]);
+    ].concat(unlocked('quests') ? [{ label: 'Путь открытий', color: '#ffc94d', on: () => { closeModal(); openPanel('quests'); questTab = 'road'; roadPage = Math.floor(UNLOCKS.indexOf(u) / ROAD_PER_PAGE); } }] : []));
   }
 
   function burst(x, y, n, color) {
@@ -934,7 +954,7 @@
       autoUpCd = 0.25;
       for (let n = 0; n < 25; n++) {
         let best = null, bc = Infinity;
-        for (const u of UPGRADES) { const c = upgradeCost(S[u.key], u.base); if (c < bc) { bc = c; best = u; } }
+        for (const u of UPGRADES) { if (u.lock && !unlocked(u.lock)) continue; const c = upgradeCost(S[u.key], u.base); if (c < bc) { bc = c; best = u; } }
         if (!best || S.ecto < bc) break;
         S.ecto -= bc; S[best.key]++; S.stats.upgrades++;
       }
@@ -1103,6 +1123,8 @@
   // Покупки / буст
   // =====================================================================
   function buyUpgrade(u) {
+    if (u.lock && !unlocked(u.lock)) { lockedToast(u.lock); return; }
+    if (u.lock) S.fresh = S.fresh.filter((f) => f !== u.lock);
     const cost = upgradeCost(S[u.key], u.base);
     if (S.ecto < cost) { showToast('Не хватает эктоплазмы'); SFX.play('deny'); return; }
     S.ecto -= cost; S[u.key]++; S.stats.upgrades++;
@@ -1119,6 +1141,9 @@
     });
   }
 
+  function lockedToast(id) { const u = UNLOCK[id]; showToast(u.name + ': ' + unlockWhere(u).toLowerCase()); SFX.play('deny'); }
+  // Открыть вкладку и снять с неё метку NEW
+  function openPanel(id) { panel = id; S.fresh = S.fresh.filter((f) => f !== id); }
   function showToast(text) { toast = { text, life: 2.2 }; }
 
   // =====================================================================
@@ -2878,6 +2903,7 @@
     }
     // кнопка Полнолуния в углу боевой зоны
     const now = Date.now();
+    if (unlocked('moon')) {
     const ready = !moonActive() && now >= S.moonReadyAt;
     if (ready || moonActive()) { const gg = ctx.createRadialGradient(330, 128, 16, 330, 128, 36); gg.addColorStop(0, 'rgba(255,220,120,0.55)'); gg.addColorStop(1, 'rgba(255,220,120,0)'); ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(330, 128, 36, 0, 7); ctx.fill(); }
     orb(330, 128, 22, moonActive() ? '#fff1a8' : ready ? '#ffc94d' : '#6b5f86');
@@ -2885,9 +2911,11 @@
     const sub = moonActive() ? Math.ceil((S.moonUntil - now) / 1000) + 'с' : ready ? 'x2' : Math.ceil((S.moonReadyAt - now) / 1000) + 'с';
     text(sub, 330, 158, 11, '#ffffff');
     if (ready) badge(346, 110);
-    btn(304, 102, 52, 66, activateMoon);
+    btn(304, 102, 52, 66, () => { S.fresh = S.fresh.filter((f) => f !== 'moon'); activateMoon(); });
+    if (S.fresh.includes('moon')) newTag(330, 98);
+    }
     // автопрокачка и автослияние
-    ['up', 'merge'].forEach((k, i) => {
+    if (unlocked('auto')) ['up', 'merge'].forEach((k, i) => {
       const a = AUTO[k], x = 306, y = 176 + i * 58;
       const avail = autoAvailable(k), run = autoRunning(k);
       plate(x, y, 48, 50, 12, run ? '#8ee08a' : avail ? '#9b93b3' : '#8a7bd1');
@@ -2897,7 +2925,8 @@
       else if (avail) { const ms = S[a.until] - Date.now(); sub = run ? Math.floor(ms / 60000) + ':' + String(Math.floor(ms / 1000) % 60).padStart(2, '0') : 'пауза'; }
       else sub = '🎬';
       text(sub, x + 24, y + 39, 10, '#ffffff');
-      btn(x, y, 48, 50, () => autoButton(k));
+      btn(x, y, 48, 50, () => { S.fresh = S.fresh.filter((f) => f !== 'auto'); autoButton(k); });
+      if (i === 0 && S.fresh.includes('auto')) newTag(x + 24, y - 4);
     });
     // переключатель автопилота
     plate(132, 8, 92, 28, 14, S.auto ? '#6fd36a' : '#6b5f86');
@@ -2910,10 +2939,10 @@
       [
         { icon: '🏚', label: 'Рейд', id: 'raid', b: S.raid.tickets > 0, lock: 'raid' },
         { icon: '🎡', label: 'Колесо', id: 'wheel', b: S.wheel.free > 0, lock: 'wheel' },
-        { icon: '🎁', label: 'Награды', id: 'daily', b: dailyReady() },
+        { icon: '🎁', label: 'Награды', id: 'daily', b: dailyReady(), lock: 'daily' },
       ].forEach((f, i) => {
         const x = 6, y = 104 + i * 56;
-        const lockU = f.lock && !unlocked(f.lock) && UNLOCKS.find((u) => u.id === f.lock);
+        const lockU = f.lock && !unlocked(f.lock) && UNLOCK[f.lock];
         const dn = pressOff(x, y, 46, 48);
         ctx.save(); ctx.translate(0, dn);
         plate(x, y, 46, 48, 12, lockU ? '#6b5f86' : '#8a7bd1');
@@ -2922,7 +2951,8 @@
         if (lockU) text('🔒', x + 34, y + 10, 10, '#ffffff');
         ctx.restore();
         if (f.b && !lockU) badge(x + 42, y + 4);
-        btn(x, y, 46, 48, () => { if (lockU) { showToast(lockU.name + ' откроется на доме ' + lockU.house); SFX.play('deny'); } else panel = f.id; });
+        if (S.fresh.includes(f.lock)) newTag(x + 23, y - 2);
+        btn(x, y, 46, 48, () => { if (lockU) lockedToast(f.lock); else { S.fresh = S.fresh.filter((q) => q !== f.lock); panel = f.id; } });
       });
     }
     // музыка и звуки: вкл/выкл
@@ -2936,13 +2966,50 @@
   }
 
   const TABS = [
-    { id: 'squad', icon: '👻', name: 'Отряд', badge: () => squadMergeable() },
-    { id: 'attach', icon: '🧹', name: 'Насадки', badge: () => S.crystals >= SUMMON_COST || attachMergeable() },
-    { id: 'bestiary', icon: '📖', name: 'Бестиарий', badge: () => anyBestClaimable() },
-    { id: 'quests', icon: '📜', name: 'Задания', badge: () => anyQuestDone() || S.dm.list.some(missionReady) || chestReady() || passClaimable() },
-    { id: 'prestige', icon: '✨', name: 'Освящение', badge: () => stonesFor(S.house) > 0 || altarAffordable() },
-    { id: 'shop', icon: '🛒', name: 'Магазин', badge: () => Date.now() >= S.adCrystalsAt || !S.starter },
+    { id: 'squad', lock: 'squad', icon: '👻', name: 'Отряд', badge: () => squadMergeable() },
+    { id: 'attach', lock: 'attach', icon: '🧹', name: 'Насадки', badge: () => S.crystals >= SUMMON_COST || attachMergeable() },
+    { id: 'bestiary', lock: 'bestiary', icon: '📖', name: 'Бестиарий', badge: () => anyBestClaimable() },
+    { id: 'quests', lock: 'quests', icon: '📜', name: 'Задания', badge: () => anyQuestDone() || S.dm.list.some(missionReady) || chestReady() || passClaimable() },
+    { id: 'prestige', lock: 'prestige', icon: '✨', name: 'Освящение', badge: () => stonesFor(S.house) > 0 || altarAffordable() },
+    { id: 'shop', lock: 'shop', icon: '🛒', name: 'Магазин', badge: () => Date.now() >= S.adCrystalsAt || !S.starter },
   ];
+
+  // Закрытая кнопка: тёмная плашка, полупрозрачная иконка, замок и где откроется
+  function lockedPlate(x, y, w, h, title, where, icon) {
+    plate(x, y, w, h, 12, '#4a4068', { lw: 2.5 });
+    ctx.save(); rr(x, y, w, h, 12); ctx.clip(); ctx.fillStyle = 'rgba(255,255,255,0.05)'; for (let k = -h; k < w; k += 10) { ctx.beginPath(); ctx.moveTo(x + k, y + h); ctx.lineTo(x + k + 4, y + h); ctx.lineTo(x + k + 4 + h, y); ctx.lineTo(x + k + h, y); ctx.closePath(); ctx.fill(); } ctx.restore();
+    if (icon) { ctx.globalAlpha = 0.3; text(icon, x + w / 2, y + 20, 18, '#ffffff'); ctx.globalAlpha = 1; text('🔒', x + w / 2 + 12, y + 12, 10, '#ffffff'); fitText(where, x + w / 2, y + 42, w - 6, 8, '#c9c3e6', 'center', '800'); }
+    else { text(title, x + w / 2, y + h / 2 - 8, 12, '#c9c3e6'); fitText(where, x + w / 2, y + h / 2 + 10, w - 10, 9, '#9b93b3', 'center', '800'); }
+  }
+  // Метка NEW над только что открытой кнопкой
+  function newTag(cx, y) {
+    const k = 1 + Math.sin(time * 6) * 0.08;
+    ctx.save(); ctx.translate(cx, y); ctx.scale(k, k);
+    rr(-17, -8, 34, 15, 7.5); ctx.fillStyle = '#ff4d6d'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke();
+    text('NEW', 0, 0, 9, '#ffffff', 'center', '900');
+    ctx.restore();
+  }
+  // Появление: кнопка «выпрыгивает» и светится, пока её не откроют
+  const appearAt = {};
+  function popIn(x, y, w, h, id) {
+    if (!id || !S.fresh.includes(id)) return;
+    if (appearAt[id] === undefined) appearAt[id] = time;
+    const age = time - appearAt[id];
+    if (age >= 0.6) return;
+    const k = 1 - Math.pow(1 - age / 0.6, 3) * Math.cos((age / 0.6) * 10) * 0.9;
+    ctx.translate(x + w / 2, y + h / 2); ctx.scale(k, k); ctx.translate(-x - w / 2, -y - h / 2);
+  }
+  function appear(x, y, w, h, id) {
+    if (appearAt[id] === undefined) appearAt[id] = time;
+    const age = time - appearAt[id];
+    const gg = ctx.createRadialGradient(x + w / 2, y + h / 2, 8, x + w / 2, y + h / 2, w * 0.9);
+    gg.addColorStop(0, `rgba(255,220,110,${0.35 + 0.2 * Math.sin(time * 5)})`); gg.addColorStop(1, 'rgba(255,220,110,0)');
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = gg; ctx.fillRect(x - w * 0.4, y - h * 0.4, w * 1.8, h * 1.8); ctx.restore();
+    if (age < 0.8) { // кольцо-вспышка
+      ctx.strokeStyle = `rgba(255,240,170,${1 - age / 0.8})`; ctx.lineWidth = 4;
+      rr(x - age * 30, y - age * 30, w + age * 60, h + age * 60, 14 + age * 20); ctx.stroke();
+    }
+  }
 
   function drawBottom() {
     {
@@ -2953,10 +3020,11 @@
     }
     UPGRADES.forEach((u, i) => {
       const x = 8 + i * 116, y = 517, w = 112, h = 58;
+      if (u.lock && !unlocked(u.lock)) { lockedPlate(x, y, w, h, '🔒 ' + u.name, unlockWhere(UNLOCK[u.lock])); btn(x, y, w, h, () => lockedToast(u.lock)); return; }
       const cost = upgradeCost(S[u.key], u.base);
       const can = S.ecto >= cost;
       const dn = pressOff(x, y, w, h);
-      ctx.save(); ctx.translate(0, dn);
+      ctx.save(); ctx.translate(0, dn); popIn(x, y, w, h, u.lock);
       plate(x, y, w, h, 12, can ? u.color : '#6b5f86', { noShadow: dn > 0 });
       text(u.name + ' ' + S[u.key], x + w / 2, y + 12, 12, '#ffffff');
       text(u.desc(), x + w / 2, y + 27, 10, INK, 'center', '700');
@@ -2966,19 +3034,22 @@
       if (can && Math.sin(time * 4 + i) > 0.7) { ctx.save(); rr(x, y, w, h, 12); ctx.clip(); const sx = x - 30 + ((time * 120 + i * 40) % (w + 60)); ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.beginPath(); ctx.moveTo(sx, y + h); ctx.lineTo(sx + 14, y + h); ctx.lineTo(sx + 34, y); ctx.lineTo(sx + 20, y); ctx.closePath(); ctx.fill(); ctx.restore(); }
       ctx.restore();
       btn(x, y, w, h, () => buyUpgrade(u));
+      if (u.lock && S.fresh.includes(u.lock)) { appear(x, y, w, h, u.lock); newTag(x + w / 2, y - 2); }
     });
     TABS.forEach((t, i) => {
       const x = 4 + i * 59, y = 580, w = 56, h = 54;
+      if (!unlocked(t.lock)) { lockedPlate(x, y, w, h, '🔒', unlockWhere(UNLOCK[t.lock]).replace('Дом ', 'Д').replace(', комн. ', '·к'), t.icon); btn(x, y, w, h, () => lockedToast(t.lock)); return; }
       const active = panel === t.id;
       const dn = active ? -3 : pressOff(x, y, w, h);
-      ctx.save(); ctx.translate(0, dn);
+      ctx.save(); ctx.translate(0, dn); popIn(x, y, w, h, t.lock);
       if (active) { const gg = ctx.createRadialGradient(x + w / 2, y + h / 2, 10, x + w / 2, y + h / 2, 44); gg.addColorStop(0, 'rgba(255,210,100,0.5)'); gg.addColorStop(1, 'rgba(255,210,100,0)'); ctx.fillStyle = gg; ctx.fillRect(x - 20, y - 20, w + 40, h + 40); }
       plate(x, y, w, h, 12, active ? '#ffc94d' : '#8a7bd1');
       text(t.icon, x + w / 2, y + 20, active ? 20 : 18, '#ffffff');
       text(t.name, x + w / 2, y + 42, 8, '#ffffff', 'center', '800');
       ctx.restore();
       if (t.badge()) badge(x + w - 6, y + 6);
-      btn(x, y, w, h, () => { panel = panel === t.id ? null : t.id; selectedJar = null; selectedAttach = null; });
+      if (S.fresh.includes(t.lock)) { appear(x, y, w, h, t.lock); newTag(x + w / 2, y - 2); }
+      btn(x, y, w, h, () => { if (panel === t.id) panel = null; else openPanel(t.id); selectedJar = null; selectedAttach = null; });
     });
   }
 
@@ -3169,7 +3240,7 @@
 
   function drawQuestsPanel() {
     panelFrame(questTab === 'pass' ? 'Призрачный пропуск' : questTab === 'road' ? 'Путь открытий' : 'Задания');
-    subTabs([['daily', 'Ежедневные', S.dm.list.some(missionReady) || chestReady()], ['pass', 'Пропуск', passClaimable()], ['quests', 'Задания', anyQuestDone()], ['road', 'Путь', false]], questTab, (id) => { questTab = id; });
+    subTabs([['daily', 'Ежедневные', S.dm.list.some(missionReady) || chestReady()], ['pass', 'Пропуск', passClaimable()], ['quests', 'Задания', anyQuestDone()], ['road', 'Путь', false]], questTab, (id) => { questTab = id; if (id === 'road') roadPage = -1; });
     if (questTab === 'daily') drawDailyMissions();
     else if (questTab === 'pass') drawPass();
     else if (questTab === 'road') drawRoad();
@@ -3280,19 +3351,25 @@
   }
 
   function drawRoad() {
-    const next = UNLOCKS.find((u) => S.maxHouse < u.house);
-    text('Рекорд: дом ' + S.maxHouse + (next ? ' · следующее открытие на доме ' + next.house : ' · всё открыто!'), 180, 146, 11, INK, 'center', '800');
-    UNLOCKS.forEach((u, i) => {
-      const y = 158 + i * 33, open = S.maxHouse >= u.house, isNext = u === next;
-      rr(24, y, 312, 29, 9); ctx.fillStyle = open ? '#eafbe9' : isNext ? '#fff3c4' : 'rgba(255,255,255,0.6)'; ctx.fill();
+    const next = UNLOCKS.find((u) => S.maxStage < u.stage);
+    const pages = Math.ceil(UNLOCKS.length / ROAD_PER_PAGE);
+    if (roadPage < 0) roadPage = Math.min(pages - 1, Math.floor(Math.max(0, UNLOCKS.indexOf(next)) / ROAD_PER_PAGE));
+    const done = UNLOCKS.filter((u) => S.maxStage >= u.stage).length;
+    text('Открыто ' + done + ' из ' + UNLOCKS.length + (next ? ' · дальше: ' + unlockWhere(next).toLowerCase() : ' · всё открыто!'), 180, 146, 11, INK, 'center', '800');
+    UNLOCKS.slice(roadPage * ROAD_PER_PAGE, (roadPage + 1) * ROAD_PER_PAGE).forEach((u, i) => {
+      const y = 158 + i * 31, open = S.maxStage >= u.stage, isNext = u === next;
+      rr(24, y, 312, 27, 9); ctx.fillStyle = open ? '#eafbe9' : isNext ? '#fff3c4' : 'rgba(255,255,255,0.6)'; ctx.fill();
       ctx.lineWidth = isNext ? 2.5 : 1.5; ctx.strokeStyle = open ? '#7dd99a' : isNext ? '#ffb02e' : '#d6cfe8'; ctx.stroke();
-      orb(41, y + 14.5, 11, open ? '#3ddc97' : isNext ? '#ffc94d' : '#9b93b3');
-      text(open || isNext ? u.icon : '🔒', 41, y + 15.5, open || isNext ? 11 : 9, '#ffffff');
-      text(u.name, 60, y + 10, 11, open || isNext ? INK : '#6b5f86', 'left', '800');
-      fitText(u.text, 60, y + 22, 200, 8.5, '#6b5f86', 'left', '700');
-      if (isNext) bar(266, y + 18, 60, 8, S.maxHouse / u.house, '#ffc94d', '#e4ddf3');
-      text('Дом ' + u.house, 326, isNext ? y + 9 : y + 14.5, 10, open ? '#2f8f4e' : INK, 'right', '800');
+      orb(40, y + 13.5, 10, open ? '#3ddc97' : isNext ? '#ffc94d' : '#9b93b3');
+      text(open || isNext ? u.icon : '🔒', 40, y + 14.5, open || isNext ? 10 : 8, '#ffffff');
+      fitText(u.name, 57, y + 9, 196, 10.5, open || isNext ? INK : '#6b5f86', 'left', '800');
+      fitText(u.text, 57, y + 20, 196, 8, '#6b5f86', 'left', '700');
+      if (isNext) bar(262, y + 17, 64, 7, Math.max(0, S.maxStage) / u.stage, '#ffc94d', '#e4ddf3');
+      fitText(unlockWhere(u), 326, isNext ? y + 8 : y + 13.5, 72, 9.5, open ? '#2f8f4e' : INK, 'right', '800');
     });
+    button(28, 534, 40, 24, '‹', '#8a7bd1', () => { roadPage = Math.max(0, roadPage - 1); }, 14, roadPage > 0);
+    button(292, 534, 40, 24, '›', '#8a7bd1', () => { roadPage = Math.min(pages - 1, roadPage + 1); }, 14, roadPage < pages - 1);
+    text('Страница ' + (roadPage + 1) + ' из ' + pages, 180, 546, 10, '#6b5f86', 'center', '700');
   }
 
   function drawPrestigePanel() {
@@ -3831,7 +3908,7 @@
     reset: () => { localStorage.removeItem(SAVE_KEY); S = defaultState(); ensureQuests(); dailyReset(); syncSlots(); resetRoom(); },
     close: () => { modal = null; },
     tab: (q, pr, pp) => { if (q) questTab = q; if (pr) prestTab = pr; if (pp !== undefined) passPage = pp; },
-    go: (h, room) => { S.house = h; S.room = room || 1; S.maxHouse = Math.max(S.maxHouse, h); checkUnlocks(); resetRoom(); },
+    go: (h, room) => { S.house = h; S.room = room || 1; S.maxHouse = Math.max(S.maxHouse, h); S.maxStage = Math.max(S.maxStage, stageIndex()); checkUnlocks(); resetRoom(); },
     info: () => ({ dmg: catDamage(), rate: fireRate(), inc: incomeMult(), hp: ghostHp(0), bossHp: ghostHp(3), slots: [S.squad.length, S.equipped.length], stars: maxStars(), rank: maxRank(), offline: offlineHours(), stonesFor: stonesFor(S.house), start: prestigeStart() }),
   };
 })();
