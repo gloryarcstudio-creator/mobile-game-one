@@ -275,7 +275,7 @@
   let spawnCd = 0.5, roomSpawned = 0, bossTimer = 0, bossSpawned = false;
   let panel = null; // squad | attach | bestiary | quests | prestige | offline
   let selectedJar = null, selectedAttach = null, bestPage = 0, prestigeConfirm = 0;
-  let toast = null, shake = 0, time = 0, roomToken = 0;
+  let toast = null, shake = 0, time = 0, roomToken = 0, press = null;
   let modal = null; // {title, lines, buttons} или {ad: {t, cb}}
   let shopTab = 'offers';
   let gold = null, goldCd = 40 + Math.random() * 30;
@@ -863,6 +863,7 @@
   canvas.addEventListener('pointerdown', (e) => {
     e.preventDefault();
     const { x, y } = toGame(e);
+    press = { x, y, t: time };
     for (let i = buttons.length - 1; i >= 0; i--) {
       const b = buttons[i];
       if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) { b.on(); return; }
@@ -886,6 +887,8 @@
     else manualUntil = time + 2;
     joy = null;
   }
+  window.addEventListener('pointerup', () => { press = null; });
+  window.addEventListener('pointercancel', () => { press = null; });
   canvas.addEventListener('pointerup', endJoy);
   canvas.addEventListener('pointercancel', endJoy);
 
@@ -1192,16 +1195,75 @@
     }
     if (line) text(line, x, yy, size, color, 'left', '700');
   }
+  // ---- UI: объёмные «конфетные» плашки, нажатие, карточки, полоски
+  const pressOff = (x, y, w, h) => (press && time - press.t < 0.25 && press.x >= x && press.x <= x + w && press.y >= y && press.y <= y + h ? 2 : 0);
+  function plate(x, y, w, h, r, color, o) {
+    o = o || {};
+    if (!o.noShadow) { rr(x, y + 3, w, h, r); ctx.fillStyle = 'rgba(15,8,30,0.35)'; ctx.fill(); }
+    rr(x, y, w, h, r);
+    const g = ctx.createLinearGradient(0, y, 0, y + h);
+    g.addColorStop(0, shade(color, 0.28)); g.addColorStop(0.55, color); g.addColorStop(1, shade(color, -0.18));
+    ctx.fillStyle = g; ctx.fill();
+    ctx.save(); ctx.clip();
+    ctx.fillStyle = shade(color, -0.32); ctx.fillRect(x, y + h - Math.min(5, h * 0.15), w, 6);
+    rr(x + 4, y + 3, w - 8, Math.min(h * 0.4, 14), Math.max(2, r * 0.6)); ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.fill();
+    ctx.restore();
+    rr(x, y, w, h, r); ctx.lineWidth = o.lw || 3; ctx.strokeStyle = INK; ctx.stroke();
+  }
+  function orb(cx, cy, rad, color) {
+    ctx.fillStyle = 'rgba(15,8,30,0.35)'; ctx.beginPath(); ctx.arc(cx, cy + 3, rad, 0, 7); ctx.fill();
+    const g = ctx.createRadialGradient(cx - rad * 0.35, cy - rad * 0.45, rad * 0.1, cx, cy, rad);
+    g.addColorStop(0, shade(color, 0.45)); g.addColorStop(0.6, color); g.addColorStop(1, shade(color, -0.25));
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, rad, 0, 7); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.beginPath(); ctx.ellipse(cx - rad * 0.3, cy - rad * 0.5, rad * 0.45, rad * 0.22, -0.3, 0, 7); ctx.fill();
+    ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.beginPath(); ctx.arc(cx, cy, rad, 0, 7); ctx.stroke();
+  }
+  function card(x, y, w, h, r, border) {
+    rr(x + 1, y + 4, w, h, r); ctx.fillStyle = 'rgba(43,35,64,0.18)'; ctx.fill();
+    rr(x, y, w, h, r);
+    const g = ctx.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#f1ebfa');
+    ctx.fillStyle = g; ctx.fill();
+    ctx.save(); ctx.clip(); ctx.fillStyle = alpha(border.startsWith('#') && border.length === 7 ? border : '#8a7bd1', 0.18); ctx.fillRect(x, y, 6, h); ctx.restore();
+    rr(x, y, w, h, r); ctx.lineWidth = 3; ctx.strokeStyle = border; ctx.stroke();
+  }
+  function bar(x, y, w, h, p, color, track) {
+    rr(x, y, w, h, h / 2); ctx.fillStyle = track || 'rgba(15,8,30,0.75)'; ctx.fill();
+    const fw = Math.max(0, Math.min(1, p)) * (w - 4);
+    if (fw > 2) {
+      rr(x + 2, y + 2, fw, h - 4, (h - 4) / 2);
+      const g = ctx.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, shade(color, 0.35)); g.addColorStop(1, shade(color, -0.15));
+      ctx.fillStyle = g; ctx.fill();
+      ctx.save(); ctx.clip();
+      ctx.fillStyle = 'rgba(255,255,255,0.18)';
+      for (let sx = x - h + ((time * 30) % 16); sx < x + fw; sx += 16) { ctx.beginPath(); ctx.moveTo(sx, y + h); ctx.lineTo(sx + 6, y + h); ctx.lineTo(sx + 6 + h, y); ctx.lineTo(sx + h, y); ctx.closePath(); ctx.fill(); }
+      ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.fillRect(x + 2, y + 2, fw, (h - 4) * 0.35);
+      ctx.restore();
+    }
+    rr(x, y, w, h, h / 2); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke();
+  }
   function button(x, y, w, h, label, color, on, size, enabled) {
     const en = enabled === undefined ? true : enabled;
-    rr(x, y, w, h, 10); ctx.fillStyle = en ? color : '#9b93b3'; ctx.fill();
-    ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
+    const dn = pressOff(x, y, w, h);
+    ctx.save(); ctx.translate(0, dn);
+    plate(x, y, w, h, Math.min(12, h / 2.6), en ? color : '#9b93b3', { noShadow: dn > 0 });
     text(label, x + w / 2, y + h / 2, size || 12, '#ffffff');
+    ctx.restore();
     btn(x, y, w, h, on);
   }
   function badge(x, y) {
-    ctx.fillStyle = '#ff4d6d'; ctx.beginPath(); ctx.arc(x, y, 6, 0, 7); ctx.fill();
+    const k = 1 + Math.sin(time * 6) * 0.12;
+    ctx.save(); ctx.translate(x, y); ctx.scale(k, k);
+    const g = ctx.createRadialGradient(-2, -2, 1, 0, 0, 7); g.addColorStop(0, '#ff9aae'); g.addColorStop(1, '#e8304f');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, 6.5, 0, 7); ctx.fill();
     ctx.lineWidth = 2; ctx.strokeStyle = '#ffffff'; ctx.stroke();
+    ctx.restore();
+  }
+  // Пилюля ресурса в верхней панели
+  function pill(x, y, w, h, icon, value, color) {
+    rr(x, y, w, h, h / 2); ctx.fillStyle = 'rgba(10,6,22,0.55)'; ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.stroke();
+    if (icon === 'ecto') orb(x + h / 2, y + h / 2, h / 2 - 1, '#7dff9e');
+    else text(icon, x + h / 2, y + h / 2 + 1, h * 0.7, '#ffffff');
+    text(value, x + w - 8, y + h / 2 + 1, h * 0.62, color, 'right');
   }
 
   // Спрайт призрака: используется в бою, в банках и в бестиарии.
@@ -1656,38 +1718,42 @@
   }
 
   function drawTopBar() {
-    ctx.fillStyle = INK; ctx.fillRect(0, 0, W, 70);
+    {
+      const g = ctx.createLinearGradient(0, 0, 0, 70); g.addColorStop(0, '#41346a'); g.addColorStop(1, '#271e40');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, 70);
+      ctx.fillStyle = 'rgba(255,255,255,0.04)'; for (let i = -70; i < W; i += 22) { ctx.beginPath(); ctx.moveTo(i, 70); ctx.lineTo(i + 10, 70); ctx.lineTo(i + 80, 0); ctx.lineTo(i + 70, 0); ctx.closePath(); ctx.fill(); }
+      ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fillRect(0, 68, W, 2);
+      const sg = ctx.createLinearGradient(0, 70, 0, 80); sg.addColorStop(0, 'rgba(10,5,25,0.45)'); sg.addColorStop(1, 'rgba(10,5,25,0)'); ctx.fillStyle = sg; ctx.fillRect(0, 70, W, 10);
+    }
     text('Дом ' + S.house, 14, 18, 16, '#ffffff', 'left');
     text(district().name, 14, 38, 10, '#c9c3e6', 'left', '700');
     if (raid) text('РЕЙД · ' + Math.ceil(raid.t) + ' с', 14, 55, 11, '#d68cff', 'left');
     else text(isBossRoom() ? 'БОСС' : 'Комната ' + S.room + '/' + ROOMS_PER_HOUSE, 14, 55, 11, isBossRoom() ? '#ffc94d' : '#c9c3e6', 'left');
     const p = isBossRoom() ? (bossSpawned ? Math.max(0, bossTimer / BOSS_TIME) : 1) : Math.min(1, S.cleared / GHOSTS_PER_ROOM);
-    rr(120, 48, 120, 12, 6); ctx.fillStyle = '#4a3f66'; ctx.fill();
-    rr(120, 48, 120 * p, 12, 6); ctx.fillStyle = isBossRoom() ? '#ffc94d' : '#7dff9e'; ctx.fill();
-    if (isBossRoom() && bossSpawned) text(Math.ceil(bossTimer) + ' с', 180, 54, 10, INK, 'center', '700');
-    ctx.fillStyle = '#7dff9e'; ctx.beginPath(); ctx.arc(302, 18, 7, 0, 7); ctx.fill();
-    text(fmt(S.ecto), 290, 18, 15, '#ffffff', 'right');
-    text('💎 ' + S.crystals, 346, 42, 12, '#9ff3ff', 'right');
-    text('🫙 ' + S.jars, 286, 42, 12, '#ffe7b0', 'right');
-    if (S.stones > 0) text('🌙 ' + S.stones, 346, 60, 11, '#fff1a8', 'right');
+    bar(118, 46, 124, 14, p, isBossRoom() ? '#ffc94d' : '#7dff9e');
+    for (let i = 1; i < ROOMS_PER_HOUSE; i++) { const px = 118 + (124 * i) / ROOMS_PER_HOUSE; const done = S.room > i; ctx.fillStyle = done ? '#ffc94d' : '#6b5f86'; ctx.beginPath(); ctx.arc(px, 42, 3, 0, 7); ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = INK; ctx.stroke(); }
+    if (isBossRoom() && bossSpawned) text(Math.ceil(bossTimer) + ' с', 180, 53, 10, '#ffffff', 'center', '800');
+    pill(246, 6, 108, 24, 'ecto', fmt(S.ecto), '#ffffff');
+    pill(246, 34, 52, 18, '🫙', String(S.jars), '#ffe7b0');
+    pill(302, 34, 52, 18, '💎', String(S.crystals), '#9ff3ff');
+    if (S.stones > 0) pill(302, 55, 52, 13, '🌙', String(S.stones), '#fff1a8');
     const rb = ghosts.find((g) => g.raid);
     if (rb) {
-      rr(30, 82, 300, 14, 7); ctx.fillStyle = INK; ctx.fill();
-      rr(30, 82, 300 * Math.max(0, rb.hp / rb.maxHp), 14, 7); ctx.fillStyle = '#d68cff'; ctx.fill();
-      text('Призрачный особняк · этаж ' + (raid.floor + 1), 180, 89, 10, '#ffffff', 'center', '700');
+      bar(30, 80, 300, 18, rb.hp / rb.maxHp, '#d68cff');
+      text('Призрачный особняк · этаж ' + (raid.floor + 1), 180, 89, 10, '#ffffff', 'center', '800');
     }
     const boss = ghosts.find((g) => g.boss && g.hp > 0);
     if (boss) {
-      rr(30, 82, 300, 14, 7); ctx.fillStyle = INK; ctx.fill();
-      rr(30, 82, 300 * Math.max(0, boss.hp / boss.maxHp), 14, 7); ctx.fillStyle = lowHp(boss) ? '#7dff9e' : '#ff6b8a'; ctx.fill();
-      text(GHOSTS[boss.type].name + ' · ' + fmt(boss.hp), 180, 89, 10, '#ffffff', 'center', '700');
+      bar(30, 80, 300, 18, boss.hp / boss.maxHp, lowHp(boss) ? '#7dff9e' : '#ff6b8a');
+      orb(30, 89, 12, '#ffc94d'); text('💀', 30, 90, 12, '#ffffff');
+      text(GHOSTS[boss.type].name + ' · ' + fmt(boss.hp), 180, 89, 10, '#ffffff', 'center', '800');
     }
     // кнопка Полнолуния в углу боевой зоны
     const now = Date.now();
     const ready = !moonActive() && now >= S.moonReadyAt;
-    ctx.fillStyle = moonActive() ? '#fff1a8' : ready ? '#ffc94d' : '#6b5f86';
-    ctx.beginPath(); ctx.arc(330, 128, 22, 0, 7); ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
-    text('🌕', 330, 126, 18, '#ffffff');
+    if (ready || moonActive()) { const gg = ctx.createRadialGradient(330, 128, 16, 330, 128, 36); gg.addColorStop(0, 'rgba(255,220,120,0.55)'); gg.addColorStop(1, 'rgba(255,220,120,0)'); ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(330, 128, 36, 0, 7); ctx.fill(); }
+    orb(330, 128, 22, moonActive() ? '#fff1a8' : ready ? '#ffc94d' : '#6b5f86');
+    text('🌕', 330, 127, 18, '#ffffff');
     const sub = moonActive() ? Math.ceil((S.moonUntil - now) / 1000) + 'с' : ready ? 'x2' : Math.ceil((S.moonReadyAt - now) / 1000) + 'с';
     text(sub, 330, 158, 11, '#ffffff');
     if (ready) badge(346, 110);
@@ -1696,7 +1762,7 @@
     ['up', 'merge'].forEach((k, i) => {
       const a = AUTO[k], x = 306, y = 176 + i * 58;
       const avail = autoAvailable(k), run = autoRunning(k);
-      rr(x, y, 48, 50, 12); ctx.fillStyle = run ? '#8ee08a' : avail ? '#9b93b3' : '#8a7bd1'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
+      plate(x, y, 48, 50, 12, run ? '#8ee08a' : avail ? '#9b93b3' : '#8a7bd1');
       ctx.save(); ctx.translate(x + 24, y + 18); if (run) ctx.rotate(time * 2); text(a.icon, 0, 0, 16, '#ffffff'); ctx.restore();
       let sub;
       if (autoOwned(k)) sub = run ? '∞' : 'пауза';
@@ -1706,11 +1772,11 @@
       btn(x, y, 48, 50, () => autoButton(k));
     });
     // переключатель автопилота
-    ctx.fillStyle = S.auto ? '#8ee08a' : '#6b5f86';
-    rr(132, 8, 92, 28, 14); ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
-    text('АВТО ' + (S.auto ? 'вкл' : 'выкл'), 178, 22, 11, '#ffffff');
+    plate(132, 8, 92, 28, 14, S.auto ? '#6fd36a' : '#6b5f86');
+    orb(S.auto ? 210 : 146, 22, 10, '#ffffff');
+    text('АВТО', S.auto ? 172 : 186, 22, 11, '#ffffff');
     btn(128, 4, 100, 36, () => { S.auto = !S.auto; showToast(S.auto ? 'Автопилот включён' : 'Веди кота свайпом по экрану'); });
-    if (vipActive()) text('VIP', 236, 22, 11, '#ffc94d', 'left');
+    if (vipActive()) { plate(86, 9, 34, 18, 9, '#ffc94d', { lw: 2 }); text('VIP', 103, 18, 10, '#ffffff'); }
     // боковые кнопки: рейд, колесо, награды дня
     if (!raid) {
       [
@@ -1719,9 +1785,12 @@
         { icon: '🎁', label: 'Награды', id: 'daily', b: dailyReady() },
       ].forEach((f, i) => {
         const x = 6, y = 104 + i * 56;
-        rr(x, y, 46, 48, 12); ctx.fillStyle = '#8a7bd1'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
+        const dn = pressOff(x, y, 46, 48);
+        ctx.save(); ctx.translate(0, dn);
+        plate(x, y, 46, 48, 12, '#8a7bd1');
         text(f.icon, x + 23, y + 18, 17, '#ffffff');
         text(f.label, x + 23, y + 39, 8, '#ffffff');
+        ctx.restore();
         if (f.b) badge(x + 42, y + 4);
         btn(x, y, 46, 48, () => { panel = f.id; });
       });
@@ -1738,26 +1807,38 @@
   ];
 
   function drawBottom() {
-    ctx.fillStyle = '#3a2f55'; ctx.fillRect(0, 512, W, 128);
+    {
+      const g = ctx.createLinearGradient(0, 512, 0, 640); g.addColorStop(0, '#41346a'); g.addColorStop(1, '#221a38');
+      ctx.fillStyle = g; ctx.fillRect(0, 512, W, 128);
+      const sg = ctx.createLinearGradient(0, 502, 0, 512); sg.addColorStop(0, 'rgba(10,5,25,0)'); sg.addColorStop(1, 'rgba(10,5,25,0.45)'); ctx.fillStyle = sg; ctx.fillRect(0, 502, W, 10);
+      ctx.fillStyle = 'rgba(255,255,255,0.14)'; ctx.fillRect(0, 512, W, 2);
+    }
     UPGRADES.forEach((u, i) => {
       const x = 8 + i * 116, y = 517, w = 112, h = 58;
       const cost = upgradeCost(S[u.key], u.base);
       const can = S.ecto >= cost;
-      rr(x, y, w, h, 12); ctx.fillStyle = can ? u.color : '#6b5f86'; ctx.fill();
-      ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
+      const dn = pressOff(x, y, w, h);
+      ctx.save(); ctx.translate(0, dn);
+      plate(x, y, w, h, 12, can ? u.color : '#6b5f86', { noShadow: dn > 0 });
       text(u.name + ' ' + S[u.key], x + w / 2, y + 12, 12, '#ffffff');
       text(u.desc(), x + w / 2, y + 27, 10, INK, 'center', '700');
-      rr(x + 8, y + 35, w - 16, 18, 7); ctx.fillStyle = 'rgba(43,35,64,0.85)'; ctx.fill();
-      text(fmt(cost), x + w / 2, y + 44, 12, can ? '#7dff9e' : '#ff9aa9');
+      rr(x + 8, y + 35, w - 16, 18, 9); ctx.fillStyle = 'rgba(25,18,45,0.85)'; ctx.fill();
+      orb(x + 18, y + 44, 6, '#7dff9e');
+      text(fmt(cost), x + w / 2 + 6, y + 44, 12, can ? '#7dff9e' : '#ff9aa9');
+      if (can && Math.sin(time * 4 + i) > 0.7) { ctx.save(); rr(x, y, w, h, 12); ctx.clip(); const sx = x - 30 + ((time * 120 + i * 40) % (w + 60)); ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.beginPath(); ctx.moveTo(sx, y + h); ctx.lineTo(sx + 14, y + h); ctx.lineTo(sx + 34, y); ctx.lineTo(sx + 20, y); ctx.closePath(); ctx.fill(); ctx.restore(); }
+      ctx.restore();
       btn(x, y, w, h, () => buyUpgrade(u));
     });
     TABS.forEach((t, i) => {
       const x = 4 + i * 59, y = 580, w = 56, h = 54;
       const active = panel === t.id;
-      rr(x, y, w, h, 12); ctx.fillStyle = active ? '#ffc94d' : '#8a7bd1'; ctx.fill();
-      ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
-      text(t.icon, x + w / 2, y + 20, 18, '#ffffff');
+      const dn = active ? -3 : pressOff(x, y, w, h);
+      ctx.save(); ctx.translate(0, dn);
+      if (active) { const gg = ctx.createRadialGradient(x + w / 2, y + h / 2, 10, x + w / 2, y + h / 2, 44); gg.addColorStop(0, 'rgba(255,210,100,0.5)'); gg.addColorStop(1, 'rgba(255,210,100,0)'); ctx.fillStyle = gg; ctx.fillRect(x - 20, y - 20, w + 40, h + 40); }
+      plate(x, y, w, h, 12, active ? '#ffc94d' : '#8a7bd1');
+      text(t.icon, x + w / 2, y + 20, active ? 20 : 18, '#ffffff');
       text(t.name, x + w / 2, y + 42, 8, '#ffffff', 'center', '800');
+      ctx.restore();
       if (t.badge()) badge(x + w - 6, y + 6);
       btn(x, y, w, h, () => { panel = panel === t.id ? null : t.id; selectedJar = null; selectedAttach = null; });
     });
@@ -1769,10 +1850,30 @@
   function panelFrame(title) {
     ctx.fillStyle = 'rgba(20,14,32,0.75)'; ctx.fillRect(0, 0, W, 574);
     btn(0, 0, W, 574, () => {});
-    rr(12, 56, 336, 516, 18); ctx.fillStyle = '#f7efe3'; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke();
-    text(title, 180, 84, 18, '#ffffff');
-    rr(306, 66, 32, 32, 16); ctx.fillStyle = '#ff6b8a'; ctx.fill(); ctx.stroke(); text('✕', 322, 83, 15, '#ffffff');
-    btn(306, 66, 32, 32, () => { panel = null; });
+    window_(12, 56, 336, 516, title);
+    orb(322, 74, 16, '#ff6b8a'); text('✕', 322, 74, 15, '#ffffff');
+    btn(302, 54, 40, 40, () => { panel = null; });
+  }
+
+  // Окно: кремовое тело с рамкой и лентой-заголовком
+  function window_(x, y, w, h, title) {
+    rr(x, y + 6, w, h, 20); ctx.fillStyle = 'rgba(10,5,25,0.45)'; ctx.fill();
+    rr(x, y, w, h, 20); ctx.fillStyle = '#8a7bd1'; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke();
+    rr(x + 6, y + 6, w - 12, h - 12, 15);
+    const g = ctx.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, '#fffaf2'); g.addColorStop(1, '#efe3d2');
+    ctx.fillStyle = g; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(43,35,64,0.35)'; ctx.stroke();
+    ctx.save(); rr(x + 6, y + 6, w - 12, h - 12, 15); ctx.clip();
+    ctx.fillStyle = 'rgba(138,123,209,0.06)'; for (let yy = y + 20; yy < y + h; yy += 26) for (let xx = x + 16 + ((yy / 26) % 2) * 13; xx < x + w; xx += 26) { ctx.beginPath(); ctx.arc(xx, yy, 4, 0, 7); ctx.fill(); }
+    ctx.restore();
+    if (title) {
+      ctx.font = '800 17px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+      const mw = ctx.measureText(title).width, tw = Math.min(w - 124, mw + 40), fs = Math.min(17, Math.floor(17 * (tw - 26) / mw)), tx = x + w / 2 - tw / 2, ty = y - 12;
+      ctx.fillStyle = shade('#ff8fb1', -0.3);
+      ctx.beginPath(); ctx.moveTo(tx - 14, ty + 10); ctx.lineTo(tx + 6, ty + 10); ctx.lineTo(tx + 6, ty + 38); ctx.lineTo(tx - 14, ty + 38); ctx.lineTo(tx - 6, ty + 24); ctx.closePath(); ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = INK; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(tx + tw + 14, ty + 10); ctx.lineTo(tx + tw - 6, ty + 10); ctx.lineTo(tx + tw - 6, ty + 38); ctx.lineTo(tx + tw + 14, ty + 38); ctx.lineTo(tx + tw + 6, ty + 24); ctx.closePath(); ctx.fill(); ctx.stroke();
+      plate(tx, ty, tw, 34, 10, '#ff8fb1');
+      text(title, x + w / 2, ty + 17, fs, '#ffffff');
+    }
   }
 
   function drawJar(x, y, it, selected) {
@@ -1894,7 +1995,7 @@
       const def = GHOSTS[type];
       const n = S.bestiary[type] || 0;
       const got = S.bestClaimed[type] || 0;
-      rr(x, y, 152, 174, 12); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = RARITY[def.rarity].color; ctx.stroke();
+      card(x, y, 152, 174, 12, RARITY[def.rarity].color);
       ghostSprite(type, x + 76, y + 48, 24, { silhouette: n === 0, phase: time * 2 });
       text(n ? def.name : '???', x + 76, y + 96, 11, INK, 'center', '800');
       text(RARITY[def.rarity].name + ' · поймано ' + n, x + 76, y + 112, 9, '#6b5f86', 'center', '700');
@@ -1968,7 +2069,7 @@
       offers.push({ t: '20 банок', d: 'Больше места для пойманных духов', p: '50 💎', c: '#8ee08a', on: () => { if (S.crystals >= 50) { S.crystals -= 50; S.jars += 20; showToast('+20 🫙'); } else showToast('Нужно 50 💎'); } });
       offers.slice(0, 6).forEach((o, i) => {
         const y = 140 + i * 71;
-        rr(24, y, 312, 65, 12); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = o.c; ctx.stroke();
+        card(24, y, 312, 65, 12, o.c);
         text(o.t, 38, y + 17, 13, INK, 'left', '800');
         wrapText(o.d, 38, y + 35, 196, 9, '#6b5f86', 12);
         if (o.hot) { rr(250, y + 7, 72, 18, 9); ctx.fillStyle = '#ff4d6d'; ctx.fill(); text(o.hot, 286, y + 16, 9, '#ffffff'); }
@@ -1979,7 +2080,7 @@
       const cards = [{ amount: 20, price: freeReady ? '🎬 Бесплатно' : Math.ceil((S.adCrystalsAt - now) / 60000) + ' мин', free: true }].concat(CRYSTAL_PACKS);
       cards.forEach((c, i) => {
         const x = 24 + (i % 2) * 160, y = 142 + Math.floor(i / 2) * 136;
-        rr(x, y, 152, 128, 12); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#7fd1ff'; ctx.stroke();
+        card(x, y, 152, 128, 12, '#7fd1ff');
         text('💎'.repeat(Math.min(3, 1 + Math.floor(i / 2))), x + 76, y + 30, 22, '#ffffff');
         text(String(c.amount), x + 76, y + 62, 18, INK, 'center', '800');
         if (c.extra) { rr(x + 98, y + 6, 48, 18, 9); ctx.fillStyle = '#ff4d6d'; ctx.fill(); text(c.extra, x + 122, y + 15, 10, '#ffffff'); }
@@ -2081,8 +2182,7 @@
     }
     const h = 110 + modal.lines.length * 20;
     const y0 = 320 - h / 2;
-    rr(30, y0, 300, h, 18); ctx.fillStyle = '#f7efe3'; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke();
-    text(modal.title, 180, y0 + 30, 17, '#ffffff');
+    window_(30, y0, 300, h, modal.title);
     modal.lines.forEach((l, i) => text(l, 180, y0 + 60 + i * 20, 12, INK, 'center', '700'));
     const n = modal.buttons.length, bw = (264 - (n - 1) * 8) / n;
     modal.buttons.forEach((b, i) => button(48 + i * (bw + 8), y0 + h - 50, bw, 38, b.label, b.color, b.on, n > 2 ? 10 : 13));
@@ -2197,7 +2297,7 @@
       ctx.globalAlpha = Math.min(1, toast.life * 3);
       ctx.font = '800 14px system-ui, sans-serif';
       const w = ctx.measureText(toast.text).width + 30;
-      rr(180 - w / 2, panel ? 20 : 108, w, 34, 17); ctx.fillStyle = INK; ctx.fill();
+      plate(180 - w / 2, panel ? 20 : 108, w, 34, 17, '#3d3160');
       text(toast.text, 180, (panel ? 20 : 108) + 17, 14, '#ffffff');
       ctx.globalAlpha = 1;
     }
