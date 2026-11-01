@@ -146,6 +146,7 @@
   // =====================================================================
   const defaultState = () => ({
     house: 1, room: 1, cleared: 0,
+    settings: { music: true, sfx: true },
     ecto: 0, crystals: 60, jars: 8,
     lvPower: 1, lvPull: 1, lvCollect: 1,
     inventory: [], squad: [null, null, null, null],
@@ -173,7 +174,7 @@
       if (!raw) return null;
       const s = Object.assign(defaultState(), JSON.parse(raw));
       s.stats = Object.assign(defaultState().stats, s.stats);
-      ['daily', 'wheel', 'raid'].forEach((k) => { s[k] = Object.assign(defaultState()[k], s[k]); });
+      ['daily', 'wheel', 'raid', 'settings'].forEach((k) => { s[k] = Object.assign(defaultState()[k], s[k]); });
       return s;
     } catch (e) { return null; }
   }
@@ -320,6 +321,178 @@
   const targetable = (g) => g.hp > 0 && !g.capturing && g.alpha >= 0.5;
 
   // =====================================================================
+  // Звук и музыка: всё синтезируется Web Audio, без файлов
+  // =====================================================================
+  const SFX = (() => {
+    let ac = null, sfxGain, musGain, noiseBuf;
+    const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
+    function init() {
+      if (ac) { if (ac.state === 'suspended') ac.resume(); return; }
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      ac = new AC();
+      const comp = ac.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4;
+      const master = ac.createGain(); master.gain.value = 0.9;
+      sfxGain = ac.createGain(); musGain = ac.createGain();
+      sfxGain.connect(comp); musGain.connect(comp); comp.connect(master); master.connect(ac.destination);
+      noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
+      const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      apply();
+      setInterval(musicTick, 50);
+    }
+    function apply() {
+      if (!ac) return;
+      sfxGain.gain.setTargetAtTime(S.settings.sfx ? 0.7 : 0, ac.currentTime, 0.05);
+      musGain.gain.setTargetAtTime(S.settings.music ? 0.38 : 0, ac.currentTime, 0.2);
+    }
+    function env(g, t, vol, attack, dur) {
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + attack); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    }
+    function tone(freq, dur, o) {
+      o = o || {};
+      const t = (o.at || ac.currentTime) + (o.delay || 0);
+      const osc = ac.createOscillator(), g = ac.createGain();
+      osc.type = o.type || 'sine';
+      osc.frequency.setValueAtTime(freq, t);
+      if (o.slide) osc.frequency.exponentialRampToValueAtTime(Math.max(30, freq * o.slide), t + dur);
+      if (o.vib) { const l = ac.createOscillator(), lg = ac.createGain(); l.frequency.value = 5.5; lg.gain.value = freq * o.vib; l.connect(lg); lg.connect(osc.frequency); l.start(t); l.stop(t + dur + 0.05); }
+      env(g, t, o.vol || 0.2, o.attack || 0.005, dur);
+      let node = osc;
+      if (o.lp) { const f = ac.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = o.lp; osc.connect(f); node = f; }
+      node.connect(g); g.connect(o.dest || sfxGain);
+      osc.start(t); osc.stop(t + dur + 0.05);
+    }
+    function noise(dur, o) {
+      o = o || {};
+      const t = (o.at || ac.currentTime) + (o.delay || 0);
+      const src = ac.createBufferSource(); src.buffer = noiseBuf;
+      const f = ac.createBiquadFilter(); f.type = o.type || 'bandpass'; f.frequency.setValueAtTime(o.freq || 2000, t); f.Q.value = o.q || 1;
+      if (o.slide) f.frequency.exponentialRampToValueAtTime(o.freq * o.slide, t + dur);
+      const g = ac.createGain(); env(g, t, o.vol || 0.1, o.attack || 0.003, dur);
+      src.connect(f); f.connect(g); g.connect(o.dest || sfxGain);
+      src.start(t, Math.random() * 0.5); src.stop(t + dur + 0.05);
+    }
+    const arp = (notes, step, type, vol, len) => notes.forEach((f, i) => tone(f, len || step * 2.2, { type, vol, delay: i * step }));
+    const P = {
+      shoot: () => { tone(900 + Math.random() * 200, 0.07, { type: 'square', vol: 0.035, slide: 0.45, lp: 3000 }); noise(0.05, { vol: 0.03, freq: 5000 }); },
+      hit: () => tone(240 + Math.random() * 80, 0.06, { type: 'triangle', vol: 0.07, slide: 0.6 }),
+      crit: () => { tone(1100, 0.08, { type: 'square', vol: 0.05, slide: 1.6, lp: 4000 }); tone(1760, 0.14, { type: 'sine', vol: 0.06, delay: 0.03 }); },
+      pop: () => { tone(420 + Math.random() * 80, 0.16, { type: 'sine', vol: 0.16, slide: 2.4 }); noise(0.08, { vol: 0.05, freq: 1400 }); },
+      bossDown: () => { noise(0.9, { vol: 0.18, freq: 300, type: 'lowpass', slide: 0.3 }); tone(150, 0.8, { type: 'sawtooth', vol: 0.1, slide: 0.3, lp: 900 }); arp([523, 659, 784, 1047, 1319], 0.09, 'square', 0.06); },
+      suck: () => { noise(0.6, { vol: 0.12, freq: 300, slide: 8, q: 4 }); tone(160, 0.6, { type: 'sawtooth', vol: 0.03, slide: 4, lp: 1200 }); },
+      caught: () => arp([784, 988, 1175, 1568], 0.06, 'triangle', 0.13),
+      escape: () => { tone(500, 0.3, { type: 'sawtooth', vol: 0.05, slide: 0.35, lp: 1500 }); tone(380, 0.3, { type: 'sine', vol: 0.08, slide: 0.5, delay: 0.08 }); },
+      ecto: () => tone(1300 + Math.random() * 500, 0.06, { type: 'sine', vol: 0.045 }),
+      crystal: () => { tone(1568, 0.18, { type: 'triangle', vol: 0.1 }); tone(2349, 0.25, { type: 'sine', vol: 0.07, delay: 0.06 }); },
+      click: () => tone(700, 0.05, { type: 'triangle', vol: 0.1, slide: 1.4 }),
+      deny: () => { tone(220, 0.1, { type: 'square', vol: 0.05, lp: 1200 }); tone(196, 0.14, { type: 'square', vol: 0.05, delay: 0.08, lp: 1200 }); },
+      upgrade: () => arp([523, 659, 784, 1047], 0.04, 'square', 0.045),
+      merge: () => { arp([523, 659, 784, 1047, 1319, 1568], 0.055, 'triangle', 0.11); noise(0.5, { vol: 0.05, freq: 7000, type: 'highpass' }); },
+      summon: () => { noise(0.5, { vol: 0.08, freq: 600, slide: 6, q: 2 }); arp([392, 523, 659, 784, 1047], 0.08, 'triangle', 0.1); },
+      hurt: () => { tone(330, 0.2, { type: 'sawtooth', vol: 0.08, slide: 0.5, lp: 1800 }); },
+      enemyShot: () => tone(260, 0.2, { type: 'sine', vol: 0.06, slide: 0.55, vib: 0.03 }),
+      spawn: () => tone(200, 0.35, { type: 'sine', vol: 0.03, slide: 2.2, vib: 0.04 }),
+      boss: () => { tone(98, 1.4, { type: 'sawtooth', vol: 0.12, slide: 0.75, lp: 700 }); tone(104, 1.4, { type: 'sawtooth', vol: 0.1, slide: 0.75, lp: 700 }); noise(1.2, { vol: 0.08, freq: 180, type: 'lowpass' }); tone(392, 1.2, { type: 'sine', vol: 0.05, vib: 0.06, delay: 0.3 }); },
+      clear: () => { arp([523, 659, 784], 0.08, 'square', 0.06); tone(1047, 0.45, { type: 'triangle', vol: 0.12, delay: 0.24 }); },
+      reward: () => { arp([659, 784, 1047, 1319], 0.07, 'triangle', 0.11); noise(0.3, { vol: 0.04, freq: 8000, type: 'highpass', delay: 0.2 }); },
+      tick: () => tone(1500, 0.025, { type: 'square', vol: 0.035 }),
+      goldAppear: () => arp([1319, 1568, 1976, 2637], 0.05, 'sine', 0.06),
+      gold: () => { arp([1047, 1319, 1568, 2093, 2637], 0.04, 'triangle', 0.1); noise(0.4, { vol: 0.05, freq: 9000, type: 'highpass' }); },
+      moon: () => { [523, 659, 784, 988].forEach((f) => tone(f, 1.4, { type: 'sine', vol: 0.06, attack: 0.15, vib: 0.01 })); },
+      fail: () => arp([392, 330, 262, 196], 0.14, 'triangle', 0.1, 0.3),
+    };
+    const LIMIT = { shoot: 0.06, hit: 0.05, crit: 0.08, ecto: 0.035, spawn: 0.4, hurt: 0.3, enemyShot: 0.15, pop: 0.05, tick: 0.03 };
+    const last = {};
+    function play(name) {
+      if (!ac || !S.settings.sfx || ac.state !== 'running') return;
+      const now = ac.currentTime;
+      if (last[name] && now - last[name] < (LIMIT[name] || 0.02)) return;
+      last[name] = now;
+      P[name]();
+    }
+
+    // ---- Музыка: генеративный секвенсор, у каждого района своя тема
+    const SC = { minor: [0, 2, 3, 5, 7, 8, 10], harm: [0, 2, 3, 5, 7, 8, 11], dorian: [0, 2, 3, 5, 7, 9, 10], major: [0, 2, 4, 5, 7, 9, 11] };
+    const SONGS = {
+      d0: { root: 57, sc: 'minor', bpm: 100, prog: [0, 5, 2, 6], lead: 'sine', box: true, drums: 1 },     // спальный: музыкальная шкатулка
+      d1: { root: 55, sc: 'dorian', bpm: 94, prog: [0, 3, 6, 4], lead: 'triangle', drums: 1 },           // старый город
+      d2: { root: 53, sc: 'dorian', bpm: 112, prog: [0, 6, 5, 6], lead: 'square', drums: 1, swing: true }, // порт: шанти
+      d3: { root: 60, sc: 'major', bpm: 116, prog: [0, 5, 3, 4], lead: 'triangle', box: true, drums: 1 }, // универмаг
+      d4: { root: 52, sc: 'harm', bpm: 86, prog: [0, 5, 3, 4], lead: 'sine', drums: 0, pad: true },      // кладбище
+      boss: { root: 50, sc: 'harm', bpm: 138, prog: [0, 0, 5, 4], lead: 'square', drums: 2, pad: true },
+      raid: { root: 57, sc: 'harm', bpm: 130, prog: [0, 5, 6, 4], lead: 'sawtooth', drums: 2 },
+    };
+    const deg = (song, d) => { const s = SC[song.sc], o = Math.floor(d / 7); return song.root + s[((d % 7) + 7) % 7] + 12 * o; };
+    function build(key) {
+      const song = Object.assign({ key }, SONGS[key]);
+      let seed = 0; for (const ch of key) seed = seed * 31 + ch.charCodeAt(0);
+      song.mel = [];
+      for (let sec = 0; sec < 2; sec++) {
+        const R = rng(seed + sec * 977);
+        let prev = 7;
+        for (let b = 0; b < 4; b++) {
+          const c = song.prog[b], bar = new Array(16).fill(null);
+          for (let st = 0; st < 16;) {
+            const strong = st % 4 === 0;
+            if (st === 0 || R() < (strong ? 0.75 : 0.35)) {
+              const tones = strong ? [c, c + 2, c + 4, c + 7] : [c, c + 1, c + 2, c + 3, c + 4, c + 5, c + 7];
+              let best = tones[0], bd = 99;
+              for (const t of tones) { const tt = t + 7 * Math.round((prev - t) / 7); const dd = Math.abs(tt - prev) + R() * 3; if (dd < bd) { bd = dd; best = tt; } }
+              prev = Math.max(4, Math.min(14, best));
+              const len = R() < 0.3 ? 4 : 2;
+              bar[st] = { d: prev, len }; st += len;
+            } else st += 2;
+          }
+          if (b === 3 && sec === 1) { bar.fill(null); bar[0] = { d: c + 7, len: 8 }; }
+          song.mel.push(bar);
+        }
+      }
+      return song;
+    }
+    const mus = { next: 0, step: 0, song: null, key: '' };
+    function musicKey() { return raid ? 'raid' : (isBossRoom() && bossSpawned) ? 'boss' : 'd' + districtIndex(); }
+    function step(song, i, t) {
+      const st = i % 16, bar = Math.floor(i / 16) % 8, c = song.prog[bar % 4];
+      const s16 = 60 / song.bpm / 4;
+      const D = musGain;
+      // бас
+      if (st === 0 || st === 8 || (song.drums === 2 && st % 4 === 2) || (song.swing && st === 6)) tone(mtof(deg(song, c) - 12), s16 * (song.drums === 2 ? 1.8 : 3.5), { type: 'triangle', vol: 0.2, at: t, dest: D, lp: 600 });
+      // арпеджио аккорда
+      if (st % 2 === 0) { const ch = [c, c + 2, c + 4, c + 2]; tone(mtof(deg(song, ch[(st / 2) % 4]) + 12), s16 * 2, { type: song.box ? 'sine' : 'triangle', vol: 0.045, at: t, dest: D }); }
+      // пэд на весь такт
+      if (song.pad && st === 0) [c, c + 2, c + 4].forEach((d) => tone(mtof(deg(song, d)), s16 * 16, { type: 'sawtooth', vol: 0.018, attack: 0.4, at: t, dest: D, lp: 700 }));
+      // мелодия
+      const n = song.mel[bar][st];
+      if (n) {
+        const f = mtof(deg(song, n.d) + 12);
+        tone(f, s16 * n.len * (song.box ? 1.6 : 0.95), { type: song.lead, vol: song.lead === 'square' || song.lead === 'sawtooth' ? 0.04 : 0.08, at: t, dest: D, lp: 2600, vib: song.box ? 0 : 0.006 });
+        if (song.box) tone(f * 2, s16 * n.len, { type: 'sine', vol: 0.025, at: t, dest: D });
+      }
+      // ударные
+      if (song.drums) {
+        if (st === 0 || (song.drums === 2 && st === 8) || (st === 10 && song.drums === 1)) tone(130, 0.14, { type: 'sine', vol: 0.22, slide: 0.35, at: t, dest: D });
+        if (st % 4 === 2) noise(0.035, { vol: 0.035, freq: 8000, type: 'highpass', at: t, dest: D });
+        if (song.drums === 2 && (st === 4 || st === 12)) noise(0.12, { vol: 0.09, freq: 1800, at: t, dest: D });
+      } else if (st === 0 && bar % 2 === 0) tone(mtof(deg(song, c) + 24), 2.5, { type: 'sine', vol: 0.03, vib: 0.02, attack: 0.3, at: t, dest: D }); // колокол
+    }
+    function musicTick() {
+      if (!ac || ac.state !== 'running' || !S.settings.music) return;
+      const key = musicKey();
+      if (mus.key !== key && mus.step % 16 === 0) { mus.key = key; mus.song = build(key); mus.step = 0; }
+      if (!mus.song) return;
+      const s16 = 60 / mus.song.bpm / 4;
+      if (mus.next < ac.currentTime) mus.next = ac.currentTime + 0.05;
+      while (mus.next < ac.currentTime + 0.25) {
+        step(mus.song, mus.step, mus.next + (mus.song.swing && mus.step % 2 ? s16 * 0.18 : 0));
+        mus.next += s16; mus.step++;
+        if (mus.key !== musicKey() && mus.step % 16 === 0) break;
+      }
+    }
+    document.addEventListener('visibilitychange', () => { if (!ac) return; if (document.hidden) ac.suspend(); else ac.resume(); });
+    return { init, play, apply, debug: () => ({ state: ac && ac.state, song: mus.key, step: mus.step }) };
+  })();
+
+  // =====================================================================
   // Бой
   // =====================================================================
   function nearestGhost(x, y, except) {
@@ -337,8 +510,9 @@
     if (g.raid) {
       g.hp -= amount; g.hit = 0.12;
       floaters.push({ x: g.x + (Math.random() - 0.5) * 40, y: g.y - g.r, text: fmt(amount), life: 0.9, color: crit ? '#ffdd55' : '#ffffff', size: crit ? 17 : 13 });
+      SFX.play(crit ? 'crit' : 'hit');
       if (g.hp <= 0) {
-        raid.floor++;
+        raid.floor++; SFX.play('clear');
         g.maxHp *= 1.3; g.hp = g.maxHp;
         burst(g.x, g.y, 30, '#c9b8ff'); shake = 0.3;
         floaters.push({ x: g.x, y: g.y - 60, text: 'Этаж ' + raid.floor + '!', life: 1.4, color: '#ffc94d', size: 20 });
@@ -347,6 +521,7 @@
     }
     g.hp -= amount;
     g.hit = 0.12;
+    SFX.play(crit ? 'crit' : 'hit');
     if (!g.boss) { const kx = g.x - cat.x, ky = g.y - cat.y, kd = Math.hypot(kx, ky) || 1; g.x += (kx / kd) * 5; g.y += (ky / kd) * 5; }
     floaters.push({ x: g.x + (Math.random() - 0.5) * 24, y: g.y - g.r, text: fmt(amount), life: 0.9, color: crit ? '#ffdd55' : '#ffffff', size: crit ? 17 : 13 });
     if (g.hp <= 0) killGhost(g);
@@ -362,6 +537,7 @@
       drops.push({ x: sp.x, y: sp.y, vx: (Math.random() - 0.5) * 160, vy: -60 - Math.random() * 120, t: 0, value: reward / n });
     }
     burst(g.x, g.y, g.boss ? 40 : 14, GHOSTS[g.type].body);
+    SFX.play(g.boss ? 'bossDown' : 'pop');
     S.stats.kills++;
     if (Math.random() < (g.boss ? 1 : 0.08)) {
       const n = g.boss ? 3 : 1;
@@ -398,6 +574,7 @@
     const rar = GHOSTS[g.type].rarity;
     const chance = g.boss ? captureChance() * 0.45 : captureChance() * (1 - rar * 0.12);
     g.capturing = 0.6;
+    SFX.play('suck');
     g.captureOk = Math.random() < chance;
     g.captureStart = { x: g.x, y: g.y };
   }
@@ -405,6 +582,7 @@
   function finishCapture(g) {
     g.capturing = 0;
     if (g.captureOk) {
+      SFX.play('caught');
       capture(g.type, cat.x, cat.y - 20, false);
       S.ecto += ghostReward(GHOSTS[g.type].rarity);
       if (g.boss) {
@@ -418,6 +596,7 @@
       g.hp = 0; g.dying = 0.01;
     } else {
       floaters.push({ x: g.x, y: g.y - g.r - 10, text: 'Вырвался!', life: 1, color: '#ff8a8a', size: 15 });
+      SFX.play('escape');
       if (g.boss) g.hp = Math.max(g.hp, g.maxHp * 0.4);
       else killGhost(g);
     }
@@ -435,6 +614,7 @@
     S.jars += 2;
     S.stats.rooms++;
     resetRoom();
+    SFX.play('clear');
     if (districtIndex() !== prevDistrict) showToast('Новый район: ' + district().name + '!');
     if (S.house === PRESTIGE_HOUSE && S.room === 1 && S.prestiges === 0) showToast('Открыто Освящение ✨');
     save();
@@ -456,6 +636,7 @@
     const color = equippedItems().length ? ATTACH[equippedItems()[0].kind].color : '#9ff3ff';
     beams.push({ x1: nz.x, y1: nz.y, x2: target.x, y2: target.y, life: 0.09, color, w: 5 });
     cat.recoil = 1;
+    SFX.play('shoot');
     const tx = target.x, ty = target.y;
     damage(target, dmg, crit);
 
@@ -535,6 +716,7 @@
     const ids = new Set(S.inventory.map((i) => i.id));
     S.squad = S.squad.map((id) => (ids.has(id) ? id : null));
     bestSquad();
+    if (n) SFX.play('merge');
     if (!silent) showToast(n ? 'Слито: ' + n + ' ✨' : 'Нужно 3 одинаковых призрака');
     return n;
   }
@@ -567,6 +749,7 @@
       if (!best || a.rank > best.rank) best = a;
     }
     S.stats.summons += count;
+    SFX.play('summon');
     autoEquipAttach();
     showToast((count > 1 ? 'Лучшая: ' : 'Получено: ') + ATTACH[best.kind].name + ' [' + RANKS[best.rank] + ']');
   }
@@ -580,6 +763,7 @@
     const n = mergeList('attach', (a) => a.kind + ':' + a.rank, (a) => a.rank >= RANKS.length - 1, (a) => a.rank++);
     autoEquipAttach();
     selectedAttach = null;
+    if (n) SFX.play('merge');
     if (!silent) showToast(n ? 'Слито насадок: ' + n + ' ✨' : 'Нужно 3 одинаковые насадки одного ранга');
     return n;
   }
@@ -687,8 +871,9 @@
   // =====================================================================
   function buyUpgrade(u) {
     const cost = upgradeCost(S[u.key], u.base);
-    if (S.ecto < cost) { showToast('Не хватает эктоплазмы'); return; }
+    if (S.ecto < cost) { showToast('Не хватает эктоплазмы'); SFX.play('deny'); return; }
     S.ecto -= cost; S[u.key]++; S.stats.upgrades++;
+    SFX.play('upgrade');
   }
 
   function activateMoon() {
@@ -696,7 +881,7 @@
     if (moonActive()) return;
     if (now < S.moonReadyAt) { showToast('Полнолуние через ' + Math.ceil((S.moonReadyAt - now) / 1000) + ' с'); return; }
     showAd('Полнолуние x2 на 60 с', () => {
-      S.moonUntil = Date.now() + 60000; S.moonReadyAt = Date.now() + 180000;
+      S.moonUntil = Date.now() + 60000; S.moonReadyAt = Date.now() + 180000; SFX.play('moon');
       showToast('Полнолуние! x2 урон и доход на 60 с');
     });
   }
@@ -718,7 +903,7 @@
   // Покупка: в релизе здесь Google Play Billing / App Store IAP.
   function purchase(name, price, apply) {
     ask('Покупка', [name, 'Цена: ' + price, 'Тестовый режим: деньги не списываются'], [
-      { label: 'Купить', color: '#8ee08a', on: () => { closeModal(); apply(); S.purchases++; showToast('Куплено: ' + name); save(); } },
+      { label: 'Купить', color: '#8ee08a', on: () => { closeModal(); apply(); S.purchases++; SFX.play('reward'); showToast('Куплено: ' + name); save(); } },
       { label: 'Отмена', color: '#ff9aa9', on: closeModal },
     ]);
   }
@@ -769,7 +954,7 @@
   function claimDaily(double) {
     if (!dailyReady()) return;
     const r = DAILY[S.daily.count % DAILY.length];
-    r.apply(); if (double) r.apply();
+    r.apply(); if (double) r.apply(); SFX.play('reward');
     if (vipActive()) S.crystals += 100;
     S.daily.count++; S.daily.last = today();
     showToast('Награда дня: ' + r.label + (double ? ' x2' : '') + (vipActive() ? ' +100 💎 VIP' : ''));
@@ -864,9 +1049,10 @@
     e.preventDefault();
     const { x, y } = toGame(e);
     press = { x, y, t: time };
+    SFX.init();
     for (let i = buttons.length - 1; i >= 0; i--) {
       const b = buttons[i];
-      if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) { b.on(); return; }
+      if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) { if (b.w < W - 1) SFX.play('click'); b.on(); return; }
     }
     if (panel || y < VIEW.y || y > VIEW.y + VIEW.h) return;
     // в боевой зоне: либо тап (поимка/удар), либо свайп-джойстик
@@ -896,6 +1082,7 @@
     const { x, y } = toWorld(sx, sy);
     if (gold && Math.hypot(gold.x - x, gold.y + Math.sin(gold.t * 3) * 14 - y) < 34) {
       const reward = ghostReward(0) * 40;
+      SFX.play('gold');
       burst(gold.x, gold.y, 30, '#ffd84d');
       gold = null; goldCd = 60 + Math.random() * 60;
       ask('Золотой призрак!', ['Он рассыпался на ' + fmt(reward) + ' эктоплазмы.', 'Посмотри рекламу, чтобы утроить.'], [
@@ -957,7 +1144,9 @@
 
   function hurtCat(amount) {
     cat.hp -= amount; cat.hurt = 0.25; cat.safeFor = 2;
+    SFX.play('hurt');
     if (cat.hp <= 0) {
+      SFX.play('fail');
       burst(cat.x, cat.y, 20, '#ff9aa9');
       if (raid) { cat.hp = CAT_MAX_HP; endRaid(); return; }
       if (isBossRoom()) { cat.hp = 1; bossFail('Мурзик испугался!'); return; }
@@ -978,13 +1167,15 @@
     jarOfferCd = Math.max(0, jarOfferCd - dt);
     if (modal && modal.ad) {
       modal.ad.t -= dt;
-      if (modal.ad.t <= 0) { const cb = modal.ad.cb; modal = null; S.adsWatched++; cb(); }
+      if (modal.ad.t <= 0) { const cb = modal.ad.cb; modal = null; S.adsWatched++; cb(); SFX.play('reward'); }
     }
     if (wheelSpin) {
       wheelSpin.t += dt;
       const k = Math.min(1, wheelSpin.t / wheelSpin.dur), e = 1 - Math.pow(1 - k, 3);
+      const segN = Math.floor(wheelRot / ((Math.PI * 2) / WHEEL.length));
       wheelRot = wheelSpin.from + (wheelSpin.to - wheelSpin.from) * e;
-      if (k >= 1) { const w = WHEEL[wheelSpin.idx]; wheelSpin = null; w.apply(); showToast('Выпало: ' + w.label); }
+      if (Math.floor(wheelRot / ((Math.PI * 2) / WHEEL.length)) !== segN) SFX.play('tick');
+      if (k >= 1) { SFX.play('reward'); const w = WHEEL[wheelSpin.idx]; wheelSpin = null; w.apply(); showToast('Выпало: ' + w.label); }
     }
     if (Math.floor(time) % 5 === 0) dailyReset();
 
@@ -992,6 +1183,7 @@
       // золотой призрак пролетает раз в 1–2 минуты
       if (!raid) {
         goldCd -= dt;
+        if (!gold && goldCd <= 0) SFX.play('goldAppear');
         if (!gold && goldCd <= 0) gold = { x: cam.x - HALF_W - 30, y: cam.y - HALF_H * 0.6 + Math.random() * HALF_H, t: 0 };
       }
       if (gold) {
@@ -1004,7 +1196,7 @@
         raid.t -= dt;
         if (raid.t <= 0) { endRaid(); return; }
       } else if (isBossRoom()) {
-        if (!bossSpawned) { spawnCd -= dt; if (spawnCd <= 0) { spawnGhost(district().boss); bossSpawned = true; bossTimer = BOSS_TIME; } }
+        if (!bossSpawned) { spawnCd -= dt; if (spawnCd <= 0) { spawnGhost(district().boss); bossSpawned = true; bossTimer = BOSS_TIME; SFX.play('boss'); } }
         else if (ghosts.some((g) => g.boss && g.hp > 0)) {
           bossTimer -= dt;
           if (bossTimer <= 0) { bossTimer = 0; bossFail('Время вышло!'); }
@@ -1036,6 +1228,7 @@
             const a = Math.atan2(cat.y - 10 - g.y, cat.x - g.x);
             const big = g.boss || g.raid;
             const spread = big ? [-0.3, 0, 0.3] : [0];
+            SFX.play('enemyShot');
             for (const sp of spread) shots.push({ x: g.x, y: g.y, vx: Math.cos(a + sp) * 115, vy: Math.sin(a + sp) * 115, dmg: big ? 22 : 14, life: 5 });
           }
         }
@@ -1047,7 +1240,7 @@
       shots = shots.filter((p) => p.life > 0 && p.x > 0 && p.x < MAP_W && p.y > 0 && p.y < MAP_H);
       for (const sh of shards) {
         sh.life -= dt;
-        if (Math.hypot(sh.x - cat.x, sh.y - cat.y) < 28) { sh.life = 0; S.crystals++; floaters.push({ x: sh.x, y: sh.y - 10, text: '+1 💎', life: 1, color: '#9ff3ff', size: 14 }); }
+        if (Math.hypot(sh.x - cat.x, sh.y - cat.y) < 28) { sh.life = 0; S.crystals++; SFX.play('crystal'); floaters.push({ x: sh.x, y: sh.y - 10, text: '+1 💎', life: 1, color: '#9ff3ff', size: 14 }); }
       }
       shards = shards.filter((sh) => sh.life > 0);
 
@@ -1145,7 +1338,7 @@
       else {
         const tx = 300, ty = 20, k = Math.min(1, dt * 7);
         d.x += (tx - d.x) * k; d.y += (ty - d.y) * k;
-        if (Math.hypot(tx - d.x, ty - d.y) < 10) { S.ecto += d.value; d.done = true; }
+        if (Math.hypot(tx - d.x, ty - d.y) < 10) { S.ecto += d.value; d.done = true; SFX.play('ecto'); }
       }
     }
     drops = drops.filter((d) => !d.done);
@@ -1795,6 +1988,14 @@
         btn(x, y, 46, 48, () => { panel = f.id; });
       });
     }
+    // музыка и звуки: вкл/выкл
+    [['music', '🎵', 17], ['sfx', '🔊', 43]].forEach(([k, icon, cx]) => {
+      const cy = raid ? 116 : 284, on = S.settings[k];
+      orb(cx, cy, 11, on ? '#8a7bd1' : '#6b5f86');
+      ctx.globalAlpha = on ? 1 : 0.5; text(icon, cx, cy + 1, 11, '#ffffff'); ctx.globalAlpha = 1;
+      if (!on) { ctx.strokeStyle = '#ff4d6d'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cx - 7, cy + 7); ctx.lineTo(cx + 7, cy - 7); ctx.stroke(); }
+      btn(cx - 13, cy - 13, 26, 26, () => { S.settings[k] = !S.settings[k]; SFX.apply(); save(); showToast(k === 'music' ? (S.settings[k] ? 'Музыка включена' : 'Музыка выключена') : (S.settings[k] ? 'Звуки включены' : 'Звуки выключены')); });
+    });
   }
 
   const TABS = [
@@ -2319,7 +2520,7 @@
 
   // Для отладки в консоли браузера.
   window.__game = {
-    state: () => S, ghosts: () => ghosts, cat: () => cat, cam: () => cam, resetRoom: () => resetRoom(), open: (p) => { panel = p; }, gold: () => { goldCd = 0; }, goldObj: () => gold, toScreen,
+    state: () => S, sfx: SFX, ghosts: () => ghosts, cat: () => cat, cam: () => cam, resetRoom: () => resetRoom(), open: (p) => { panel = p; }, gold: () => { goldCd = 0; }, goldObj: () => gold, toScreen,
     reset: () => { localStorage.removeItem(SAVE_KEY); S = defaultState(); ensureQuests(); resetRoom(); },
   };
 })();
