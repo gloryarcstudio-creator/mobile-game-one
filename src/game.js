@@ -254,7 +254,7 @@
   // Мир
   // =====================================================================
   // Карта больше экрана, вид сверху, камера следует за котом
-  const MAP_W = 1100, MAP_H = 1300, WALL = 28;
+  const MAP_W = 1100, MAP_H = 1300, WALL = 90;
   const VIEW = { x: 0, y: 70, w: 360, h: 442 };
   const VIEW_CX = VIEW.w / 2, VIEW_CY = VIEW.y + VIEW.h / 2;
   const ZOOM = 0.72; // камера отдалена, чтобы видеть больше карты
@@ -1285,8 +1285,7 @@
       for (let i = 0; i < 6; i++) { c.beginPath(); c.ellipse(R() * MAP_W, R() * MAP_H, 60 + R() * 60, 30 + R() * 20, R() * 3, 0, 7); c.fill(); }
     }
     // стены по краю
-    c.fillStyle = F.wall; c.fillRect(0, 0, MAP_W, WALL); c.fillRect(0, MAP_H - WALL, MAP_W, WALL); c.fillRect(0, 0, WALL, MAP_H); c.fillRect(MAP_W - WALL, 0, WALL, MAP_H);
-    c.fillStyle = 'rgba(0,0,0,0.12)'; c.fillRect(WALL, WALL, MAP_W - WALL * 2, 10);
+    drawBorder(c, d, F, R);
     // мебель
     solids = [];
     const kinds = DECOR[d];
@@ -1303,6 +1302,97 @@
       if (SOLID[kind]) solids.push({ x: x + 4, y: y + 4, w: w - 8, h: h - 8 });
     }
     cat.x = MAP_W / 2; cat.y = MAP_H / 2; cam.x = cat.x; cam.y = cat.y;
+  }
+
+  // Края карты: у каждого района своя текстура стены и детали
+  function drawBorder(c, d, F, R) {
+    const W = WALL, IW = MAP_W - W * 2, IH = MAP_H - W * 2;
+    // мягкая тень от стен на полу
+    const sh = 22;
+    const grads = [[W, W, IW, sh, 0, W, 0, W + sh], [W, MAP_H - W - sh, IW, sh, 0, MAP_H - W, 0, MAP_H - W - sh], [W, W, sh, IH, W, 0, W + sh, 0], [MAP_W - W - sh, W, sh, IH, MAP_W - W, 0, MAP_W - W - sh, 0]];
+    for (const [x, y, w, h, x0, y0, x1, y1] of grads) { const g = c.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, 'rgba(0,0,0,0.28)'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.fillRect(x, y, w, h); }
+    // паутина в углах
+    const web = (x, y, sx, sy) => {
+      c.strokeStyle = 'rgba(255,255,255,0.55)'; c.lineWidth = 1.5;
+      for (let i = 0; i <= 4; i++) { const a = (i / 4) * Math.PI / 2; c.beginPath(); c.moveTo(x, y); c.lineTo(x + sx * Math.cos(a) * 70, y + sy * Math.sin(a) * 70); c.stroke(); }
+      for (let r = 18; r <= 66; r += 16) { c.beginPath(); for (let i = 0; i <= 4; i++) { const a = (i / 4) * Math.PI / 2, px = x + sx * Math.cos(a) * r, py = y + sy * Math.sin(a) * r; if (i) c.quadraticCurveTo(x + sx * Math.cos(a - 0.2) * r * 0.85, y + sy * Math.sin(a - 0.2) * r * 0.85, px, py); else c.moveTo(px, py); } c.stroke(); }
+    };
+    web(W, W, 1, 1); web(MAP_W - W, W, -1, 1); web(W, MAP_H - W, 1, -1); web(MAP_W - W, MAP_H - W, -1, -1);
+
+    c.save();
+    c.beginPath(); c.rect(0, 0, MAP_W, MAP_H); c.rect(W, W, IW, IH); c.clip('evenodd');
+    c.fillStyle = F.wall; c.fillRect(0, 0, MAP_W, MAP_H);
+    if (d === 0) { // кирпич
+      for (let y = 0, row = 0; y < MAP_H; y += 16, row++) for (let x = (row % 2) * -16; x < MAP_W; x += 32) {
+        c.fillStyle = ['#b8674f', '#a95c46', '#c2735a'][Math.floor(R() * 3)]; c.fillRect(x + 2, y + 2, 28, 12);
+      }
+    } else if (d === 1) { // каменная кладка
+      for (let y = 0, row = 0; y < MAP_H; y += 26, row++) for (let x = (row % 2) * -22; x < MAP_W; x += 44) {
+        c.fillStyle = ['#6e6488', '#62597b', '#7a7094'][Math.floor(R() * 3)]; c.beginPath(); c.roundRect(x + 2, y + 2, 40, 22, 5); c.fill();
+        if (R() < 0.12) { c.fillStyle = '#6f9a5e'; c.beginPath(); c.arc(x + 8 + R() * 26, y + 20, 4 + R() * 4, 0, 7); c.fill(); }
+      }
+    } else if (d === 2) { // вода
+      c.fillStyle = '#4f9fc0'; c.fillRect(0, 0, MAP_W, MAP_H);
+      c.strokeStyle = 'rgba(255,255,255,0.45)'; c.lineWidth = 2;
+      for (let i = 0; i < 260; i++) { const x = R() * MAP_W, y = R() * MAP_H; c.beginPath(); c.arc(x, y, 6, Math.PI * 1.1, Math.PI * 1.9); c.arc(x + 10, y, 6, Math.PI * 1.1, Math.PI * 1.9); c.stroke(); }
+    } else if (d === 3) { // витрины универмага
+      c.fillStyle = '#7a4d64'; c.fillRect(0, 0, MAP_W, MAP_H);
+      const items = ['#ff8fb1', '#7fd1ff', '#ffd36b', '#8ee08a', '#c9a0ff'];
+      for (let y = 6; y < MAP_H; y += 58) for (let x = 6; x < MAP_W; x += 58) {
+        c.fillStyle = '#f7e6ee'; c.fillRect(x, y, 52, 52);
+        c.fillStyle = '#d9b9c8'; c.fillRect(x, y + 24, 52, 3); c.fillRect(x, y + 48, 52, 3);
+        for (let k = 0; k < 3; k++) { c.fillStyle = items[Math.floor(R() * items.length)]; c.fillRect(x + 4 + k * 16, y + 8, 12, 15); c.fillStyle = items[Math.floor(R() * items.length)]; c.fillRect(x + 4 + k * 16, y + 33, 12, 15); }
+      }
+    } else { // живая изгородь
+      c.fillStyle = '#3f5e3c'; c.fillRect(0, 0, MAP_W, MAP_H);
+      for (let i = 0; i < 2400; i++) { const x = R() * MAP_W, y = R() * MAP_H; c.fillStyle = ['#4d7349', '#5b8656', '#36522f', '#6a9a62'][Math.floor(R() * 4)]; c.beginPath(); c.arc(x, y, 7 + R() * 9, 0, 7); c.fill(); }
+      for (let i = 0; i < 160; i++) { c.fillStyle = ['#ffd1e0', '#fff3a6', '#ffffff'][Math.floor(R() * 3)]; c.beginPath(); c.arc(R() * MAP_W, R() * MAP_H, 3, 0, 7); c.fill(); }
+    }
+    // затемнение к внешнему краю, будто стена уходит вверх
+    const fade = [[0, 0, MAP_W, W, 0, 0, 0, W], [0, MAP_H - W, MAP_W, W, 0, MAP_H, 0, MAP_H - W], [0, 0, W, MAP_H, 0, 0, W, 0], [MAP_W - W, 0, W, MAP_H, MAP_W, 0, MAP_W - W, 0]];
+    for (const [x, y, w, h, x0, y0, x1, y1] of fade) { const g = c.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, 'rgba(20,10,30,0.45)'); g.addColorStop(1, 'rgba(20,10,30,0)'); c.fillStyle = g; c.fillRect(x, y, w, h); }
+    c.restore();
+
+    // внутренний бортик
+    const trim = ['#f3e2c8', '#9d93b8', '#a7713f', '#f2c6d6', '#2f2a3a'][d];
+    c.fillStyle = trim; c.fillRect(W - 8, W - 8, IW + 16, 8); c.fillRect(W - 8, MAP_H - W, IW + 16, 8); c.fillRect(W - 8, W - 8, 8, IH + 16); c.fillRect(MAP_W - W, W - 8, 8, IH + 16);
+    c.strokeStyle = INK; c.lineWidth = 3; c.strokeRect(W, W, IW, IH); c.strokeRect(1.5, 1.5, MAP_W - 3, MAP_H - 3);
+    if (d === 2) { // причал: столбики вдоль края
+      for (let x = W; x <= MAP_W - W; x += 80) for (const y of [W - 4, MAP_H - W + 4]) post(x, y, '#8a5a36');
+      for (let y = W + 80; y <= MAP_H - W - 40; y += 80) for (const x of [W - 4, MAP_W - W + 4]) post(x, y, '#8a5a36');
+    }
+    if (d === 4) { // кованая ограда
+      c.strokeStyle = '#2a2433'; c.lineWidth = 3;
+      for (let x = W; x <= MAP_W - W; x += 12) { c.beginPath(); c.moveTo(x, W - 16); c.lineTo(x, W); c.stroke(); c.beginPath(); c.moveTo(x, MAP_H - W); c.lineTo(x, MAP_H - W + 16); c.stroke(); }
+      for (let y = W; y <= MAP_H - W; y += 12) { c.beginPath(); c.moveTo(W - 16, y); c.lineTo(W, y); c.stroke(); c.beginPath(); c.moveTo(MAP_W - W, y); c.lineTo(MAP_W - W + 16, y); c.stroke(); }
+    }
+    function post(x, y, col) { c.fillStyle = col; c.beginPath(); c.arc(x, y, 9, 0, 7); c.fill(); c.lineWidth = 2.5; c.strokeStyle = INK; c.stroke(); c.fillStyle = 'rgba(255,255,255,0.3)'; c.beginPath(); c.arc(x - 2, y - 2, 4, 0, 7); c.fill(); }
+
+    // детали на верхней и нижней стенах: окна, фонари, вывески
+    const lamp = (x, y) => { c.fillStyle = 'rgba(255,230,140,0.30)'; c.beginPath(); c.arc(x, y + 10, 46, 0, 7); c.fill(); c.fillStyle = '#ffe28a'; c.beginPath(); c.arc(x, y, 9, 0, 7); c.fill(); c.lineWidth = 2.5; c.strokeStyle = INK; c.stroke(); };
+    for (let x = 150; x < MAP_W - 100; x += 260) {
+      if (d === 0 || d === 1) { // окно с луной
+        const wx = x - 34, wy = 10, ww = 68, wh = W - 22;
+        c.fillStyle = d === 0 ? '#f3e2c8' : '#9d93b8'; c.fillRect(wx - 5, wy - 5, ww + 10, wh + 10);
+        c.fillStyle = '#2b3a6b'; c.fillRect(wx, wy, ww, wh);
+        c.fillStyle = '#fff4c2'; c.beginPath(); c.arc(wx + ww - 16, wy + 13, 7, 0, 7); c.fill();
+        c.fillStyle = '#ffffff'; for (let k = 0; k < 4; k++) c.fillRect(wx + 6 + R() * (ww - 12), wy + 6 + R() * (wh - 12), 2, 2);
+        c.strokeStyle = INK; c.lineWidth = 2.5; c.strokeRect(wx, wy, ww, wh); c.beginPath(); c.moveTo(wx + ww / 2, wy); c.lineTo(wx + ww / 2, wy + wh); c.moveTo(wx, wy + wh / 2); c.lineTo(wx + ww, wy + wh / 2); c.stroke();
+        lamp(x + 130, W - 2);
+      } else if (d === 3) { // вывеска SALE
+        c.fillStyle = '#ff5c8a'; c.beginPath(); c.roundRect(x - 40, 14, 80, 30, 8); c.fill(); c.lineWidth = 2.5; c.strokeStyle = INK; c.stroke();
+        c.fillStyle = '#fff'; c.font = '900 16px system-ui, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('SALE', x, 30);
+      } else if (d === 4) { lamp(x, W - 4); lamp(x + 130, MAP_H - W + 4); }
+      else { lamp(x + 40, W - 4); }
+    }
+    // колонны по углам
+    const col = ['#8a6450', '#585070', '#7a5636', '#9a6a82', '#5c5868'][d];
+    for (const [x, y] of [[0, 0], [MAP_W - W - 10, 0], [0, MAP_H - W - 10], [MAP_W - W - 10, MAP_H - W - 10]]) {
+      c.fillStyle = 'rgba(0,0,0,0.25)'; c.fillRect(x + 6, y + 8, W + 10, W + 10);
+      c.fillStyle = col; c.fillRect(x, y, W + 10, W + 10); c.lineWidth = 3; c.strokeStyle = INK; c.strokeRect(x + 1.5, y + 1.5, W + 7, W + 7);
+      c.fillStyle = 'rgba(255,255,255,0.18)'; c.fillRect(x + 8, y + 8, W - 6, W - 6);
+      c.fillStyle = 'rgba(0,0,0,0.15)'; c.fillRect(x + 16, y + 16, W - 22, W - 22);
+    }
   }
 
   function drawDecor(c, kind, x, y, w, h, R, F) {
@@ -1994,7 +2084,7 @@
 
   // Для отладки в консоли браузера.
   window.__game = {
-    state: () => S, ghosts: () => ghosts, open: (p) => { panel = p; }, gold: () => { goldCd = 0; }, goldObj: () => gold, toScreen,
+    state: () => S, ghosts: () => ghosts, cat: () => cat, cam: () => cam, resetRoom: () => resetRoom(), open: (p) => { panel = p; }, gold: () => { goldCd = 0; }, goldObj: () => gold, toScreen,
     reset: () => { localStorage.removeItem(SAVE_KEY); S = defaultState(); ensureQuests(); resetRoom(); },
   };
 })();
