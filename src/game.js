@@ -92,6 +92,47 @@
     merges: { text: (n) => 'Слей ' + n + ' раз', goal: 2 },
   };
 
+  // Особые призраки вне районов
+  GHOSTS.golden = { name: 'Золотой призрак', rarity: 3, body: '#ffd84d', shape: 'sheet', d: -1 };
+  GHOSTS.mansion = { name: 'Призрачный особняк', rarity: 3, body: '#c9b8ff', shape: 'king', d: -1 };
+
+  // Скины: бонус действует, пока скин есть в коллекции (даже если не надет)
+  const SKINS = {
+    ginger: { name: 'Рыжик', body: '#f2a65a', dark: '#d9853a', bonus: {}, text: 'Стартовый' },
+    black: { name: 'Уголёк', body: '#5d566e', dark: '#3f3a4f', bonus: { rate: 1.15 }, text: '+15% скорострельность', crystals: 300 },
+    white: { name: 'Снежок', body: '#f4f1ea', dark: '#d8d2c4', bonus: { income: 1.25 }, text: '+25% эктоплазмы', crystals: 500 },
+    ninja: { name: 'Ниндзя', body: '#8a8fa8', dark: '#5c6078', mask: true, bonus: { dmg: 1.2, rate: 1.1 }, text: '+20% урон, +10% скорость', crystals: 1200 },
+    vampire: { name: 'Граф Мурракула', body: '#c7b3e6', dark: '#8f6fc4', cape: true, bonus: { dmg: 1.35 }, text: '+35% урона', usd: '$2.99' },
+    golden: { name: 'Золотой кот', body: '#ffd24d', dark: '#e0a91f', sparkle: true, bonus: { dmg: 1.5, income: 1.5 }, text: '+50% урон и доход', usd: '$9.99' },
+  };
+
+  const CRYSTAL_PACKS = [
+    { amount: 100, price: '$0.99' }, { amount: 550, price: '$4.99', extra: '+10%' }, { amount: 1200, price: '$9.99', extra: '+20%' },
+    { amount: 2600, price: '$19.99', extra: '+30%' }, { amount: 7000, price: '$49.99', extra: '+40%' },
+  ];
+
+  const DAILY = [
+    { label: '20 💎', apply: () => { S.crystals += 20; } },
+    { label: '5 🫙', apply: () => { S.jars += 5; } },
+    { label: '50 💎', apply: () => { S.crystals += 50; } },
+    { label: 'Насадка B', apply: () => giveAttach(2) },
+    { label: '100 💎', apply: () => { S.crystals += 100; } },
+    { label: 'Эпик-дух', apply: () => giveGhost(district().ghosts[2]) },
+    { label: '300 💎', apply: () => { S.crystals += 300; } },
+  ];
+
+  const WHEEL = [
+    { label: '50 💎', color: '#9ff3ff', w: 2, apply: () => { S.crystals += 50; } },
+    { label: '5 🫙', color: '#ffe7b0', w: 3, apply: () => { S.jars += 5; } },
+    { label: 'Луна', color: '#fff1a8', w: 2, apply: () => { S.moonUntil = Date.now() + 60000; } },
+    { label: '200 💎', color: '#7fd1ff', w: 0.5, apply: () => { S.crystals += 200; } },
+    { label: 'Насадка', color: '#d68cff', w: 1, apply: () => giveAttach(rollRank()) },
+    { label: '15 💎', color: '#c9f7ff', w: 3, apply: () => { S.crystals += 15; } },
+    { label: 'Эктопл.', color: '#8ee08a', w: 3, apply: () => { S.ecto += ghostReward(0) * 60; } },
+    { label: 'Эпик', color: '#ff9fbf', w: 0.5, apply: () => giveGhost(district().ghosts[2]) },
+  ];
+
+  const RAID_TIME = 30;
   const ROOMS_PER_HOUSE = 5;
   const GHOSTS_PER_ROOM = 8;
   const BOSS_TIME = 30;
@@ -113,6 +154,12 @@
     stats: { kills: 0, captures: 0, upgrades: 0, rooms: 0, summons: 0, merges: 0 },
     quests: [], questLevel: 0,
     stones: 0, prestiges: 0, auto: true,
+    skins: ['ginger'], skin: 'ginger',
+    vipUntil: 0, noAds: false, starter: false, weekly: false,
+    daily: { count: 0, last: '' },
+    wheel: { day: '', free: 1, ads: 3 },
+    raid: { day: '', tickets: 3, adUsed: false },
+    adSummonAt: 0, adCrystalsAt: 0, purchases: 0, adsWatched: 0,
     moonUntil: 0, moonReadyAt: 0,
     lastSeen: Date.now(),
   });
@@ -124,6 +171,7 @@
       if (!raw) return null;
       const s = Object.assign(defaultState(), JSON.parse(raw));
       s.stats = Object.assign(defaultState().stats, s.stats);
+      ['daily', 'wheel', 'raid'].forEach((k) => { s[k] = Object.assign(defaultState()[k], s[k]); });
       return s;
     } catch (e) { return null; }
   }
@@ -142,7 +190,11 @@
   const district = () => DISTRICTS[districtIndex()];
   const isBossRoom = () => S.room === ROOMS_PER_HOUSE;
   const moonActive = () => Date.now() < S.moonUntil;
-  const moonMult = () => (moonActive() ? 2 : 1);
+  const vipActive = () => Date.now() < S.vipUntil;
+  const moonMult = () => (moonActive() || vipActive() ? 2 : 1);
+  const skinMult = (kind) => S.skins.reduce((m, k) => m * (SKINS[k].bonus[kind] || 1), 1);
+  const attachSlots = () => (vipActive() ? 4 : 3);
+  const today = () => new Date().toDateString();
   const stoneMult = () => 1 + 0.1 * S.stones;
   const bestiaryClaimedTotal = () => Object.values(S.bestClaimed).reduce((a, b) => a + b, 0);
   const bestiaryMult = () => 1 + BEST_BONUS * bestiaryClaimedTotal();
@@ -158,12 +210,12 @@
   }
   const setMult = () => (Object.values(squadDistrictCounts()).some((n) => n >= 4) ? 1.25 : 1);
 
-  const catDamage = () => 10 * Math.pow(1.16, S.lvPower - 1) * moonMult() * stoneMult() * bestiaryMult() * attachMult() * setMult();
-  const fireRate = () => Math.min(2 + 0.08 * (S.lvPull - 1), 9);
+  const catDamage = () => 10 * Math.pow(1.16, S.lvPower - 1) * moonMult() * stoneMult() * bestiaryMult() * attachMult() * setMult() * skinMult('dmg');
+  const fireRate = () => Math.min((2 + 0.08 * (S.lvPull - 1)) * skinMult('rate'), 12);
   const captureChance = () => Math.min(0.4 + 0.012 * (S.lvPull - 1), 0.95);
   const critChance = () => 0.1 + Math.min(0.5, 0.04 * kindPower('brush'));
   const critMult = () => 3 + 0.25 * kindPower('brush');
-  const incomeMult = () => Math.pow(1.13, S.lvCollect - 1) * moonMult() * stoneMult();
+  const incomeMult = () => Math.pow(1.13, S.lvCollect - 1) * moonMult() * stoneMult() * skinMult('income');
   const ghostHp = (rarity) => 22 * Math.pow(1.24, stageIndex()) * RARITY[rarity].hp;
   const ghostReward = (rarity) => 4 * Math.pow(1.2, stageIndex()) * RARITY[rarity].reward * incomeMult();
   const upgradeCost = (lv, base) => Math.floor(base * Math.pow(1.19, lv - 1));
@@ -210,9 +262,15 @@
   let panel = null; // squad | attach | bestiary | quests | prestige | offline
   let selectedJar = null, selectedAttach = null, bestPage = 0, prestigeConfirm = 0;
   let toast = null, shake = 0, time = 0, roomToken = 0;
+  let modal = null; // {title, lines, buttons} или {ad: {t, cb}}
+  let shopTab = 'offers';
+  let gold = null, goldCd = 40 + Math.random() * 30;
+  let raid = null; // {t, floor}
+  let wheelRot = 0, wheelSpin = null;
+  let bossContinued = false, jarOfferCd = 0;
 
   function resetRoom() {
-    ghosts = []; shots = []; roomSpawned = 0; S.cleared = 0; cat.hp = CAT_MAX_HP; spawnCd = 0.6; bossSpawned = false; bossTimer = 0; roomToken++;
+    ghosts = []; shots = []; roomSpawned = 0; S.cleared = 0; cat.hp = CAT_MAX_HP; bossContinued = false; spawnCd = 0.6; bossSpawned = false; bossTimer = 0; roomToken++;
   }
 
   function pickType() {
@@ -235,7 +293,7 @@
     });
   }
 
-  const lowHp = (g) => g.hp > 0 && g.hp / g.maxHp <= 0.3;
+  const lowHp = (g) => !g.raid && g.hp > 0 && g.hp / g.maxHp <= 0.3;
   const targetable = (g) => g.hp > 0 && !g.capturing && g.alpha >= 0.5;
 
   // =====================================================================
@@ -253,6 +311,17 @@
 
   function damage(g, amount, crit) {
     if (g.hp <= 0 || g.capturing) return;
+    if (g.raid) {
+      g.hp -= amount; g.hit = 0.12;
+      floaters.push({ x: g.x + (Math.random() - 0.5) * 40, y: g.y - g.r, text: fmt(amount), life: 0.9, color: crit ? '#ffdd55' : '#ffffff', size: crit ? 17 : 13 });
+      if (g.hp <= 0) {
+        raid.floor++;
+        g.maxHp *= 1.3; g.hp = g.maxHp;
+        burst(g.x, g.y, 30, '#c9b8ff'); shake = 0.3;
+        floaters.push({ x: g.x, y: g.y - 60, text: 'Этаж ' + raid.floor + '!', life: 1.4, color: '#ffc94d', size: 20 });
+      }
+      return;
+    }
     g.hp -= amount;
     g.hit = 0.12;
     floaters.push({ x: g.x + (Math.random() - 0.5) * 24, y: g.y - g.r, text: fmt(amount), life: 0.9, color: crit ? '#ffdd55' : '#ffffff', size: crit ? 17 : 13 });
@@ -287,7 +356,7 @@
   }
 
   function capture(type, x, y, auto) {
-    if (S.jars <= 0) { showToast('Нет пустых банок!'); return false; }
+    if (S.jars <= 0) { offerJars(); return false; }
     S.jars--;
     const item = { id: S.nextId++, type, stars: 1 };
     S.inventory.push(item);
@@ -300,7 +369,7 @@
   }
 
   function tryCapture(g) {
-    if (S.jars <= 0) { showToast('Нет пустых банок!'); return; }
+    if (S.jars <= 0) { offerJars(); return; }
     const rar = GHOSTS[g.type].rarity;
     const chance = g.boss ? captureChance() * 0.45 : captureChance() * (1 - rar * 0.12);
     g.capturing = 0.6;
@@ -404,7 +473,7 @@
 
   function bestSquad() {
     const sorted = [...S.inventory].sort((a, b) => itemPower(b) - itemPower(a));
-    S.squad = [0, 1, 2, 3].map((i) => (sorted[i] ? sorted[i].id : null));
+    S.squad = S.squad.map((_, i) => (sorted[i] ? sorted[i].id : null));
   }
 
   function canMerge(list, keyFn, maxed) {
@@ -478,7 +547,7 @@
 
   function autoEquipAttach() {
     const sorted = [...S.attach].sort((a, b) => b.rank - a.rank);
-    S.equipped = [0, 1, 2].map((i) => (sorted[i] ? sorted[i].id : null));
+    S.equipped = S.equipped.map((_, i) => (sorted[i] ? sorted[i].id : null));
   }
 
   function mergeAttach() {
@@ -556,12 +625,149 @@
     const now = Date.now();
     if (moonActive()) return;
     if (now < S.moonReadyAt) { showToast('Полнолуние через ' + Math.ceil((S.moonReadyAt - now) / 1000) + ' с'); return; }
-    // В релизе здесь будет rewarded-реклама.
-    S.moonUntil = now + 60000; S.moonReadyAt = now + 180000;
-    showToast('Полнолуние! x2 урон и доход на 60 с');
+    showAd('Полнолуние x2 на 60 с', () => {
+      S.moonUntil = Date.now() + 60000; S.moonReadyAt = Date.now() + 180000;
+      showToast('Полнолуние! x2 урон и доход на 60 с');
+    });
   }
 
   function showToast(text) { toast = { text, life: 2.2 }; }
+
+  // =====================================================================
+  // Реклама (заглушка) и покупки (тестовый режим)
+  // =====================================================================
+  function ask(title, lines, buttons) { modal = { title, lines, buttons }; }
+  function closeModal() { modal = null; }
+
+  // Rewarded-реклама: в релизе здесь вызов SDK (AdMob / AppLovin / Unity Ads).
+  function showAd(label, cb) {
+    if (S.noAds || vipActive()) { cb(); showToast('Награда без рекламы ✓'); return; }
+    modal = { ad: { t: 2.5, total: 2.5, cb }, title: 'Реклама', lines: [label] };
+  }
+
+  // Покупка: в релизе здесь Google Play Billing / App Store IAP.
+  function purchase(name, price, apply) {
+    ask('Покупка', [name, 'Цена: ' + price, 'Тестовый режим: деньги не списываются'], [
+      { label: 'Купить', color: '#8ee08a', on: () => { closeModal(); apply(); S.purchases++; showToast('Куплено: ' + name); save(); } },
+      { label: 'Отмена', color: '#ff9aa9', on: closeModal },
+    ]);
+  }
+
+  function giveAttach(rank, kind) {
+    const a = { id: S.nextId++, kind: kind || ATTACH_KINDS[Math.floor(Math.random() * ATTACH_KINDS.length)], rank };
+    S.attach.push(a); autoEquipAttach();
+    showToast('Насадка: ' + ATTACH[a.kind].name + ' [' + RANKS[a.rank] + ']');
+  }
+  function giveGhost(type, stars) {
+    const it = { id: S.nextId++, type, stars: stars || 1 };
+    S.inventory.push(it); S.bestiary[type] = (S.bestiary[type] || 0) + 1; autoEquip(it);
+    showToast('Новый дух: ' + GHOSTS[type].name);
+  }
+
+  function offerJars() {
+    if (jarOfferCd > 0) { showToast('Нет пустых банок!'); return; }
+    jarOfferCd = 40;
+    ask('Банки закончились', ['Слей или отпусти духов в отряде,', 'или возьми ещё банок.'], [
+      { label: '🎬 +5 банок', color: '#ffc94d', on: () => { closeModal(); showAd('+5 банок', () => { S.jars += 5; }); } },
+      { label: '20 за 50 💎', color: '#7fd1ff', on: () => { closeModal(); if (S.crystals >= 50) { S.crystals -= 50; S.jars += 20; } else showToast('Нужно 50 💎'); } },
+      { label: 'Закрыть', color: '#ff9aa9', on: closeModal },
+    ]);
+  }
+
+  // Второй шанс в бою с боссом
+  function bossFail(reason) {
+    if (!bossContinued) {
+      bossContinued = true;
+      ask(reason, ['Посмотри рекламу: +15 секунд', 'и полная смелость кота.'], [
+        { label: '🎬 Продолжить', color: '#ffc94d', on: () => { closeModal(); showAd('Продолжение боя с боссом', () => { bossTimer = Math.max(bossTimer, 0) + 15; cat.hp = CAT_MAX_HP; }); } },
+        { label: 'Отступить', color: '#ff9aa9', on: () => { closeModal(); S.room = ROOMS_PER_HOUSE - 1; resetRoom(); } },
+      ]);
+    } else {
+      showToast(reason + ' Прокачайся и попробуй снова');
+      S.room = ROOMS_PER_HOUSE - 1; resetRoom();
+    }
+  }
+
+  // Ежедневные сбросы
+  function dailyReset() {
+    const d = today();
+    if (S.raid.day !== d) { S.raid.day = d; S.raid.tickets = 3; S.raid.adUsed = false; }
+    if (S.wheel.day !== d) { S.wheel.day = d; S.wheel.free = 1; S.wheel.ads = 3; }
+  }
+  dailyReset();
+  const dailyReady = () => S.daily.last !== today();
+  function claimDaily(double) {
+    if (!dailyReady()) return;
+    const r = DAILY[S.daily.count % DAILY.length];
+    r.apply(); if (double) r.apply();
+    if (vipActive()) S.crystals += 100;
+    S.daily.count++; S.daily.last = today();
+    showToast('Награда дня: ' + r.label + (double ? ' x2' : '') + (vipActive() ? ' +100 💎 VIP' : ''));
+  }
+
+  // Колесо удачи
+  function spinWheel(viaAd) {
+    if (wheelSpin) return;
+    const go = () => {
+      const total = WHEEL.reduce((s, w) => s + w.w, 0);
+      let r = Math.random() * total, idx = 0;
+      for (let i = 0; i < WHEEL.length; i++) { if (r < WHEEL[i].w) { idx = i; break; } r -= WHEEL[i].w; }
+      const seg = (Math.PI * 2) / WHEEL.length;
+      const from = wheelRot % (Math.PI * 2);
+      const to = -(idx + 0.5) * seg - Math.PI * 2 * 5 + (Math.random() - 0.5) * seg * 0.6;
+      wheelSpin = { t: 0, dur: 2.6, from, to, idx };
+    };
+    if (viaAd) { S.wheel.ads--; showAd('Вращение колеса', go); }
+    else { S.wheel.free--; go(); }
+  }
+
+  // Рейд: 30 секунд бьёшь особняк, каждый «этаж» — награда
+  function startRaid() {
+    if (S.raid.tickets <= 0) { showToast('Билеты закончились'); return; }
+    S.raid.tickets--;
+    panel = null;
+    ghosts = []; shots = []; cat.hp = CAT_MAX_HP; roomToken++;
+    raid = { t: RAID_TIME, floor: 0 };
+    const hp = ghostHp(3) * 1.5;
+    ghosts.push({ type: 'mansion', boss: false, raid: true, hp, maxHp: hp, x: 180, y: 170, vx: 20, vy: 14, r: 46, phase: 0, hit: 0, alpha: 0, dying: 0, capturing: 0, shootCd: 2 });
+    showToast('Рейд! Пробей как можно больше этажей');
+  }
+  function endRaid() {
+    const f = raid.floor;
+    raid = null; ghosts = []; shots = [];
+    resetRoom();
+    const cr = 10 + 15 * f, jars = f, att = Math.floor(f / 3);
+    const apply = (m) => { S.crystals += cr * m; S.jars += jars * m; for (let i = 0; i < att * m; i++) giveAttach(rollRank()); };
+    ask('Рейд завершён', ['Этажей пробито: ' + f, 'Награда: ' + cr + ' 💎, ' + jars + ' 🫙' + (att ? ', насадок: ' + att : '')], [
+      { label: 'Забрать', color: '#8ee08a', on: () => { closeModal(); apply(1); } },
+      { label: '🎬 x2', color: '#ffc94d', on: () => { closeModal(); showAd('Удвоение награды рейда', () => apply(2)); } },
+    ]);
+  }
+
+  // Магазин
+  function buyStarter() {
+    purchase('Стартовый набор', '$1.99', () => {
+      S.starter = true;
+      if (S.squad.length < 5) S.squad.push(null);
+      S.crystals += 300; giveAttach(3); giveGhost(DISTRICTS[0].ghosts[2], 2);
+    });
+  }
+  function buyVip() { purchase('VIP на 7 дней', '$6.99', () => { S.vipUntil = Math.max(Date.now(), S.vipUntil) + 7 * 864e5; syncSlots(); }); }
+  function buyNoAds() { purchase('Без рекламы', '$4.99', () => { S.noAds = true; }); }
+  function buyWeekly() { purchase('Набор недели', '$14.99', () => { S.weekly = true; S.crystals += 500; S.jars += 20; giveAttach(4); }); }
+  function buySkin(k) {
+    const sk = SKINS[k];
+    if (S.skins.includes(k)) { S.skin = k; showToast('Надет скин: ' + sk.name); return; }
+    if (sk.crystals) {
+      if (S.crystals < sk.crystals) { showToast('Нужно ' + sk.crystals + ' 💎'); return; }
+      S.crystals -= sk.crystals; S.skins.push(k); S.skin = k; showToast('Новый скин: ' + sk.name);
+    } else purchase('Скин «' + sk.name + '»', sk.usd, () => { S.skins.push(k); S.skin = k; });
+  }
+  function syncSlots() {
+    while (S.equipped.length < attachSlots()) S.equipped.push(null);
+    while (S.equipped.length > attachSlots()) S.equipped.pop();
+  }
+  syncSlots();
 
   // Офлайн-доход
   let offlineGain = 0;
@@ -614,6 +820,16 @@
   canvas.addEventListener('pointercancel', endJoy);
 
   function tapField(x, y) {
+    if (gold && Math.hypot(gold.x - x, gold.y + Math.sin(gold.t * 3) * 14 - y) < 34) {
+      const reward = ghostReward(0) * 40;
+      burst(gold.x, gold.y, 30, '#ffd84d');
+      gold = null; goldCd = 60 + Math.random() * 60;
+      ask('Золотой призрак!', ['Он рассыпался на ' + fmt(reward) + ' эктоплазмы.', 'Посмотри рекламу, чтобы утроить.'], [
+        { label: 'Забрать', color: '#8ee08a', on: () => { closeModal(); S.ecto += reward; } },
+        { label: '🎬 x3', color: '#ffc94d', on: () => { closeModal(); showAd('Утроение награды', () => { S.ecto += reward * 3; }); } },
+      ]);
+      return;
+    }
     for (const g of ghosts) {
       if (g.hp > 0 && !g.capturing && lowHp(g) && Math.hypot(g.x - x, g.y - y) < g.r + 18) { tryCapture(g); return; }
     }
@@ -656,9 +872,10 @@
   function hurtCat(amount) {
     cat.hp -= amount; cat.hurt = 0.25; cat.safeFor = 2;
     if (cat.hp <= 0) {
-      showToast('Мурзик испугался! Попробуй увернуться');
       burst(cat.x, cat.y, 20, '#ff9aa9');
-      if (isBossRoom()) S.room = ROOMS_PER_HOUSE - 1;
+      if (raid) { cat.hp = CAT_MAX_HP; endRaid(); return; }
+      if (isBossRoom()) { cat.hp = 1; bossFail('Мурзик испугался!'); return; }
+      showToast('Мурзик испугался! Попробуй увернуться');
       resetRoom();
     }
   }
@@ -672,16 +889,39 @@
     cat.recoil = Math.max(0, cat.recoil - dt * 8);
     shake = Math.max(0, shake - dt);
     prestigeConfirm = Math.max(0, prestigeConfirm - dt);
+    jarOfferCd = Math.max(0, jarOfferCd - dt);
+    if (modal && modal.ad) {
+      modal.ad.t -= dt;
+      if (modal.ad.t <= 0) { const cb = modal.ad.cb; modal = null; S.adsWatched++; cb(); }
+    }
+    if (wheelSpin) {
+      wheelSpin.t += dt;
+      const k = Math.min(1, wheelSpin.t / wheelSpin.dur), e = 1 - Math.pow(1 - k, 3);
+      wheelRot = wheelSpin.from + (wheelSpin.to - wheelSpin.from) * e;
+      if (k >= 1) { const w = WHEEL[wheelSpin.idx]; wheelSpin = null; w.apply(); showToast('Выпало: ' + w.label); }
+    }
+    if (Math.floor(time) % 5 === 0) dailyReset();
 
-    if (panel !== 'offline') {
-      if (isBossRoom()) {
+    if (!modal && panel !== 'offline') {
+      // золотой призрак пролетает раз в 1–2 минуты
+      if (!raid) {
+        goldCd -= dt;
+        if (!gold && goldCd <= 0) gold = { x: -30, y: 130 + Math.random() * 120, t: 0 };
+      }
+      if (gold) {
+        gold.t += dt; gold.x += 62 * dt;
+        if (Math.random() < 0.3) particles.push({ x: gold.x, y: gold.y + Math.sin(gold.t * 3) * 14, vx: 0, vy: 20, life: 0.6, color: '#ffe680', r: 2.5 });
+        if (gold.x > 400) { gold = null; goldCd = 60 + Math.random() * 60; }
+      }
+
+      if (raid) {
+        raid.t -= dt;
+        if (raid.t <= 0) { endRaid(); return; }
+      } else if (isBossRoom()) {
         if (!bossSpawned) { spawnCd -= dt; if (spawnCd <= 0) { spawnGhost(district().boss); bossSpawned = true; bossTimer = BOSS_TIME; } }
         else if (ghosts.some((g) => g.boss && g.hp > 0)) {
           bossTimer -= dt;
-          if (bossTimer <= 0) {
-            showToast('Время вышло! Прокачайся и попробуй снова');
-            S.room = ROOMS_PER_HOUSE - 1; resetRoom();
-          }
+          if (bossTimer <= 0) { bossTimer = 0; bossFail('Время вышло!'); }
         }
       } else {
         spawnCd -= dt;
@@ -704,10 +944,11 @@
         if (GHOSTS[g.type].rarity >= 1) {
           g.shootCd -= dt;
           if (g.shootCd <= 0) {
-            g.shootCd = g.boss ? 1.6 : 3.2;
+            g.shootCd = g.boss || g.raid ? 1.6 : 3.2;
             const a = Math.atan2(cat.y - 10 - g.y, cat.x - g.x);
-            const spread = g.boss ? [-0.3, 0, 0.3] : [0];
-            for (const sp of spread) shots.push({ x: g.x, y: g.y, vx: Math.cos(a + sp) * 115, vy: Math.sin(a + sp) * 115, dmg: g.boss ? 22 : 14, life: 5 });
+            const big = g.boss || g.raid;
+            const spread = big ? [-0.3, 0, 0.3] : [0];
+            for (const sp of spread) shots.push({ x: g.x, y: g.y, vx: Math.cos(a + sp) * 115, vy: Math.sin(a + sp) * 115, dmg: big ? 22 : 14, life: 5 });
           }
         }
       }
@@ -748,7 +989,7 @@
       // отряд
       orbiters = S.squad.map((id, i) => {
         const it = findItem(id); if (!it) return null;
-        const a = time * 1.3 + (i * Math.PI) / 2;
+        const a = time * 1.3 + (i * Math.PI * 2) / S.squad.length;
         const o = orbiters[i] && orbiters[i].id === id ? orbiters[i] : { id, cd: 0.3 * i };
         o.it = it; o.x = cat.x + Math.cos(a) * 58; o.y = cat.y - 10 + Math.sin(a) * 26;
         o.cd -= dt;
@@ -832,6 +1073,16 @@
       ctx.strokeText(t, x, y);
     }
     ctx.fillStyle = color; ctx.fillText(t, x, y);
+  }
+  function wrapText(t, x, y, maxW, size, color, lh) {
+    ctx.font = '700 ' + size + 'px system-ui, sans-serif';
+    let line = '', yy = y;
+    for (const word of t.split(' ')) {
+      const test = line ? line + ' ' + word : word;
+      if (ctx.measureText(test).width > maxW && line) { text(line, x, yy, size, color, 'left', '700'); line = word; yy += lh; }
+      else line = test;
+    }
+    if (line) text(line, x, yy, size, color, 'left', '700');
   }
   function button(x, y, w, h, label, color, on, size, enabled) {
     const en = enabled === undefined ? true : enabled;
@@ -946,19 +1197,23 @@
     const x = cat.x, y = cat.y + Math.sin(cat.bob * (cat.moving ? 3 : 1)) * (cat.moving ? 3 : 1.5);
     if (cat.hurt > 0 && Math.sin(time * 60) > 0) return;
     ctx.fillStyle = 'rgba(0,0,0,0.18)'; ctx.beginPath(); ctx.ellipse(x, cat.y + 26, 30, 8, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = '#f2a65a'; ctx.lineWidth = 8; ctx.lineCap = 'round';
+    const SK = SKINS[S.skin] || SKINS.ginger;
+    ctx.strokeStyle = SK.body; ctx.lineWidth = 8; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.moveTo(x + 18, y + 14); ctx.quadraticCurveTo(x + 44, y + 4 + Math.sin(time * 3) * 6, x + 36, y - 16); ctx.stroke();
     ctx.lineCap = 'butt';
     ctx.strokeStyle = INK; ctx.lineWidth = 3;
-    ctx.fillStyle = '#f2a65a'; ctx.beginPath(); ctx.ellipse(x, y + 8, 24, 20, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    if (SK.cape) { ctx.fillStyle = '#7a2340'; ctx.beginPath(); ctx.moveTo(x - 20, y - 6); ctx.lineTo(x + 20, y - 6); ctx.lineTo(x + 30, y + 30); ctx.lineTo(x - 30, y + 30); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+    ctx.fillStyle = SK.body; ctx.beginPath(); ctx.ellipse(x, y + 8, 24, 20, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     rr(x - 34, y - 6, 16, 28, 6); ctx.fillStyle = kindPower('rocket') > 0 ? ATTACH.rocket.color : '#8a7bd1'; ctx.fill(); ctx.stroke();
     const hy = y - 22;
-    ctx.fillStyle = '#f2a65a';
+    ctx.fillStyle = SK.body;
     ctx.beginPath(); ctx.moveTo(x - 22, hy - 6); ctx.lineTo(x - 18, hy - 30); ctx.lineTo(x - 4, hy - 16); ctx.closePath(); ctx.fill(); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(x + 22, hy - 6); ctx.lineTo(x + 18, hy - 30); ctx.lineTo(x + 4, hy - 16); ctx.closePath(); ctx.fill(); ctx.stroke();
     ctx.beginPath(); ctx.ellipse(x, hy, 26, 21, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#d9853a'; ctx.fillRect(x - 3, hy - 20, 6, 8);
-    ctx.fillStyle = INK;
+    ctx.fillStyle = SK.dark; ctx.fillRect(x - 3, hy - 20, 6, 8);
+    if (SK.mask) { ctx.fillStyle = '#2b2340'; ctx.fillRect(x - 25, hy - 7, 50, 11); ctx.fillStyle = '#ff5c7a'; ctx.fillRect(x + 22, hy - 6, 10, 4); }
+    if (SK.sparkle && Math.sin(time * 5) > 0.6) { ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(x + 14, hy - 12, 2.5, 0, 7); ctx.fill(); }
+    ctx.fillStyle = SK.mask ? '#ffffff' : INK;
     ctx.beginPath(); ctx.arc(x - 9, hy - 1, 3.5, 0, Math.PI * 2); ctx.arc(x + 9, hy - 1, 3.5, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = 'rgba(255,110,140,0.6)';
     ctx.beginPath(); ctx.ellipse(x - 16, hy + 7, 5, 3, 0, 0, Math.PI * 2); ctx.ellipse(x + 16, hy + 7, 5, 3, 0, 0, Math.PI * 2); ctx.fill();
@@ -1023,7 +1278,8 @@
     ctx.fillStyle = INK; ctx.fillRect(0, 0, W, 70);
     text('Дом ' + S.house, 14, 18, 16, '#ffffff', 'left');
     text(district().name, 14, 38, 10, '#c9c3e6', 'left', '700');
-    text(isBossRoom() ? 'БОСС' : 'Комната ' + S.room + '/' + ROOMS_PER_HOUSE, 14, 55, 11, isBossRoom() ? '#ffc94d' : '#c9c3e6', 'left');
+    if (raid) text('РЕЙД · ' + Math.ceil(raid.t) + ' с', 14, 55, 11, '#d68cff', 'left');
+    else text(isBossRoom() ? 'БОСС' : 'Комната ' + S.room + '/' + ROOMS_PER_HOUSE, 14, 55, 11, isBossRoom() ? '#ffc94d' : '#c9c3e6', 'left');
     const p = isBossRoom() ? (bossSpawned ? Math.max(0, bossTimer / BOSS_TIME) : 1) : Math.min(1, S.cleared / GHOSTS_PER_ROOM);
     rr(120, 48, 120, 12, 6); ctx.fillStyle = '#4a3f66'; ctx.fill();
     rr(120, 48, 120 * p, 12, 6); ctx.fillStyle = isBossRoom() ? '#ffc94d' : '#7dff9e'; ctx.fill();
@@ -1033,6 +1289,12 @@
     text('💎 ' + S.crystals, 346, 42, 12, '#9ff3ff', 'right');
     text('🫙 ' + S.jars, 286, 42, 12, '#ffe7b0', 'right');
     if (S.stones > 0) text('🌙 ' + S.stones, 346, 60, 11, '#fff1a8', 'right');
+    const rb = ghosts.find((g) => g.raid);
+    if (rb) {
+      rr(30, 82, 300, 14, 7); ctx.fillStyle = INK; ctx.fill();
+      rr(30, 82, 300 * Math.max(0, rb.hp / rb.maxHp), 14, 7); ctx.fillStyle = '#d68cff'; ctx.fill();
+      text('Призрачный особняк · этаж ' + (raid.floor + 1), 180, 89, 10, '#ffffff', 'center', '700');
+    }
     const boss = ghosts.find((g) => g.boss && g.hp > 0);
     if (boss) {
       rr(30, 82, 300, 14, 7); ctx.fillStyle = INK; ctx.fill();
@@ -1054,6 +1316,22 @@
     rr(132, 8, 92, 28, 14); ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
     text('АВТО ' + (S.auto ? 'вкл' : 'выкл'), 178, 22, 11, '#ffffff');
     btn(128, 4, 100, 36, () => { S.auto = !S.auto; showToast(S.auto ? 'Автопилот включён' : 'Веди кота свайпом по экрану'); });
+    if (vipActive()) text('VIP', 236, 22, 11, '#ffc94d', 'left');
+    // боковые кнопки: рейд, колесо, награды дня
+    if (!raid) {
+      [
+        { icon: '🏚', label: 'Рейд', id: 'raid', b: S.raid.tickets > 0 },
+        { icon: '🎡', label: 'Колесо', id: 'wheel', b: S.wheel.free > 0 },
+        { icon: '🎁', label: 'Награды', id: 'daily', b: dailyReady() },
+      ].forEach((f, i) => {
+        const x = 6, y = 104 + i * 56;
+        rr(x, y, 46, 48, 12); ctx.fillStyle = '#8a7bd1'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
+        text(f.icon, x + 23, y + 18, 17, '#ffffff');
+        text(f.label, x + 23, y + 39, 8, '#ffffff');
+        if (f.b) badge(x + 42, y + 4);
+        btn(x, y, 46, 48, () => { panel = f.id; });
+      });
+    }
   }
 
   const TABS = [
@@ -1062,6 +1340,7 @@
     { id: 'bestiary', icon: '📖', name: 'Бестиарий', badge: () => anyBestClaimable() },
     { id: 'quests', icon: '📜', name: 'Задания', badge: () => anyQuestDone() },
     { id: 'prestige', icon: '✨', name: 'Освящение', badge: () => stonesFor(S.house) > 0 },
+    { id: 'shop', icon: '🛒', name: 'Магазин', badge: () => Date.now() >= S.adCrystalsAt || !S.starter },
   ];
 
   function drawBottom() {
@@ -1080,12 +1359,12 @@
       btn(x, y, w, h, () => buyUpgrade(u));
     });
     TABS.forEach((t, i) => {
-      const x = 6 + i * 70, y = 580, w = 66, h = 54;
+      const x = 4 + i * 59, y = 580, w = 56, h = 54;
       const active = panel === t.id;
       rr(x, y, w, h, 12); ctx.fillStyle = active ? '#ffc94d' : '#8a7bd1'; ctx.fill();
       ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
       text(t.icon, x + w / 2, y + 20, 18, '#ffffff');
-      text(t.name, x + w / 2, y + 42, 9, '#ffffff', 'center', '800');
+      text(t.name, x + w / 2, y + 42, 8, '#ffffff', 'center', '800');
       if (t.badge()) badge(x + w - 6, y + 6);
       btn(x, y, w, h, () => { panel = panel === t.id ? null : t.id; selectedJar = null; selectedAttach = null; });
     });
@@ -1115,7 +1394,8 @@
   function drawSquadPanel() {
     panelFrame('Отряд призраков');
     S.squad.forEach((id, i) => {
-      const x = 32 + i * 76, y = 106;
+      const n = S.squad.length, step = n > 4 ? 64 : 76;
+      const x = 180 - ((n - 1) * step + 58) / 2 + i * step, y = 106;
       drawJar(x, y, findItem(id), false);
       btn(x, y, 58, 66, () => {
         if (selectedJar) { S.squad = S.squad.map((s) => (s === selectedJar ? null : s)); S.squad[i] = selectedJar; selectedJar = null; }
@@ -1170,15 +1450,16 @@
     panelFrame('Насадки пылесоса');
     const eqItems = S.equipped.map((id) => S.attach.find((a) => a.id === id));
     eqItems.forEach((a, i) => {
-      const x = 34 + i * 100, y = 104;
-      drawAttachCard(x, y, 92, 80, a, false);
-      btn(x, y, 92, 80, () => {
+      const n = eqItems.length, cw = n > 3 ? 70 : 92, step = cw + 8;
+      const x = 180 - ((n - 1) * step + cw) / 2 + i * step, y = 104;
+      drawAttachCard(x, y, cw, 80, a, false);
+      btn(x, y, cw, 80, () => {
         if (selectedAttach) { S.equipped = S.equipped.map((s) => (s === selectedAttach ? null : s)); S.equipped[i] = selectedAttach; selectedAttach = null; }
       });
     });
     text('Урон x' + fmt(attachMult(), 2) + ' · крит ' + Math.round(critChance() * 100) + '% x' + fmt(critMult(), 1), 180, 196, 11, INK, 'center', '700');
 
-    const list = [...S.attach].sort((a, b) => b.rank - a.rank || a.kind.localeCompare(b.kind)).slice(0, 20);
+    const list = [...S.attach].sort((a, b) => b.rank - a.rank || a.kind.localeCompare(b.kind)).slice(0, 15);
     list.forEach((a, i) => {
       const x = 24 + (i % 5) * 63, y = 212 + Math.floor(i / 5) * 66;
       drawAttachCard(x, y, 58, 60, a, selectedAttach === a.id);
@@ -1191,11 +1472,15 @@
     }
     const sel = selectedAttach && S.attach.find((a) => a.id === selectedAttach);
     if (sel) {
-      text(ATTACH[sel.kind].name + ' [' + RANKS[sel.rank] + ']: ' + ATTACH[sel.kind].desc, 180, 480, 11, INK, 'center', '700');
-      text('Тапни верхний слот, чтобы надеть', 180, 495, 10, '#6b5f86', 'center', '700');
+      text(ATTACH[sel.kind].name + ' [' + RANKS[sel.rank] + ']: ' + ATTACH[sel.kind].desc, 180, 418, 11, INK, 'center', '700');
+      text('Тапни верхний слот, чтобы надеть', 180, 433, 10, '#6b5f86', 'center', '700');
     } else {
-      text('Шансы: D 60% · C 27% · B 10% · A 2.5% · S 0.5%', 180, 488, 10, '#6b5f86', 'center', '700');
+      text('Шансы: D 60% · C 27% · B 10% · A 2.5% · S 0.5%', 180, 425, 10, '#6b5f86', 'center', '700');
     }
+    const freeReady = Date.now() >= S.adSummonAt;
+    button(70, 448, 220, 30, freeReady ? '🎬 Бесплатный призыв' : 'Бесплатно через ' + Math.ceil((S.adSummonAt - Date.now()) / 60000) + ' мин', '#ffc94d',
+      () => { if (freeReady) showAd('Бесплатный призыв насадки', () => { S.adSummonAt = Date.now() + 4 * 3600e3; S.crystals += SUMMON_COST; summon(1); }); }, 12, freeReady);
+    if (!vipActive()) text('4-й слот насадок — в VIP', 180, 494, 10, '#6b5f86', 'center', '700');
     button(22, 516, 100, 46, 'Призыв\n', '#d68cff', () => summon(1), 12, S.crystals >= SUMMON_COST);
     text(SUMMON_COST + ' 💎', 72, 550, 10, '#ffffff');
     button(130, 516, 100, 46, 'x10\n', '#ffc94d', () => summon(10), 12, S.crystals >= SUMMON_COST * 9);
@@ -1274,6 +1559,141 @@
     button(80, 440, 200, 54, prestigeConfirm > 0 ? 'Точно? Нажми ещё раз' : '✨ Освятить', prestigeConfirm > 0 ? '#ff7a9c' : '#ffc94d', prestige, 15, gain > 0);
   }
 
+  function drawShopPanel() {
+    panelFrame('Магазин');
+    [['offers', 'Акции'], ['crystals', 'Кристаллы'], ['skins', 'Скины']].forEach(([id, label], i) => {
+      button(28 + i * 104, 102, 96, 30, label, shopTab === id ? '#ffc94d' : '#8a7bd1', () => { shopTab = id; }, 12);
+    });
+    const now = Date.now();
+    if (shopTab === 'offers') {
+      const offers = [];
+      if (!S.starter) offers.push({ t: 'Стартовый набор', d: 'Эпик-дух ★★, 300 💎, насадка A, 5-й слот отряда', p: '$1.99', c: '#ff9fbf', on: buyStarter, hot: 'x10 выгода' });
+      offers.push({ t: vipActive() ? 'VIP активен: ' + Math.ceil((S.vipUntil - now) / 864e5) + ' дн.' : 'VIP на 7 дней', d: 'Вечное x2, 4-й слот насадок, без рекламы, +100 💎/день', p: '$6.99', c: '#ffc94d', on: buyVip });
+      if (!S.noAds) offers.push({ t: 'Без рекламы', d: 'Все награды за рекламу выдаются сразу', p: '$4.99', c: '#7fd1ff', on: buyNoAds });
+      if (!S.weekly) offers.push({ t: 'Набор недели', d: 'Насадка S, 500 💎, 20 банок', p: '$14.99', c: '#d68cff', on: buyWeekly, hot: 'Ограничено' });
+      offers.push({ t: '20 банок', d: 'Больше места для пойманных духов', p: '50 💎', c: '#8ee08a', on: () => { if (S.crystals >= 50) { S.crystals -= 50; S.jars += 20; showToast('+20 🫙'); } else showToast('Нужно 50 💎'); } });
+      offers.slice(0, 5).forEach((o, i) => {
+        const y = 142 + i * 84;
+        rr(24, y, 312, 76, 12); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = o.c; ctx.stroke();
+        text(o.t, 38, y + 20, 14, INK, 'left', '800');
+        wrapText(o.d, 38, y + 38, 196, 9, '#6b5f86', 12);
+        if (o.hot) { rr(250, y + 10, 72, 18, 9); ctx.fillStyle = '#ff4d6d'; ctx.fill(); text(o.hot, 286, y + 19, 9, '#ffffff'); }
+        button(246, y + 40, 80, 28, o.p, o.c, o.on, 13);
+      });
+    } else if (shopTab === 'crystals') {
+      const freeReady = now >= S.adCrystalsAt;
+      const cards = [{ amount: 20, price: freeReady ? '🎬 Бесплатно' : Math.ceil((S.adCrystalsAt - now) / 60000) + ' мин', free: true }].concat(CRYSTAL_PACKS);
+      cards.forEach((c, i) => {
+        const x = 24 + (i % 2) * 160, y = 142 + Math.floor(i / 2) * 136;
+        rr(x, y, 152, 128, 12); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#7fd1ff'; ctx.stroke();
+        text('💎'.repeat(Math.min(3, 1 + Math.floor(i / 2))), x + 76, y + 30, 22, '#ffffff');
+        text(String(c.amount), x + 76, y + 62, 18, INK, 'center', '800');
+        if (c.extra) { rr(x + 98, y + 6, 48, 18, 9); ctx.fillStyle = '#ff4d6d'; ctx.fill(); text(c.extra, x + 122, y + 15, 10, '#ffffff'); }
+        const on = c.free
+          ? () => { if (freeReady) showAd('Бесплатные кристаллы', () => { S.crystals += 20; S.adCrystalsAt = Date.now() + 3600e3; }); }
+          : () => purchase(c.amount + ' кристаллов', c.price, () => { S.crystals += c.amount; });
+        button(x + 16, y + 84, 120, 32, c.price, c.free ? '#ffc94d' : '#8ee08a', on, 13, !c.free || freeReady);
+      });
+    } else {
+      Object.keys(SKINS).forEach((k, i) => {
+        const sk = SKINS[k];
+        const x = 24 + (i % 2) * 160, y = 142 + Math.floor(i / 2) * 136;
+        const owned = S.skins.includes(k);
+        rr(x, y, 152, 128, 12); ctx.fillStyle = S.skin === k ? '#fff3c4' : '#ffffff'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = sk.usd ? '#ffc94d' : '#c9c3e6'; ctx.stroke();
+        // мордочка
+        const cx = x + 40, cy = y + 40;
+        ctx.fillStyle = sk.body; ctx.strokeStyle = INK; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(cx - 17, cy - 4); ctx.lineTo(cx - 14, cy - 22); ctx.lineTo(cx - 3, cy - 12); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx + 17, cy - 4); ctx.lineTo(cx + 14, cy - 22); ctx.lineTo(cx + 3, cy - 12); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.ellipse(cx, cy, 20, 16, 0, 0, 7); ctx.fill(); ctx.stroke();
+        if (sk.mask) { ctx.fillStyle = INK; ctx.fillRect(cx - 19, cy - 5, 38, 8); }
+        ctx.fillStyle = sk.mask ? '#ffffff' : INK; ctx.beginPath(); ctx.arc(cx - 7, cy - 1, 2.5, 0, 7); ctx.arc(cx + 7, cy - 1, 2.5, 0, 7); ctx.fill();
+        text(sk.name, x + 104, y + 30, 10, INK, 'center', '800');
+        text(owned ? 'есть' : sk.usd ? 'донат' : '', x + 104, y + 46, 9, '#6b5f86', 'center', '700');
+        text(sk.text, x + 76, y + 74, 9, '#2f8f4e', 'center', '700');
+        const label = owned ? (S.skin === k ? 'Надето' : 'Надеть') : sk.crystals ? sk.crystals + ' 💎' : sk.usd;
+        button(x + 16, y + 88, 120, 30, label, owned ? '#7fd1ff' : sk.usd ? '#ffc94d' : '#8ee08a', () => buySkin(k), 12, !(owned && S.skin === k));
+      });
+      text('Бонусы скинов работают, даже если скин не надет', 180, 556, 9, '#6b5f86', 'center', '700');
+    }
+  }
+
+  function drawRaidPanel() {
+    panelFrame('Рейд: Призрачный особняк');
+    ghostSprite('mansion', 180, 180, 46, { phase: time * 2 });
+    const lines = ['30 секунд бьёшь огромный особняк.', 'Каждый пробитый этаж: +15 💎 и банка,', 'каждые 3 этажа: насадка.', 'Особняк стреляет, уворачивайся!'];
+    lines.forEach((l, i) => text(l, 180, 262 + i * 18, 11, INK, 'center', '600'));
+    text('Билеты на сегодня: ' + S.raid.tickets + ' / 3', 180, 350, 14, INK, 'center', '800');
+    if (S.raid.tickets > 0) button(80, 380, 200, 50, '⚔ В бой', '#d68cff', startRaid, 16);
+    else if (!S.raid.adUsed) button(80, 380, 200, 50, '🎬 +1 билет', '#ffc94d', () => showAd('Дополнительный билет рейда', () => { S.raid.adUsed = true; S.raid.tickets++; }), 15);
+    else text('Новые билеты завтра', 180, 405, 13, '#6b5f86', 'center', '800');
+  }
+
+  function drawWheelPanel() {
+    panelFrame('Колесо удачи');
+    const cx = 180, cy = 290, R = 120, seg = (Math.PI * 2) / WHEEL.length;
+    WHEEL.forEach((w, i) => {
+      const a0 = wheelRot + i * seg - Math.PI / 2;
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, a0, a0 + seg); ctx.closePath();
+      ctx.fillStyle = w.color; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke();
+      ctx.save(); ctx.translate(cx, cy); ctx.rotate(a0 + seg / 2);
+      text(w.label, R * 0.62, 0, 11, INK, 'center', '800');
+      ctx.restore();
+    });
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.lineWidth = 5; ctx.strokeStyle = INK; ctx.stroke();
+    ctx.fillStyle = '#ffc94d'; ctx.beginPath(); ctx.arc(cx, cy, 18, 0, 7); ctx.fill(); ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = '#ff4d6d'; ctx.beginPath(); ctx.moveTo(cx - 12, cy - R - 16); ctx.lineTo(cx + 12, cy - R - 16); ctx.lineTo(cx, cy - R + 8); ctx.closePath(); ctx.fill(); ctx.stroke();
+    if (wheelSpin) text('Крутится...', 180, 460, 14, INK, 'center', '800');
+    else if (S.wheel.free > 0) button(80, 444, 200, 46, 'Крутить бесплатно', '#8ee08a', () => spinWheel(false), 14);
+    else if (S.wheel.ads > 0) button(80, 444, 200, 46, '🎬 Крутить (' + S.wheel.ads + '/3)', '#ffc94d', () => spinWheel(true), 14);
+    else text('Новые вращения завтра', 180, 466, 13, '#6b5f86', 'center', '800');
+    text('1 бесплатно в день + 3 за рекламу', 180, 510, 10, '#6b5f86', 'center', '700');
+  }
+
+  function drawDailyPanel() {
+    panelFrame('Награды за вход');
+    const cur = S.daily.count % DAILY.length;
+    DAILY.forEach((d, i) => {
+      const x = i < 4 ? 26 + i * 78 : 65 + (i - 4) * 78, y = i < 4 ? 112 : 222;
+      const claimed = i < cur || (i === cur && !dailyReady() && false);
+      const isToday = i === cur;
+      rr(x, y, 70, 98, 12); ctx.fillStyle = claimed ? '#e5f4e4' : isToday ? '#fff3c4' : '#ffffff'; ctx.fill();
+      ctx.lineWidth = 3; ctx.strokeStyle = isToday ? '#ffc94d' : '#c9c3e6'; ctx.stroke();
+      text('День ' + (i + 1), x + 35, y + 16, 10, INK, 'center', '800');
+      text(i === 6 ? '👑' : i === 5 ? '👻' : i === 3 ? '🧹' : i === 1 ? '🫙' : '💎', x + 35, y + 46, 22, '#ffffff');
+      text(d.label, x + 35, y + 78, 9, INK, 'center', '800');
+      if (claimed) text('✓', x + 58, y + 14, 14, '#2f8f4e', 'center', '800');
+    });
+    if (dailyReady()) {
+      button(40, 350, 136, 48, 'Забрать', '#8ee08a', () => claimDaily(false), 15);
+      button(184, 350, 136, 48, '🎬 Забрать x2', '#ffc94d', () => showAd('Удвоение награды дня', () => claimDaily(true)), 14);
+    } else text('Возвращайся завтра за наградой дня ' + (cur + 1), 180, 374, 12, '#6b5f86', 'center', '800');
+    text('Цикл из 7 дней повторяется. С VIP +100 💎 каждый день.', 180, 430, 10, '#6b5f86', 'center', '700');
+  }
+
+  function drawModal() {
+    ctx.fillStyle = 'rgba(20,14,32,0.8)'; ctx.fillRect(0, 0, W, H);
+    btn(0, 0, W, H, () => {});
+    if (modal.ad) {
+      rr(30, 180, 300, 260, 18); ctx.fillStyle = '#111'; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = '#444'; ctx.stroke();
+      text('РЕКЛАМА', 180, 214, 16, '#ffffff');
+      text(modal.lines[0], 180, 250, 12, '#c9c3e6', 'center', '700');
+      text('Здесь будет видео из рекламной сети', 180, 300, 11, '#9b93b3', 'center', '600');
+      const k = 1 - modal.ad.t / modal.ad.total;
+      rr(60, 360, 240, 12, 6); ctx.fillStyle = '#333'; ctx.fill();
+      rr(60, 360, 240 * k, 12, 6); ctx.fillStyle = '#ffc94d'; ctx.fill();
+      text('Награда через ' + Math.ceil(modal.ad.t) + ' с', 180, 396, 12, '#ffffff');
+      return;
+    }
+    const h = 110 + modal.lines.length * 20;
+    const y0 = 320 - h / 2;
+    rr(30, y0, 300, h, 18); ctx.fillStyle = '#f7efe3'; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke();
+    text(modal.title, 180, y0 + 30, 17, '#ffffff');
+    modal.lines.forEach((l, i) => text(l, 180, y0 + 60 + i * 20, 12, INK, 'center', '700'));
+    const n = modal.buttons.length, bw = (264 - (n - 1) * 8) / n;
+    modal.buttons.forEach((b, i) => button(48 + i * (bw + 8), y0 + h - 50, bw, 38, b.label, b.color, b.on, n > 2 ? 11 : 13));
+  }
+
   function drawOfflinePanel() {
     ctx.fillStyle = 'rgba(20,14,32,0.75)'; ctx.fillRect(0, 0, W, H);
     btn(0, 0, W, H, () => {});
@@ -1283,7 +1703,7 @@
     text(fmt(offlineGain) + ' эктоплазмы', 180, 300, 20, '#7dff9e');
     const take = (mult) => () => { S.ecto += offlineGain * mult; offlineGain = 0; panel = null; };
     button(58, 340, 116, 50, 'Забрать', '#8ee08a', take(1), 15);
-    button(186, 340, 116, 50, 'x2 (реклама)', '#ffc94d', take(2), 13);
+    button(186, 340, 116, 50, '🎬 x2', '#ffc94d', () => { const g = offlineGain; offlineGain = 0; panel = null; showAd('Удвоение офлайн-дохода', () => { S.ecto += g * 2; }); }, 15);
   }
 
   function draw() {
@@ -1298,6 +1718,12 @@
     drawCat();
     orbiters.forEach((o) => o && o.y >= cat.y - 10 && drawOrbiter(o));
     drawHazards();
+    if (gold) {
+      const gy = gold.y + Math.sin(gold.t * 3) * 14;
+      ctx.fillStyle = 'rgba(255,230,120,0.35)'; ctx.beginPath(); ctx.arc(gold.x, gy, 30, 0, 7); ctx.fill();
+      ghostSprite('golden', gold.x, gy, 18, { phase: gold.t * 3 });
+      text('ТАП!', gold.x, gy + 34, 11, '#ffd84d');
+    }
     for (const rg of rings) {
       ctx.globalAlpha = Math.max(0, rg.life / 0.3);
       ctx.strokeStyle = '#ffcf8a'; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(rg.x, rg.y, rg.r, 0, 7); ctx.stroke();
@@ -1325,7 +1751,12 @@
     else if (panel === 'bestiary') drawBestiaryPanel();
     else if (panel === 'quests') drawQuestsPanel();
     else if (panel === 'prestige') drawPrestigePanel();
+    else if (panel === 'shop') drawShopPanel();
+    else if (panel === 'raid') drawRaidPanel();
+    else if (panel === 'wheel') drawWheelPanel();
+    else if (panel === 'daily') drawDailyPanel();
     else if (panel === 'offline') drawOfflinePanel();
+    if (modal) drawModal();
     if (toast) {
       ctx.globalAlpha = Math.min(1, toast.life * 3);
       ctx.font = '800 14px system-ui, sans-serif';
@@ -1352,7 +1783,7 @@
 
   // Для отладки в консоли браузера.
   window.__game = {
-    state: () => S, ghosts: () => ghosts, open: (p) => { panel = p; },
+    state: () => S, ghosts: () => ghosts, open: (p) => { panel = p; }, gold: () => { goldCd = 0; }, goldObj: () => gold,
     reset: () => { localStorage.removeItem(SAVE_KEY); S = defaultState(); ensureQuests(); resetRoom(); },
   };
 })();
