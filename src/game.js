@@ -34,10 +34,10 @@
     { name: 'Старый город', hue: 260, ghosts: ['armor', 'portrait', 'candle'], boss: 'headless', set: 'x1.25 урона кота' },
     { name: 'Порт', hue: 195, ghosts: ['drowned', 'jelly', 'lantern'], boss: 'ship', set: 'x1.25 урона кота' },
     { name: 'Универмаг', hue: 330, ghosts: ['mannequin', 'toy', 'tv'], boss: 'carousel', set: 'x1.25 урона кота' },
-    { name: 'Кладбище котов', hue: 150, ghosts: ['skelecat', 'pumpkin', 'wisp'], boss: 'ninelives', set: 'x1.25 урона кота' },
-    { name: 'Ледяной замок', hue: 200, ghosts: ['snowman', 'icicle', 'aurora'], boss: 'frostqueen', set: 'x1.25 урона кота' },
-    { name: 'Безумная лаборатория', hue: 100, ghosts: ['slime', 'flask', 'spark'], boss: 'franken', set: 'x1.25 урона кота' },
-    { name: 'Лунный дворец', hue: 280, ghosts: ['moth', 'mirror', 'starling'], boss: 'moonking', set: 'x1.25 урона кота' },
+    { name: 'Кладбище котов', hue: 150, ghosts: ['skelecat', 'pumpkin', 'wisp'], boss: 'ninelives', set: 'x1.25 урона кота', feature: 'густая тьма' },
+    { name: 'Ледяной замок', hue: 200, ghosts: ['snowman', 'icicle', 'aurora'], boss: 'frostqueen', set: 'x1.25 урона кота', feature: 'скользкий лёд' },
+    { name: 'Безумная лаборатория', hue: 100, ghosts: ['slime', 'flask', 'spark'], boss: 'franken', set: 'x1.25 урона кота', feature: 'лужи кислоты' },
+    { name: 'Лунный дворец', hue: 280, ghosts: ['moth', 'mirror', 'starling'], boss: 'moonking', set: 'x1.25 урона кота', feature: 'звездопад' },
   ];
   const HOUSES_PER_DISTRICT = 10;
 
@@ -274,7 +274,7 @@
     stats: { kills: 0, captures: 0, upgrades: 0, rooms: 0, summons: 0, merges: 0, bosses: 0, ads: 0, spins: 0, raids: 0, elites: 0 },
     quests: [], questLevel: 0,
     stones: 0, prestiges: 0, auto: true,
-    stonesSpent: 0, altar: {}, boostPrest: 0, seenUnlocks: [], maxStage: 0, fresh: [],
+    stonesSpent: 0, altar: {}, boostPrest: 0, seenUnlocks: [], maxStage: 0, fresh: [], tut: 0,
     dm: { day: '', list: [], chest: false }, streak: { count: 0, last: '' },
     pass: { season: -1, xp: 0, premium: false, free: [], prem: [] },
     skins: ['ginger'], skin: 'ginger', maxHouse: 1,
@@ -293,7 +293,9 @@
     try {
       const raw = localStorage.getItem(SAVE_KEY);
       if (!raw) return null;
-      const s = Object.assign(defaultState(), JSON.parse(raw));
+      const parsed = JSON.parse(raw);
+      const s = Object.assign(defaultState(), parsed);
+      if (parsed.tut === undefined && ((parsed.maxStage || 0) > 0 || (parsed.house || 1) > 1 || ((parsed.stats || {}).captures || 0) > 0)) s.tut = 9; // старым игрокам обучение не нужно
       s.stats = Object.assign(defaultState().stats, s.stats);
       ['daily', 'wheel', 'raid', 'settings', 'dm', 'streak', 'pass'].forEach((k) => { s[k] = Object.assign(defaultState()[k], s[k]); });
       s.maxHouse = Math.max(s.maxHouse || 1, s.house);
@@ -412,6 +414,7 @@
   let joy = null; // {sx, sy, x, y, id, drag}
   let manualUntil = 0;
   const motes = Array.from({ length: 26 }, () => ({ x: Math.random() * 1000, y: Math.random() * 1000, vx: (Math.random() - 0.5) * 12, vy: -4 - Math.random() * 10, r: 1 + Math.random() * 1.8 }));
+  let zones = [], featureCd = 6; // опасные зоны на полу: {x, y, r, tele, life, kind, dmg, color}
   let ghosts = [], beams = [], floaters = [], particles = [], drops = [], orbiters = [], rings = [];
   let spawnCd = 0.5, roomSpawned = 0, bossTimer = 0, bossSpawned = false;
   let panel = null; // squad | attach | bestiary | quests | prestige | offline
@@ -426,7 +429,7 @@
   let splash = { t: 0, out: 0 }; // титульная заставка при запуске
 
   function resetRoom() {
-    ghosts = []; shots = []; shards = []; roomSpawned = 0; S.cleared = 0; cat.hp = CAT_MAX_HP; bossContinued = false; buildMap(); spawnCd = 0.6; bossSpawned = false; bossTimer = 0; roomToken++;
+    ghosts = []; shots = []; shards = []; zones = []; featureCd = 6; roomSpawned = 0; S.cleared = 0; cat.hp = CAT_MAX_HP; bossContinued = false; buildMap(); spawnCd = 0.6; bossSpawned = false; bossTimer = 0; roomToken++;
   }
 
   function pickType() {
@@ -645,6 +648,7 @@
     let best = null, bd = Infinity;
     for (const g of ghosts) {
       if (!targetable(g) || g === except) continue;
+      if (S.tut === 0 && lowHp(g) && !raid) continue; // в обучении ослабленных оставляем для поимки
       const d = (g.x - x) ** 2 + (g.y - y) ** 2;
       if (d < bd) { bd = d; best = g; }
     }
@@ -723,7 +727,7 @@
     const chance = g.boss ? captureChance() * 0.45 : captureChance() * (1 - rar * 0.12);
     g.capturing = 0.6;
     SFX.play('suck');
-    g.captureOk = Math.random() < chance;
+    g.captureOk = (S.tut === 0 && !g.boss) || Math.random() < chance;
     g.captureStart = { x: g.x, y: g.y };
   }
 
@@ -751,6 +755,104 @@
     }
   }
 
+  // =====================================================================
+  // Атаки боссов: у каждого района своя, с предупреждением на полу
+  // =====================================================================
+  const BOSS_SKILLS = { washer: 'spin', headless: 'dash', ship: 'cannon', carousel: 'spiral', ninelives: 'summon', frostqueen: 'frost', franken: 'lightning', moonking: 'stars' };
+  const SKILL_NAMES = { spin: 'Отжим!', dash: 'Рывок!', cannon: 'Залп!', spiral: 'Карусель!', summon: 'Девять жизней!', frost: 'Метель!', lightning: 'Молния!', stars: 'Звездопад!' };
+  const near = (r) => ({ x: Math.max(FIELD.x1, Math.min(FIELD.x2, cat.x + (Math.random() - 0.5) * 2 * r)), y: Math.max(FIELD.y1, Math.min(FIELD.y2, cat.y + (Math.random() - 0.5) * 2 * r)) });
+  function addZone(z) { zones.push(Object.assign({ r: 40, tele: 1, life: 0.35, kind: 'blast', dmg: 25, color: '#ff6b8a' }, z, { max: z.tele || 1 })); }
+  function radial(g, n, speed, dmg, off) { for (let i = 0; i < n; i++) { const a = (off || 0) + (i / n) * Math.PI * 2; shots.push({ x: g.x, y: g.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, dmg, life: 5 }); } SFX.play('enemyShot'); }
+  function bossSkill(g, dt) {
+    const sk = BOSS_SKILLS[g.type]; if (!sk) return;
+    if (g.skillCd === undefined) g.skillCd = 3;
+    if (g.spiral) {
+      g.spiral.t -= dt; g.spiral.cd -= dt;
+      if (g.spiral.cd <= 0) { g.spiral.cd = 0.12; g.spiral.a += 0.42; radial(g, 3, 105, 12, g.spiral.a); }
+      if (g.spiral.t <= 0) g.spiral = null;
+    }
+    if (g.windup) { g.windup.t -= dt; if (g.windup.t <= 0) { const f = g.windup.fire; g.windup = null; f(); } return; }
+    if (g.dash || g.spiral) return;
+    g.skillCd -= dt; if (g.skillCd > 0) return;
+    g.skillCd = 4.5 + Math.random() * 1.5;
+    floaters.push({ x: g.x, y: g.y - g.r - 26, text: SKILL_NAMES[sk], life: 1.3, color: '#ffd84d', size: 17 });
+    SFX.play('spawn');
+    if (sk === 'spin') g.windup = { t: 0.7, fire: () => { radial(g, 14, 120, 14, Math.random()); radial(g, 14, 80, 14, Math.random()); } };
+    else if (sk === 'dash') {
+      const a = Math.atan2(cat.y - 10 - g.y, cat.x - g.x), len = Math.min(520, Math.hypot(cat.x - g.x, cat.y - g.y) + 120);
+      g.windup = { t: 0.9, line: { a, len }, fire: () => { g.dash = { vx: Math.cos(a) * len / 0.45, vy: Math.sin(a) * len / 0.45, t: 0.45, hit: false }; } };
+    } else if (sk === 'cannon') { for (let i = 0; i < 3; i++) addZone(Object.assign(i ? near(80) : { x: cat.x, y: cat.y }, { r: 50, tele: 1.1 + i * 0.25, dmg: 28, color: '#ff8a3d' })); }
+    else if (sk === 'spiral') g.windup = { t: 0.4, fire: () => { g.spiral = { t: 1.8, cd: 0, a: Math.random() * 6 }; } };
+    else if (sk === 'summon') g.windup = { t: 0.6, fire: () => {
+      const minions = ghosts.filter((m) => m.minion && m.hp > 0).length;
+      for (let i = 0; i < Math.min(3, 6 - minions); i++) { spawnGhost(district().ghosts[0]); const m = ghosts[ghosts.length - 1]; m.minion = true; m.elite = false; m.x = g.x + (Math.random() - 0.5) * 120; m.y = g.y + (Math.random() - 0.5) * 120; m.hp = m.maxHp = ghostHp(0) * 3; }
+      burst(g.x, g.y, 24, '#bda8ff');
+    } };
+    else if (sk === 'frost') { for (let i = 0; i < 4; i++) addZone(Object.assign(i ? near(110) : { x: cat.x, y: cat.y }, { kind: 'ice', r: 46, tele: 0.9, life: 5, dmg: 8, color: '#7fd1ff' })); }
+    else if (sk === 'lightning') {
+      const a = Math.atan2(cat.y - g.y, cat.x - g.x), d0 = Math.hypot(cat.x - g.x, cat.y - g.y);
+      for (let i = 0; i < 5; i++) { const dd = d0 - 120 + i * 70; addZone({ x: g.x + Math.cos(a) * dd, y: g.y + Math.sin(a) * dd, r: 36, tele: 0.7 + i * 0.12, dmg: 26, color: '#ffe14d' }); }
+    } else if (sk === 'stars') { for (let i = 0; i < 6; i++) addZone(Object.assign(i ? near(150) : { x: cat.x, y: cat.y }, { r: 38, tele: 1.0 + i * 0.15, dmg: 22, color: '#d68cff' })); radial(g, 8, 90, 12); }
+  }
+  function updateZones(dt) {
+    cat.slow = 1;
+    for (const z of zones) {
+      const inside = Math.hypot(cat.x - z.x, cat.y - z.y) < z.r + 8;
+      if (z.tele > 0) {
+        z.tele -= dt;
+        if (z.tele <= 0) {
+          if (z.kind === 'blast') { if (inside) hurtCat(z.dmg); burst(z.x, z.y, 16, z.color); shake = Math.max(shake, 0.15); SFX.play('pop'); }
+          else if (z.kind === 'ice' && inside) hurtCat(z.dmg);
+        }
+      } else {
+        z.life -= dt;
+        if (z.kind === 'ice' && inside) cat.slow = 0.5;
+        if (z.kind === 'acid' && inside) { cat.hp -= 12 * dt; cat.safeFor = 1; if (cat.hp <= 0) hurtCat(1); }
+      }
+    }
+    zones = zones.filter((z) => z.tele > 0 || z.life > 0);
+    // особенности районов
+    if (raid) return;
+    const d = districtIndex();
+    featureCd -= dt;
+    if (featureCd <= 0) {
+      if (d === 6) { addZone(Object.assign(near(90), { kind: 'acid', r: 42, tele: 0.8, life: 6, dmg: 0, color: '#7dff5a' })); featureCd = 6 + Math.random() * 3; }
+      else if (d === 7) { for (let i = 0; i < 2; i++) addZone(Object.assign(near(120), { r: 34, tele: 1.3, dmg: 16, color: '#ffd84d' })); featureCd = 5 + Math.random() * 3; }
+      else featureCd = 5;
+    }
+  }
+  function drawZones() {
+    for (const g of ghosts) if (g.windup && g.windup.line) { // линия рывка
+      const L = g.windup.line;
+      ctx.save(); ctx.translate(g.x, g.y); ctx.rotate(L.a);
+      ctx.fillStyle = `rgba(255,80,110,${0.18 + 0.12 * Math.sin(time * 20)})`; ctx.fillRect(0, -g.r * 0.8, L.len, g.r * 1.6);
+      ctx.strokeStyle = 'rgba(255,80,110,0.8)'; ctx.setLineDash([10, 8]); ctx.lineWidth = 3; ctx.strokeRect(0, -g.r * 0.8, L.len, g.r * 1.6); ctx.setLineDash([]);
+      ctx.restore();
+    }
+    for (const z of zones) {
+      if (z.tele > 0) {
+        const k = 1 - z.tele / z.max;
+        ctx.fillStyle = alpha(z.color, 0.16); ctx.beginPath(); ctx.arc(z.x, z.y, z.r, 0, 7); ctx.fill();
+        ctx.fillStyle = alpha(z.color, 0.35); ctx.beginPath(); ctx.arc(z.x, z.y, z.r * k, 0, 7); ctx.fill();
+        ctx.strokeStyle = z.color; ctx.lineWidth = 3; ctx.setLineDash([8, 6]); ctx.beginPath(); ctx.arc(z.x, z.y, z.r, time * 2, time * 2 + 7); ctx.stroke(); ctx.setLineDash([]);
+        if (z.kind === 'blast') text('!', z.x, z.y, 18, z.color);
+      } else if (z.kind === 'blast') {
+        const k = 1 - z.life / 0.35;
+        ctx.globalAlpha = Math.max(0, 1 - k); ctx.strokeStyle = z.color; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(z.x, z.y, z.r * (0.6 + k * 0.7), 0, 7); ctx.stroke(); ctx.globalAlpha = 1;
+      } else {
+        const a = Math.min(1, z.life);
+        ctx.globalAlpha = a;
+        const gg = ctx.createRadialGradient(z.x, z.y, 4, z.x, z.y, z.r); gg.addColorStop(0, alpha(z.color, z.kind === 'ice' ? 0.7 : 0.6)); gg.addColorStop(1, alpha(z.color, 0.15));
+        ctx.fillStyle = gg; ctx.beginPath(); ctx.ellipse(z.x, z.y, z.r, z.r * 0.8, 0, 0, 7); ctx.fill();
+        ctx.strokeStyle = shade(z.color, -0.3); ctx.lineWidth = 2; ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        if (z.kind === 'ice') { for (let i = 0; i < 4; i++) { const an = i * 1.7 + z.x; ctx.fillRect(z.x + Math.cos(an) * z.r * 0.5 - 1, z.y + Math.sin(an) * z.r * 0.4 - 4, 2, 8); ctx.fillRect(z.x + Math.cos(an) * z.r * 0.5 - 4, z.y + Math.sin(an) * z.r * 0.4 - 1, 8, 2); } }
+        else { for (let i = 0; i < 3; i++) { const ph = (time * 0.8 + i / 3) % 1; ctx.beginPath(); ctx.arc(z.x + Math.cos(i * 2.1 + z.y) * z.r * 0.4, z.y + Math.sin(i * 2.1) * z.r * 0.3 - ph * 6, 2 + ph * 4, 0, 7); ctx.fill(); } }
+        ctx.globalAlpha = 1;
+      }
+    }
+  }
+
   const bossGems = () => Math.round(10 * (1 + circle()) * (1 + 0.2 * talent('luck')));
   function bossDown() { S.stats.bosses++; addPassXp(15); }
 
@@ -769,7 +871,7 @@
     S.stats.rooms++;
     resetRoom();
     SFX.play('clear');
-    if (districtIndex() !== prevDistrict) showToast('Новый район: ' + district().name + '!');
+    if (districtIndex() !== prevDistrict) showToast('Новый район: ' + district().name + (district().feature ? ' · ' + district().feature : '') + '!');
     save();
   }
 
@@ -1430,6 +1532,15 @@
     } else if (S.auto && time > manualUntil) {
       // автопилот: уворот от снарядов > дистанция до призраков > сбор осколков
       let ax = 0, ay = 0;
+      for (const z of zones) {
+        if (z.kind === 'blast' && z.tele <= 0) continue;
+        const d = Math.hypot(cat.x - z.x, cat.y - z.y) || 1;
+        if (d < z.r + 34) { ax += ((cat.x - z.x) / d) * 2.5; ay += ((cat.y - z.y) / d) * 2.5; }
+      }
+      for (const g of ghosts) if (g.windup && g.windup.line) { // уйти с линии рывка вбок
+        const L = g.windup.line, px = cat.x - g.x, py = cat.y - g.y, along = px * Math.cos(L.a) + py * Math.sin(L.a), side = -px * Math.sin(L.a) + py * Math.cos(L.a);
+        if (along > 0 && along < L.len + 30 && Math.abs(side) < g.r + 40) { const sg = side >= 0 ? 1 : -1; ax += -Math.sin(L.a) * sg * 3; ay += Math.cos(L.a) * sg * 3; }
+      }
       for (const p of shots) {
         const d = Math.hypot(p.x - cat.x, p.y - cat.y);
         if (d < 70) { const side = (cat.x - p.x) * p.vy - (cat.y - p.y) * p.vx > 0 ? 1 : -1; ax += -p.vy * side / 110 * 1.4; ay += p.vx * side / 110 * 1.4; }
@@ -1451,8 +1562,12 @@
       const len = Math.hypot(ax, ay);
       if (len > 0.05) { dx = ax / len; dy = ay / len; speed = 110 * Math.min(1, len); }
     }
-    cat.x = Math.max(FIELD.x1, Math.min(FIELD.x2, cat.x + dx * speed * dt));
-    cat.y = Math.max(FIELD.y1, Math.min(FIELD.y2, cat.y + dy * speed * dt));
+    speed *= cat.slow || 1;
+    // на льду кот скользит: скорость меняется плавно
+    const tvx = dx * speed, tvy = dy * speed, slip = districtIndex() === 5 && !raid ? Math.min(1, dt * 2.2) : 1;
+    cat.vx = (cat.vx || 0) + (tvx - (cat.vx || 0)) * slip; cat.vy = (cat.vy || 0) + (tvy - (cat.vy || 0)) * slip;
+    cat.x = Math.max(FIELD.x1, Math.min(FIELD.x2, cat.x + cat.vx * dt));
+    cat.y = Math.max(FIELD.y1, Math.min(FIELD.y2, cat.y + cat.vy * dt));
     for (const o of solids) {
       const nx = Math.max(o.x, Math.min(o.x + o.w, cat.x)), ny = Math.max(o.y, Math.min(o.y + o.h, cat.y));
       const ddx = cat.x - nx, ddy = cat.y - ny, dd = Math.hypot(ddx, ddy);
@@ -1536,6 +1651,7 @@
       }
 
       autoTick(dt);
+      tutorialTick(dt);
       moveCat(dt);
       // смелость кота: урон от касаний и снарядов, восстановление
       cat.hurt = Math.max(0, cat.hurt - dt);
@@ -1556,7 +1672,9 @@
             for (const sp of spread) shots.push({ x: g.x, y: g.y, vx: Math.cos(a + sp) * 115, vy: Math.sin(a + sp) * 115, dmg: big ? 22 : 14, life: 5 });
           }
         }
+        if (g.boss) bossSkill(g, dt);
       }
+      updateZones(dt);
       for (const p of shots) {
         p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
         if (Math.hypot(p.x - cat.x, p.y - (cat.y - 8)) < 20) { hurtCat(p.dmg); p.life = 0; burst(p.x, p.y, 6, '#b48cff'); }
@@ -1625,6 +1743,17 @@
         continue;
       }
       if (g.dying) { g.dying -= dt; continue; }
+      if (g.windup && !modal) continue; // замах: босс замирает
+      if (g.dash) {
+        if (!modal) {
+          g.x += g.dash.vx * dt; g.y += g.dash.vy * dt; g.dash.t -= dt;
+          if (Math.random() < 0.6) particles.push({ x: g.x, y: g.y, vx: 0, vy: 0, life: 0.4, color: GHOSTS[g.type].body, r: 6 });
+          if (!g.dash.hit && Math.hypot(g.x - cat.x, g.y - cat.y) < g.r + 20) { g.dash.hit = true; hurtCat(32); }
+          if (g.dash.t <= 0) g.dash = null;
+        }
+        g.x = Math.max(WALL, Math.min(MAP_W - WALL, g.x)); g.y = Math.max(WALL, Math.min(MAP_H - WALL, g.y));
+        continue;
+      }
       const dx = cat.x - g.x, dy = cat.y - 10 - g.y;
       const d = Math.hypot(dx, dy);
       if (d > g.r + 14) { g.x += (dx / d) * g.vy * dt + g.vx * dt; g.y += (dy / d) * g.vy * dt; }
@@ -2548,7 +2677,7 @@
     let a = g.alpha;
     if (g.dying) a *= Math.max(0, g.dying / 0.35);
     ctx.globalAlpha = a;
-    const x = g.x, y = g.y + Math.sin(g.phase) * 4;
+    const x = g.x + (g.windup ? Math.sin(time * 50) * 2.5 : 0), y = g.y + Math.sin(g.phase) * 4;
     let r = g.r;
     if (g.capturing) {
       const k = g.capturing / 0.6;
@@ -3022,6 +3151,60 @@
     { id: 'prestige', lock: 'prestige', icon: '✨', name: 'Освящение', badge: () => stonesFor(S.house) > 0 || altarAffordable() },
     { id: 'shop', lock: 'shop', icon: '🛒', name: 'Магазин', badge: () => Date.now() >= S.adCrystalsAt || !S.starter },
   ];
+
+  // =====================================================================
+  // Обучение первых минут: пузырь с подсказкой и рука
+  // =====================================================================
+  let tutT = 0;
+  function tutorialTick(dt) {
+    if (S.tut >= 9 || raid) return;
+    tutT += dt;
+    const next = () => { S.tut++; tutT = 0; SFX.play('reward'); };
+    if (S.tut === 0 && S.stats.captures >= 1) next();
+    else if (S.tut === 1 && S.stats.upgrades >= 1) next();
+    else if (S.tut === 2 && ((joy && joy.drag) || tutT > 7)) next();
+    else if (S.tut === 3 && (panel === 'squad' || (unlocked('squad') && !S.inventory.length && tutT > 3))) { S.tut = 9; save(); }
+  }
+  function drawHand(x, y, k) {
+    ctx.save(); ctx.translate(x, y + (k || 0) * 6); ctx.rotate(-0.35);
+    ctx.strokeStyle = INK; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+    rr(-6, 0, 12, 30, 6); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.stroke();
+    rr(-9, 18, 30, 28, 10); ctx.fill(); ctx.stroke();
+    for (const fx of [6, 14]) { rr(fx - 4, 14, 9, 14, 4.5); ctx.fill(); ctx.stroke(); }
+    ctx.beginPath(); ctx.ellipse(-10, 30, 6, 9, -0.5, 0, 7); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,1)'; ctx.fillRect(-4, 20, 8, 10);
+    ctx.restore();
+  }
+  function tapRipple(x, y) { const ph = (time * 1.6) % 1; ctx.strokeStyle = `rgba(255,255,255,${1 - ph})`; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, y, 8 + ph * 26, 0, 7); ctx.stroke(); }
+  function tutBubble(msg, y) {
+    ctx.font = '800 13px system-ui, sans-serif';
+    const w = Math.min(330, ctx.measureText(msg).width + 64), x = 180 - w / 2;
+    rr(x, y + 4, w, 40, 14); ctx.fillStyle = 'rgba(10,5,25,0.4)'; ctx.fill();
+    plate(x, y, w, 40, 14, '#fffaf2', { lw: 3 });
+    ctx.save(); ctx.translate(x + 22, y + 22); ctx.scale(0.36, 0.36); catSprite(0, 0, { skin: S.skin, aim: -0.6, blinkSeed: 2, eqColor: '#9ff3ff' }); ctx.restore();
+    fitText(msg, x + 42, y + 20, w - 52, 13, INK, 'left', '800');
+  }
+  function drawTutorial() {
+    if (S.tut >= 9 || panel || modal || raid || splash) return;
+    const press = Math.abs(Math.sin(time * 3.5));
+    if (S.tut === 0) {
+      const onView = (q) => { const p = toScreen(q.x, q.y); return p.x > 20 && p.x < 340 && p.y > VIEW.y + 40 && p.y < VIEW.y + VIEW.h - 70; };
+      const g = ghosts.filter((q) => lowHp(q) && targetable(q) && onView(q)).sort((a, b) => Math.hypot(a.x - cat.x, a.y - cat.y) - Math.hypot(b.x - cat.x, b.y - cat.y))[0];
+      if (g) { const p = toScreen(g.x, g.y); tapRipple(p.x, p.y); drawHand(p.x + 4, p.y + 6, press); tutBubble('Призрак светится! Тапни, чтобы поймать', 452); }
+      else tutBubble('Кот стреляет сам. Жди, пока призрак засветится', 452);
+    } else if (S.tut === 1) {
+      if (S.ecto >= upgradeCost(S.lvPower, UPGRADES[0].base)) { tapRipple(64, 546); drawHand(70, 548, press); tutBubble('Прокачай Мощность: кот станет сильнее', 452); }
+      else tutBubble('Собирай эктоплазму с призраков', 452);
+    } else if (S.tut === 2) {
+      const k = (time * 0.7) % 1, hx = 120 + k * 120;
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(120, 340); ctx.lineTo(hx, 340); ctx.stroke(); ctx.lineCap = 'butt';
+      drawHand(hx, 344, 0);
+      tutBubble('Веди кота пальцем, чтобы уворачиваться', 452);
+    } else if (S.tut === 3 && unlocked('squad') && S.inventory.length) {
+      tapRipple(32, 606); drawHand(38, 610, press);
+      tutBubble('Пойманные духи бьются за тебя. Открой Отряд', 452);
+    }
+  }
 
   // Закрытая кнопка: тёмная плашка, полупрозрачная иконка, замок и где откроется
   function lockedPlate(x, y, w, h, title, where, icon) {
@@ -3850,6 +4033,7 @@
     if (shake > 0) ctx.translate((Math.random() - 0.5) * 8 * shake, (Math.random() - 0.5) * 8 * shake);
     ctx.translate(VIEW_CX, VIEW_CY); ctx.scale(ZOOM, ZOOM); ctx.translate(-cam.x, -cam.y);
     drawMap();
+    drawZones();
     const sorted = ghosts.slice().sort((a, b) => a.y - b.y);
     for (const g of sorted) if (g.y < cat.y) drawGhost(g);
     orbiters.forEach((o) => o && o.y < cat.y - 10 && drawOrbiter(o));
@@ -3901,7 +4085,7 @@
     {
       ctx.save(); ctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
       const cp = toScreen(cat.x, cat.y);
-      const dark = moonActive() ? 0.12 : 0.3;
+      const dark = moonActive() ? 0.12 : districtIndex() === 4 && !raid ? 0.58 : 0.3;
       const lg = ctx.createRadialGradient(cp.x, cp.y, 70, cp.x, cp.y, 330);
       lg.addColorStop(0, 'rgba(20,10,45,0)'); lg.addColorStop(1, `rgba(20,10,45,${dark})`);
       ctx.fillStyle = lg; ctx.fillRect(VIEW.x, VIEW.y, VIEW.w, VIEW.h);
@@ -3922,6 +4106,7 @@
     drawJoystick();
     drawTopBar();
     drawBottom();
+    drawTutorial();
     if (panel === 'squad') drawSquadPanel();
     else if (panel === 'attach') drawAttachPanel();
     else if (panel === 'bestiary') drawBestiaryPanel();
@@ -3962,6 +4147,8 @@
   window.__game = {
     state: () => S, sfx: SFX, mapImage: () => mapCanvas.toDataURL(), ghosts: () => ghosts, cat: () => cat, cam: () => cam, resetRoom: () => resetRoom(), open: (p) => { panel = p; }, gold: () => { goldCd = 0; }, goldObj: () => gold, toScreen,
     splash: () => { splash = { t: 0, out: 0 }; },
+    tut: (n) => { S.tut = n; },
+    zones: () => zones,
     reset: () => { localStorage.removeItem(SAVE_KEY); S = defaultState(); ensureQuests(); dailyReset(); syncSlots(); resetRoom(); },
     close: () => { modal = null; },
     tab: (q, pr, pp) => { if (q) questTab = q; if (pr) prestTab = pr; if (pp !== undefined) passPage = pp; },
