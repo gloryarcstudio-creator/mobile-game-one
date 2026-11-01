@@ -77,6 +77,34 @@
     moonking: { name: 'Лунный король', rarity: 3, body: '#e0c8ff', shape: 'king', d: 7 },
   };
 
+  // Достижения: у каждого несколько ступеней, за каждую кристаллы
+  const ACHIEVEMENTS = [
+    { id: 'kills', icon: '👻', name: 'Гроза призраков', unit: 'побед', val: () => S.stats.kills, tiers: [100, 1000, 10000, 100000, 1000000] },
+    { id: 'captures', icon: '🫙', name: 'Коллекционер', unit: 'поимок', val: () => S.stats.captures, tiers: [10, 100, 500, 2500, 10000] },
+    { id: 'bosses', icon: '👑', name: 'Охотник на боссов', unit: 'боссов', val: () => S.stats.bosses, tiers: [5, 25, 100, 300, 1000] },
+    { id: 'house', icon: '🏚', name: 'Экзорцист города', unit: 'дом', val: () => S.maxHouse, tiers: [5, 15, 30, 50, 80] },
+    { id: 'prestige', icon: '✨', name: 'Свет луны', unit: 'освящений', val: () => S.prestiges, tiers: [1, 5, 15, 40, 100] },
+    { id: 'elites', icon: '⭐', name: 'Золотая лихорадка', unit: 'элит', val: () => S.stats.elites, tiers: [5, 50, 250, 1000] },
+    { id: 'merges', icon: '🔁', name: 'Алхимик', unit: 'слияний', val: () => S.stats.merges, tiers: [5, 50, 250, 1000] },
+    { id: 'summons', icon: '🧹', name: 'Мастер насадок', unit: 'призывов', val: () => S.stats.summons, tiers: [10, 100, 500, 2000] },
+    { id: 'raid', icon: '⚔', name: 'Покоритель особняка', unit: 'этаж', val: () => S.stats.raidBest || 0, tiers: [5, 10, 20, 35, 50] },
+    { id: 'upgrades', icon: '⚙', name: 'Инженер', unit: 'улучшений', val: () => S.stats.upgrades, tiers: [50, 500, 2500, 10000] },
+    { id: 'bestiary', icon: '📖', name: 'Знаток нечисти', unit: 'видов', val: () => Object.keys(S.bestiary).length, tiers: [4, 12, 20, 32] },
+    { id: 'skins', icon: '🎁', name: 'Модник', unit: 'скинов', val: () => S.skins.length, tiers: [2, 5, 10, 18] },
+    { id: 'streak', icon: '🔥', name: 'Верный кот', unit: 'дней подряд', val: () => S.stats.bestStreak || S.streak.count, tiers: [3, 7, 14, 30, 60] },
+    { id: 'spins', icon: '🎡', name: 'Везунчик', unit: 'вращений', val: () => S.stats.spins, tiers: [10, 50, 200] },
+  ];
+  const ACH_REWARD = [20, 50, 120, 300, 800];
+  const achTier = (a) => S.ach[a.id] || 0;
+  const achReady = (a) => achTier(a) < a.tiers.length && a.val() >= a.tiers[achTier(a)];
+  const anyAchReady = () => ACHIEVEMENTS.some(achReady);
+  function claimAch(a) {
+    if (!achReady(a)) return;
+    const cr = ACH_REWARD[achTier(a)];
+    S.ach[a.id] = achTier(a) + 1; S.crystals += cr; addPassXp(30);
+    SFX.play('reward'); showToast(a.name + ': +' + cr + ' 💎'); save();
+  }
+
   // Особое поведение обычных призраков
   const BEHAVIORS = {
     split: { name: 'Делится', color: '#ff8fb8', hint: 'делится надвое, когда его победишь' },
@@ -185,6 +213,7 @@
   const MAX_ALIVE = 14;
   const PRESTIGE_HOUSE = 10;
   const SAVE_KEY = 'cat_exorcist_v1';
+  const VERSION = '0.9.0';
   const CIRCLE = HOUSES_PER_DISTRICT * DISTRICTS.length; // 80 домов, дальше «Круг 2»
 
   // Путь открытий: что даёт рекорд по домам
@@ -274,14 +303,15 @@
   // =====================================================================
   const defaultState = () => ({
     house: 1, room: 1, cleared: 0,
-    settings: { music: true, sfx: true },
+    settings: { music: true, sfx: true, vibro: true, numbers: true, shake: true },
+    ach: {},
     ecto: 0, crystals: 60, jars: 8,
     lvPower: 1, lvPull: 1, lvCollect: 1,
     inventory: [], squad: [null, null, null, null],
     attach: [], equipped: [null, null, null],
     nextId: 1,
     bestiary: {}, bestClaimed: {},
-    stats: { kills: 0, captures: 0, upgrades: 0, rooms: 0, summons: 0, merges: 0, bosses: 0, ads: 0, spins: 0, raids: 0, elites: 0 },
+    stats: { kills: 0, captures: 0, upgrades: 0, rooms: 0, summons: 0, merges: 0, bosses: 0, ads: 0, spins: 0, raids: 0, elites: 0, raidBest: 0, bestStreak: 0 },
     quests: [], questLevel: 0,
     stones: 0, prestiges: 0, auto: true,
     stonesSpent: 0, altar: {}, boostPrest: 0, seenUnlocks: [], maxStage: 0, fresh: [], tut: 0,
@@ -307,7 +337,7 @@
       const s = Object.assign(defaultState(), parsed);
       if (parsed.tut === undefined && ((parsed.maxStage || 0) > 0 || (parsed.house || 1) > 1 || ((parsed.stats || {}).captures || 0) > 0)) s.tut = 9; // старым игрокам обучение не нужно
       s.stats = Object.assign(defaultState().stats, s.stats);
-      ['daily', 'wheel', 'raid', 'settings', 'dm', 'streak', 'pass'].forEach((k) => { s[k] = Object.assign(defaultState()[k], s[k]); });
+      ['daily', 'wheel', 'raid', 'settings', 'dm', 'streak', 'pass', 'ach'].forEach((k) => { s[k] = Object.assign(defaultState()[k], s[k]); });
       s.maxHouse = Math.max(s.maxHouse || 1, s.house);
       s.maxStage = Math.max(s.maxStage || 0, (s.maxHouse - 1) * 5 + (s.house === s.maxHouse ? s.room - 1 : 4));
       // старые сохранения: всё, что уже пройдено, считается открытым без окон
@@ -689,7 +719,7 @@
     g.hit = 0.12;
     SFX.play(crit ? 'crit' : 'hit');
     if (!g.boss) { const kx = g.x - cat.x, ky = g.y - cat.y, kd = Math.hypot(kx, ky) || 1; g.x += (kx / kd) * 5; g.y += (ky / kd) * 5; }
-    floaters.push({ x: g.x + (Math.random() - 0.5) * 24, y: g.y - g.r, text: fmt(amount), life: 0.9, color: crit ? '#ffdd55' : '#ffffff', size: crit ? 17 : 13 });
+    if (opt('numbers')) floaters.push({ x: g.x + (Math.random() - 0.5) * 24, y: g.y - g.r, text: fmt(amount), life: 0.9, color: crit ? '#ffdd55' : '#ffffff', size: crit ? 17 : 13 });
     if (g.hp <= 0) killGhost(g);
   }
 
@@ -934,7 +964,9 @@
   }
 
   const bossGems = () => Math.round(10 * (1 + circle()) * (1 + 0.2 * talent('luck')));
-  function bossDown() { S.stats.bosses++; addPassXp(15); }
+  function bossDown() { S.stats.bosses++; addPassXp(15); vibrate([40, 40, 80]); }
+  const opt = (k) => S.settings[k] !== false;
+  function vibrate(p) { if (opt('vibro') && navigator.vibrate) try { navigator.vibrate(p); } catch (e) { /* не везде доступно */ } }
 
   function scheduleNextRoom() {
     const tok = roomToken;
@@ -1389,7 +1421,7 @@
     const d = today();
     if (S.streak.last !== d) {
       const y = new Date(); y.setDate(y.getDate() - 1);
-      S.streak.count = S.streak.last === y.toDateString() ? S.streak.count + 1 : 1; S.streak.last = d;
+      S.streak.count = S.streak.last === y.toDateString() ? S.streak.count + 1 : 1; S.streak.last = d; S.stats.bestStreak = Math.max(S.stats.bestStreak || 0, S.streak.count);
     }
     if (S.dm.day !== d) newMissions();
     if (S.pass.season !== passSeason()) S.pass = { season: passSeason(), xp: 0, premium: false, free: [], prem: [] };
@@ -1437,6 +1469,7 @@
   }
   function endRaid() {
     const f = raid.floor;
+    S.stats.raidBest = Math.max(S.stats.raidBest || 0, f);
     raid = null; ghosts = []; shots = [];
     resetRoom();
     const cr = 10 + 15 * f, jars = f, att = Math.floor(f / 3);
@@ -1661,6 +1694,7 @@
   }
 
   function hurtCat(amount) {
+    if (amount >= 5) vibrate(25);
     cat.hp -= amount; cat.hurt = 0.25; cat.safeFor = 2;
     SFX.play('hurt');
     if (cat.hp <= 0) {
@@ -2065,6 +2099,14 @@
     } else if (kind === 'speaker') {
       P([[-0.85, -0.3], [-0.4, -0.3], [0.15, -0.8], [0.15, 0.8], [-0.4, 0.3], [-0.85, 0.3]]); fs('#ffffff');
       ctx.strokeStyle = '#ffffff'; ctx.lineCap = 'round'; ctx.lineWidth = Math.max(1.5, r / 6); for (const q of [0.45, 0.75]) { ctx.beginPath(); ctx.arc(x + r * 0.15, y, q * r, -0.8, 0.8); ctx.stroke(); }
+    } else if (kind === 'phone') {
+      rr(x - r * 0.42, y - r * 0.8, r * 0.84, r * 1.6, r * 0.18); fs('#ffffff');
+      ctx.fillStyle = '#9fd0f0'; ctx.fillRect(x - r * 0.28, y - r * 0.6, r * 0.56, r * 1.05);
+      ctx.strokeStyle = '#ffffff'; ctx.lineCap = 'round'; ctx.lineWidth = Math.max(1.2, r / 7);
+      for (const sg of [-1, 1]) { ctx.beginPath(); ctx.moveTo(x + sg * r * 0.62, y - r * 0.35); ctx.lineTo(x + sg * r * 0.78, y - r * 0.15); ctx.lineTo(x + sg * r * 0.62, y + r * 0.05); ctx.lineTo(x + sg * r * 0.78, y + r * 0.25); ctx.stroke(); }
+    } else if (kind === 'boom') {
+      ctx.beginPath(); for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2, q = i % 2 ? 0.48 : 0.92; ctx.lineTo(x + Math.cos(a) * q * r, y + Math.sin(a) * q * r); } ctx.closePath(); fs(grad(y - r, y + r, '#ffe680', '#ff6a3a'));
+      ctx.beginPath(); ctx.arc(x, y, r * 0.28, 0, 7); ctx.fillStyle = '#fff6c0'; ctx.fill();
     } else if (kind === 'pumpkin') {
       for (const [ox, w] of [[-0.42, 0.42], [0.42, 0.42], [0, 0.48]]) { ctx.beginPath(); ctx.ellipse(x + ox * r, y + r * 0.15, w * r, r * 0.68, 0, 0, 7); fs(grad(y - r, y + r, '#ffb35a', '#e8701f')); }
       rr(x - r * 0.1, y - r * 0.85, r * 0.2, r * 0.35, r * 0.06); fs('#5fa04e');
@@ -2084,7 +2126,7 @@
     }
   }
   // Текст со встроенными нарисованными иконками вместо капризных эмодзи
-  const INLINE_ICONS = { '💎': 'gem', '🎬': 'ad', '🫙': 'jar', '🔒': 'lock', '🌙': 'moon', '✨': 'sparkle', '👻': 'ghost', '🧹': 'attach', '👑': 'crown', '📜': 'scroll', '🌕': 'fullmoon', '🎁': 'gift', '🛒': 'cart', '⚙': 'gear', '📖': 'book', '🎡': 'wheel', '🏚': 'house', '🔁': 'loop', '⚔': 'swords', '🧲': 'magnet', '💚': 'ecto', '💠': 'rank', '⭐': 'star', '❄': 'snow', '🧪': 'flask', '🌿': 'leaf', '🧠': 'brain', '🌃': 'night', '🍀': 'clover', '⏳': 'hourglass', '💀': 'skull', '🎵': 'note', '🔊': 'speaker', '🔥': 'flame', '🎃': 'pumpkin', '🍬': 'candy', '🏆': 'trophy' };
+  const INLINE_ICONS = { '💎': 'gem', '🎬': 'ad', '🫙': 'jar', '🔒': 'lock', '🌙': 'moon', '✨': 'sparkle', '👻': 'ghost', '🧹': 'attach', '👑': 'crown', '📜': 'scroll', '🌕': 'fullmoon', '🎁': 'gift', '🛒': 'cart', '⚙': 'gear', '📖': 'book', '🎡': 'wheel', '🏚': 'house', '🔁': 'loop', '⚔': 'swords', '🧲': 'magnet', '💚': 'ecto', '💠': 'rank', '⭐': 'star', '❄': 'snow', '🧪': 'flask', '🌿': 'leaf', '🧠': 'brain', '🌃': 'night', '🍀': 'clover', '⏳': 'hourglass', '💀': 'skull', '🎵': 'note', '🔊': 'speaker', '🔥': 'flame', '🎃': 'pumpkin', '📳': 'phone', '💥': 'boom', '🍬': 'candy', '🏆': 'trophy' };
   const ICON_RE = new RegExp('(' + Object.keys(INLINE_ICONS).join('|') + ')');
   function text(t, x, y, size, color, align, weight) {
     t = String(t).replace(/\uFE0F/g, '');
@@ -3358,14 +3400,15 @@
         btn(x, y, 46, 48, () => { if (lockU) lockedToast(f.lock); else { S.fresh = S.fresh.filter((q) => q !== f.lock); panel = f.id; } });
       });
     }
-    // музыка и звуки: вкл/выкл
-    [['music', '🎵', 17], ['sfx', '🔊', 43]].forEach(([k, icon, cx]) => {
-      const cy = raid ? 116 : 284, on = S.settings[k];
-      orb(cx, cy, 11, on ? '#8a7bd1' : '#6b5f86');
-      ctx.globalAlpha = on ? 1 : 0.5; text(icon, cx, cy + 1, 11, '#ffffff'); ctx.globalAlpha = 1;
-      if (!on) { ctx.strokeStyle = '#ff4d6d'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cx - 7, cy + 7); ctx.lineTo(cx + 7, cy - 7); ctx.stroke(); }
-      btn(cx - 13, cy - 13, 26, 26, () => { S.settings[k] = !S.settings[k]; SFX.apply(); save(); showToast(k === 'music' ? (S.settings[k] ? 'Музыка включена' : 'Музыка выключена') : (S.settings[k] ? 'Звуки включены' : 'Звуки выключены')); });
-    });
+    // настройки и достижения
+    const cy = raid ? 116 : 284;
+    orb(17, cy, 11, '#8a7bd1'); text('⚙', 17, cy + 1, 13, '#ffffff');
+    btn(4, cy - 13, 26, 26, () => { panel = 'settings'; });
+    if (!raid && unlocked('quests')) {
+      orb(43, cy, 11, '#8a7bd1'); text('🏆', 43, cy + 1, 13, '#ffffff');
+      if (anyAchReady()) badge(52, cy - 10);
+      btn(30, cy - 13, 26, 26, () => { panel = 'achievements'; });
+    }
   }
 
   const TABS = [
@@ -3686,6 +3729,57 @@
       }
     });
     text('Бонус бестиария: +' + Math.round((bestiaryMult() - 1) * 100) + '% урона', 180, 512 + 46, 11, INK, 'center', '800');
+  }
+
+  // Настройки
+  function drawSettingsPanel() {
+    panelFrame('Настройки');
+    const rows = [['music', '🎵', 'Музыка'], ['sfx', '🔊', 'Звуки'], ['vibro', '📳', 'Вибрация'], ['numbers', '✨', 'Цифры урона'], ['shake', '💥', 'Тряска экрана']];
+    rows.forEach(([k, icon, name], i) => {
+      const y = 108 + i * 50, on = opt(k);
+      card(28, y, 304, 42, 12, '#d9cff0');
+      orb(52, y + 21, 13, '#8a7bd1'); text(icon, 52, y + 22, 13, '#ffffff');
+      text(name, 76, y + 21, 13, INK, 'left', '800');
+      // переключатель
+      rr(258, y + 9, 56, 24, 12); ctx.fillStyle = on ? '#7dd99a' : '#c9c0dc'; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.stroke();
+      ctx.beginPath(); ctx.arc(on ? 302 : 270, y + 21, 9, 0, 7); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.stroke();
+      btn(28, y, 304, 42, () => { S.settings[k] = !on; if (k === 'music' || k === 'sfx') SFX.apply(); if (k === 'vibro' && !on) vibrate(40); save(); });
+    });
+    text('Прогресс сохраняется на этом устройстве', 180, 372, 10, '#6b5f86', 'center', '700');
+    button(40, 388, 280, 40, 'Политика конфиденциальности', '#8a7bd1', () => showToast('Ссылка появится в релизе'), 12);
+    button(40, 436, 280, 40, 'Сбросить прогресс', '#ff6b8a', () => ask('Сбросить прогресс?', ['Пропадут дома, духи, насадки, камни и скины.', 'Покупки восстановятся через магазин.'], [
+      { label: 'Отмена', color: '#8a7bd1', on: closeModal },
+      { label: 'Сбросить', color: '#ff6b8a', on: () => { closeModal(); panel = null; localStorage.removeItem(SAVE_KEY); S = defaultState(); ensureQuests(); dailyReset(); syncSlots(); resetRoom(); splash = { t: 0, out: 0 }; } },
+    ]), 12);
+    text('Кот-экзорцист · версия ' + VERSION, 180, 498, 10, '#6b5f86', 'center', '700');
+    text('Вся графика и музыка нарисованы кодом', 180, 514, 9, '#9a8fb5', 'center', '700');
+  }
+
+  // Достижения
+  function drawAchievementsPanel() {
+    panelFrame('Достижения');
+    const done = ACHIEVEMENTS.reduce((n, a) => n + achTier(a), 0), total = ACHIEVEMENTS.reduce((n, a) => n + a.tiers.length, 0);
+    text('Пройдено ступеней: ' + done + ' из ' + total, 180, 108, 12, INK, 'center', '800');
+    const list = [...ACHIEVEMENTS].sort((a, b) => (achReady(b) - achReady(a)) || ((achTier(a) >= a.tiers.length) - (achTier(b) >= b.tiers.length)));
+    const area = scrollArea('ach', 22, 122, 316, 440, list.length * 70 + 4);
+    ctx.save(); ctx.beginPath(); ctx.rect(area.x, area.y, area.w, area.h); ctx.clip();
+    list.forEach((a, i) => {
+      const y = area.y + 2 + i * 70 - area.off;
+      if (y > area.y + area.h || y + 64 < area.y) return;
+      const t = achTier(a), max = t >= a.tiers.length, ready = achReady(a), goal = a.tiers[Math.min(t, a.tiers.length - 1)];
+      card(26, y, 300, 64, 12, ready ? '#ffc94d' : max ? '#7dd99a' : '#d9cff0');
+      orb(52, y + 26, 17, max ? '#7dd99a' : '#8a7bd1'); text(a.icon, 52, y + 27, 17, '#ffffff');
+      for (let k = 0; k < a.tiers.length; k++) text('★', 40 + k * 6, y + 52, 7, k < t ? '#ffc94d' : '#d9cff0');
+      fitText(a.name, 78, y + 16, 140, 13, INK, 'left', '800');
+      const v = Math.min(a.val(), goal);
+      text(max ? 'Пройдено полностью' : fmt(v) + ' / ' + fmt(goal) + ' ' + a.unit, 78, y + 33, 10, '#6b5f86', 'left', '700');
+      rr(78, y + 44, 150, 7, 3.5); ctx.fillStyle = '#e4ddf3'; ctx.fill();
+      rr(78, y + 44, 150 * (max ? 1 : Math.min(1, a.val() / goal)), 7, 3.5); ctx.fillStyle = max ? '#7dd99a' : '#ffc94d'; ctx.fill();
+      if (ready) { button(238, y + 14, 80, 36, '+' + ACH_REWARD[t] + ' 💎', '#8ee08a', null, 12); buttons.pop(); sbtn(area, 238, y + 14, 80, 36, () => claimAch(a)); }
+      else if (!max) text(ACH_REWARD[t] + ' 💎', 278, y + 32, 12, '#6b5f86', 'center', '800');
+      else text('✓', 278, y + 32, 20, '#2f8f4e', 'center', '900');
+    });
+    ctx.restore(); scrollBar(area);
   }
 
   // Вкладки внутри панели
@@ -4256,7 +4350,7 @@
     ctx.fillStyle = '#1d1729'; ctx.fillRect(0, 0, W, H);
     ctx.save();
     ctx.beginPath(); ctx.rect(VIEW.x, VIEW.y, VIEW.w, VIEW.h); ctx.clip();
-    if (shake > 0) ctx.translate((Math.random() - 0.5) * 8 * shake, (Math.random() - 0.5) * 8 * shake);
+    if (shake > 0 && opt('shake')) ctx.translate((Math.random() - 0.5) * 8 * shake, (Math.random() - 0.5) * 8 * shake);
     ctx.translate(VIEW_CX, VIEW_CY); ctx.scale(ZOOM, ZOOM); ctx.translate(-cam.x, -cam.y);
     drawMap();
     drawZones();
@@ -4347,6 +4441,8 @@
     if (panel === 'squad') drawSquadPanel();
     else if (panel === 'attach') drawAttachPanel();
     else if (panel === 'bestiary') drawBestiaryPanel();
+    else if (panel === 'settings') drawSettingsPanel();
+    else if (panel === 'achievements') drawAchievementsPanel();
     else if (panel === 'quests') drawQuestsPanel();
     else if (panel === 'prestige') drawPrestigePanel();
     else if (panel === 'shop') drawShopPanel();
