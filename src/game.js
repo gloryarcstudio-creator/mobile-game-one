@@ -405,6 +405,7 @@
   let raid = null; // {t, floor}
   let wheelRot = 0, wheelSpin = null, wheelWin = null;
   let bossContinued = false, jarOfferCd = 0;
+  let splash = { t: 0, out: 0 }; // титульная заставка при запуске
 
   function resetRoom() {
     ghosts = []; shots = []; shards = []; roomSpawned = 0; S.cleared = 0; cat.hp = CAT_MAX_HP; bossContinued = false; buildMap(); spawnCd = 0.6; bossSpawned = false; bossTimer = 0; roomToken++;
@@ -546,6 +547,7 @@
       d6: { root: 55, sc: 'harm', bpm: 124, prog: [0, 1, 5, 4], lead: 'square', drums: 2 },               // лаборатория
       d7: { root: 58, sc: 'major', bpm: 96, prog: [0, 4, 5, 3], lead: 'triangle', drums: 1, pad: true },   // лунный дворец
       boss: { root: 50, sc: 'harm', bpm: 138, prog: [0, 0, 5, 4], lead: 'square', drums: 2, pad: true },
+      title: { root: 57, sc: 'harm', bpm: 104, prog: [0, 5, 3, 4], lead: 'triangle', box: true, drums: 1, pad: true }, // заставка
       raid: { root: 57, sc: 'harm', bpm: 130, prog: [0, 5, 6, 4], lead: 'sawtooth', drums: 2 },
     };
     const deg = (song, d) => { const s = SC[song.sc], o = Math.floor(d / 7); return song.root + s[((d % 7) + 7) % 7] + 12 * o; };
@@ -576,7 +578,7 @@
       return song;
     }
     const mus = { next: 0, step: 0, song: null, key: '' };
-    function musicKey() { return raid ? 'raid' : (isBossRoom() && bossSpawned) ? 'boss' : 'd' + districtIndex(); }
+    function musicKey() { return splash ? 'title' : raid ? 'raid' : (isBossRoom() && bossSpawned) ? 'boss' : 'd' + districtIndex(); }
     function step(song, i, t) {
       const st = i % 16, bar = Math.floor(i / 16) % 8, c = song.prog[bar % 4];
       const s16 = 60 / song.bpm / 4;
@@ -1294,8 +1296,9 @@
   canvas.addEventListener('pointerdown', (e) => {
     e.preventDefault();
     const { x, y } = toGame(e);
-    press = { x, y, t: time };
     SFX.init();
+    if (splash) { if (!splash.out && splash.t > 0.4) { splash.out = 0.6; SFX.play('reward'); } return; }
+    press = { x, y, t: time };
     for (let i = buttons.length - 1; i >= 0; i--) {
       const b = buttons[i];
       if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) { if (b.w < W - 1) SFX.play('click'); b.on(); return; }
@@ -1406,6 +1409,7 @@
   // =====================================================================
   function update(dt) {
     time += dt;
+    if (splash) { splash.t += dt; if (splash.out) { splash.out -= dt; if (splash.out <= 0) splash = null; } if (splash && !splash.out) return; }
     cat.bob += dt * 4;
     cat.recoil = Math.max(0, cat.recoil - dt * 8);
     shake = Math.max(0, shake - dt);
@@ -3599,9 +3603,112 @@
     button(186, 340, 116, 50, '🎬 x2', '#ffc94d', () => { const g = offlineGain; offlineGain = 0; panel = null; showAd('Удвоение офлайн-дохода', () => { S.ecto += g * 2; }); }, 15);
   }
 
+  // =====================================================================
+  // Заставка: ночной город, луна, призраки, кот с пылесосом и логотип
+  // =====================================================================
+  const SKYLINE = (() => {
+    const R = rng(4242), list = [];
+    for (let x = -10; x < W + 20;) { const w = 34 + R() * 40, h = 60 + R() * 90; list.push({ x, w, h, roof: R() < 0.5, wins: Array.from({ length: 6 }, () => R()) }); x += w - 4; }
+    return list;
+  })();
+  const SPLASH_GHOSTS = [
+    { type: 'sheet', x: 0.16, y: 290, r: 20, sp: 0.6 }, { type: 'fire', x: 0.62, y: 270, r: 16, sp: 0.8 },
+    { type: 'sock', x: 0.12, y: 380, r: 16, sp: 1.1 }, { type: 'aurora', x: 0.9, y: 240, r: 15, sp: 0.9 },
+    { type: 'pumpkin', x: 0.9, y: 450, r: 17, sp: 0.7 }, { type: 'moth', x: 0.08, y: 200, r: 13, sp: 1.2 },
+  ];
+  function drawSplash(a) {
+    const t = splash ? splash.t : 0;
+    ctx.save(); ctx.globalAlpha = a;
+    // небо
+    const sky = ctx.createLinearGradient(0, 0, 0, H); sky.addColorStop(0, '#120c2e'); sky.addColorStop(0.55, '#3b2a74'); sky.addColorStop(1, '#6a4a9a');
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+    for (let i = 0; i < 70; i++) { const sx = (i * 97.3) % W, sy = (i * 53.7) % 420, tw = 0.3 + 0.7 * Math.abs(Math.sin(t * 1.5 + i)); ctx.fillStyle = `rgba(255,255,255,${tw * a})`; ctx.fillRect(sx, sy, i % 5 ? 1.5 : 2.5, i % 5 ? 1.5 : 2.5); }
+    // луна
+    const mx = 270, my = 120;
+    const mg = ctx.createRadialGradient(mx, my, 20, mx, my, 150); mg.addColorStop(0, 'rgba(255,240,180,0.5)'); mg.addColorStop(1, 'rgba(255,240,180,0)'); ctx.fillStyle = mg; ctx.fillRect(mx - 150, my - 150, 300, 300);
+    const mf = ctx.createRadialGradient(mx - 14, my - 14, 6, mx, my, 52); mf.addColorStop(0, '#fffbe6'); mf.addColorStop(1, '#ffe08a');
+    ctx.fillStyle = mf; ctx.beginPath(); ctx.arc(mx, my, 52, 0, 7); ctx.fill();
+    ctx.fillStyle = 'rgba(220,190,120,0.45)'; [[-16, -10, 9], [14, 12, 12], [18, -20, 6], [-10, 22, 7]].forEach(([dx, dy, r]) => { ctx.beginPath(); ctx.arc(mx + dx, my + dy, r, 0, 7); ctx.fill(); });
+    // облака
+    for (let i = 0; i < 4; i++) { const cx = ((i * 120 + t * (8 + i * 3)) % (W + 160)) - 80, cy = 70 + i * 55; ctx.fillStyle = 'rgba(160,140,220,0.25)'; ctx.beginPath(); ctx.arc(cx, cy, 18, 0, 7); ctx.arc(cx + 22, cy - 8, 24, 0, 7); ctx.arc(cx + 48, cy, 17, 0, 7); ctx.fill(); }
+    // силуэт города с окнами
+    const base = 520;
+    for (const b of SKYLINE) {
+      ctx.fillStyle = '#231a45'; ctx.fillRect(b.x, base - b.h, b.w, b.h + 130);
+      if (b.roof) { ctx.beginPath(); ctx.moveTo(b.x - 4, base - b.h); ctx.lineTo(b.x + b.w / 2, base - b.h - 22); ctx.lineTo(b.x + b.w + 4, base - b.h); ctx.closePath(); ctx.fill(); }
+      b.wins.forEach((r, k) => { const wx = b.x + 7 + (k % 2) * (b.w / 2 - 2), wy = base - b.h + 14 + Math.floor(k / 2) * 26; if (wy > base - 12 || r < 0.35) return; const f = 0.55 + 0.45 * Math.abs(Math.sin(t * 2 + r * 9)); ctx.fillStyle = r > 0.85 ? `rgba(190,140,255,${f})` : `rgba(255,214,120,${f})`; ctx.fillRect(wx, wy, 9, 11); });
+    }
+    const hill = ctx.createLinearGradient(0, 500, 0, H); hill.addColorStop(0, '#2b2152'); hill.addColorStop(1, '#170f30');
+    ctx.fillStyle = hill; ctx.beginPath(); ctx.moveTo(0, H); ctx.lineTo(0, 540); ctx.quadraticCurveTo(180, 480, W, 540); ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
+    // призраки вокруг
+    SPLASH_GHOSTS.forEach((g, i) => {
+      const gx = g.x * W + Math.sin(t * g.sp + i) * 18, gy = g.y + Math.cos(t * g.sp * 1.3 + i * 2) * 14;
+      const gg = ctx.createRadialGradient(gx, gy, g.r * 0.5, gx, gy, g.r * 2.2); gg.addColorStop(0, alpha(GHOSTS[g.type].body, 0.35)); gg.addColorStop(1, alpha(GHOSTS[g.type].body, 0));
+      ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(gx, gy, g.r * 2.2, 0, 7); ctx.fill();
+      ghostSprite(g.type, gx, gy, g.r, { phase: t * 3 + i, lookX: (180 - gx) / 200, lookY: 0.3 });
+    });
+    // кот засасывает призрака: воронка луча
+    const cx = 150, cy = 492 + (1 - Math.min(1, t / 0.7)) * 160;
+    const tx = 276 + Math.sin(t * 2) * 10, ty = 330 + Math.cos(t * 2.5) * 8;
+    const aim = Math.atan2(ty - (cy - 30), tx - cx);
+    const nx = cx + Math.cos(aim) * 52, ny = cy - 28 + Math.sin(aim) * 52;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    const len = Math.hypot(tx - nx, ty - ny);
+    ctx.translate(nx, ny); ctx.rotate(Math.atan2(ty - ny, tx - nx));
+    const cone = ctx.createLinearGradient(0, 0, len, 0); cone.addColorStop(0, 'rgba(160,255,240,0.55)'); cone.addColorStop(1, 'rgba(160,255,240,0.05)');
+    ctx.fillStyle = cone; ctx.beginPath(); ctx.moveTo(0, -6); ctx.lineTo(len, -26); ctx.lineTo(len, 26); ctx.lineTo(0, 6); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 2;
+    for (let k = 0; k < 4; k++) { const u = ((t * 1.4 + k / 4) % 1), px = len * (1 - u); ctx.beginPath(); ctx.ellipse(px, 0, 3, 6 + 18 * (1 - u), 0, 0, 7); ctx.stroke(); }
+    ctx.restore();
+    ghostSprite('sheet', tx, ty, 15 + Math.sin(t * 6) * 1.5, { phase: t * 8, hit: Math.sin(t * 10) > 0.6, lookX: -1, lookY: 1 });
+    ctx.save(); ctx.translate(cx, cy); ctx.scale(1.55, 1.55);
+    catSprite(0, 0, { skin: S.skin, aim, bobY: Math.sin(t * 3) * 2, blinkSeed: 1, eqColor: '#9ff3ff' });
+    ctx.restore();
+    // логотип падает сверху с пружинкой
+    const k = Math.min(1, t / 0.9), drop = 1 - Math.pow(1 - k, 3) * Math.cos(k * 9);
+    const ly = -120 + drop * 230;
+    ctx.save(); ctx.translate(180, ly); ctx.rotate(Math.sin(t * 1.6) * 0.025);
+    const logo = (str, y, size, c1, c2) => {
+      ctx.font = '900 ' + size + 'px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const w = ctx.measureText(str).width, sz = w > 320 ? (size * 320) / w : size;
+      ctx.font = '900 ' + sz + 'px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+      ctx.lineJoin = 'round';
+      ctx.fillStyle = 'rgba(10,5,25,0.6)'; ctx.fillText(str, 0, y + 6);
+      ctx.strokeStyle = INK; ctx.lineWidth = 11; ctx.strokeText(str, 0, y);
+      const g = ctx.createLinearGradient(0, y - sz / 2, 0, y + sz / 2); g.addColorStop(0, c1); g.addColorStop(1, c2);
+      ctx.fillStyle = g; ctx.fillText(str, 0, y);
+      ctx.save(); ctx.beginPath(); ctx.rect(-180, y - sz / 2, 360, sz * 0.38); ctx.clip(); ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.fillText(str, 0, y); ctx.restore();
+    };
+    logo('КОТ-', -34, 54, '#fff3b0', '#ffb02e');
+    logo('ЭКЗОРЦИСТ', 22, 50, '#d6fbff', '#7f8cff');
+    ctx.restore();
+    // лента-подзаголовок
+    if (t > 0.6) {
+      ctx.save(); ctx.globalAlpha = a * Math.min(1, (t - 0.6) * 3);
+      const ry = ly + 70, rw = 230, rx = 180 - rw / 2;
+      ctx.fillStyle = shade('#ff8fb1', -0.3); ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(rx - 14, ry + 4); ctx.lineTo(rx + 6, ry + 4); ctx.lineTo(rx + 6, ry + 30); ctx.lineTo(rx - 14, ry + 30); ctx.lineTo(rx - 6, ry + 17); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(rx + rw + 14, ry + 4); ctx.lineTo(rx + rw - 6, ry + 4); ctx.lineTo(rx + rw - 6, ry + 30); ctx.lineTo(rx + rw + 14, ry + 30); ctx.lineTo(rx + rw + 6, ry + 17); ctx.closePath(); ctx.fill(); ctx.stroke();
+      plate(rx, ry - 2, rw, 30, 10, '#ff8fb1');
+      text('Лови призраков пылесосом!', 180, ry + 13, 13, '#ffffff');
+      ctx.restore();
+    }
+    // нижняя часть
+    if (t > 1) {
+      const p = 0.6 + 0.4 * Math.abs(Math.sin(t * 2.5));
+      ctx.save(); ctx.globalAlpha = a * p;
+      text('Нажми, чтобы начать', 180, 586, 18, '#ffffff');
+      ctx.restore();
+      if (S.maxHouse > 1) text('Рекорд: дом ' + S.maxHouse + (S.prestiges ? ' · освящений: ' + S.prestiges : ''), 180, 612, 11, '#c9c3e6', 'center', '700');
+    }
+    text('прототип', 180, 632, 9, 'rgba(201,195,230,0.6)', 'center', '700');
+    ctx.restore();
+  }
+
   function draw() {
     buttons.length = 0;
     ctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
+    if (splash && !splash.out) { drawSplash(1); return; }
     ctx.clearRect(0, 0, W, H);
     ctx.fillStyle = '#1d1729'; ctx.fillRect(0, 0, W, H);
     ctx.save();
@@ -3692,6 +3799,7 @@
     else if (panel === 'daily') drawDailyPanel();
     else if (panel === 'offline') drawOfflinePanel();
     if (modal) drawModal();
+    if (splash && splash.out) { buttons.length = 0; drawSplash(splash.out / 0.6); }
     if (toast) {
       ctx.globalAlpha = Math.min(1, toast.life * 3);
       ctx.font = '800 14px system-ui, sans-serif';
@@ -3719,6 +3827,7 @@
   // Для отладки в консоли браузера.
   window.__game = {
     state: () => S, sfx: SFX, mapImage: () => mapCanvas.toDataURL(), ghosts: () => ghosts, cat: () => cat, cam: () => cam, resetRoom: () => resetRoom(), open: (p) => { panel = p; }, gold: () => { goldCd = 0; }, goldObj: () => gold, toScreen,
+    splash: () => { splash = { t: 0, out: 0 }; },
     reset: () => { localStorage.removeItem(SAVE_KEY); S = defaultState(); ensureQuests(); dailyReset(); syncSlots(); resetRoom(); },
     close: () => { modal = null; },
     tab: (q, pr, pp) => { if (q) questTab = q; if (pr) prestTab = pr; if (pp !== undefined) passPage = pp; },
