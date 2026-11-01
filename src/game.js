@@ -267,6 +267,7 @@
     { house: 1, room: 4, id: 'quests', icon: '📜', name: 'Задания', text: 'Задания дня, пропуск и Путь открытий' },
     { house: 2, id: 'moon', icon: '🌕', name: 'Полнолуние', text: 'x2 урона и дохода на 60 секунд' },
     { house: 2, id: 'daily', icon: '🎁', name: 'Награды за вход', text: 'Подарок каждый день, неделя по кругу' },
+    { house: 2, room: 2, id: 'turbo', icon: '⏩', name: 'Турбо x2', text: 'Пройденные комнаты идут в 2 раза быстрее' },
     { house: 2, room: 3, id: 'attach', icon: '🧹', name: 'Насадки пылесоса', text: 'Призыв насадок за кристаллы с боссов' },
     { house: 3, id: 'shop', icon: '🛒', name: 'Магазин', text: 'Скины, наборы и кристаллы' },
     { house: 3, room: 3, id: 'auto', icon: '⚙', name: 'Автопрокачка и автослияние', text: 'Кнопки справа: качают и сливают сами' },
@@ -1025,7 +1026,9 @@
     const prevDistrict = districtIndex();
     if (S.room === ROOMS_PER_HOUSE) { S.house++; S.room = 1; S.maxHouse = Math.max(S.maxHouse || 1, S.house); }
     else S.room++;
+    const wasTurbo = turboActive();
     S.maxStage = Math.max(S.maxStage || 0, stageIndex());
+    if (wasTurbo && !turboActive()) showToast('Новый рекорд: турбо на паузе');
     checkUnlocks();
     S.jars += 2;
     S.stats.rooms++;
@@ -1228,6 +1231,15 @@
       if (attachMergeable()) n += mergeAttach(true);
       if (n) floaters.push({ x: cat.x, y: cat.y - 60, text: 'Авто-слияние ✨', life: 1.2, color: '#8ee08a', size: 13 });
     }
+  }
+
+  // Турбо x2: только в комнатах, которые уже пройдены (ниже рекорда)
+  const turboActive = () => S.turbo !== false && unlocked('turbo') && !raid && stageIndex() < (S.maxStage || 0);
+  function toggleTurbo() {
+    S.fresh = S.fresh.filter((f) => f !== 'turbo');
+    S.turbo = S.turbo === false; save();
+    if (S.turbo === false) showToast('Турбо выключено');
+    else showToast(turboActive() ? 'Турбо x2: пройденные комнаты быстрее' : 'Турбо включится в пройденных комнатах');
   }
 
   function autoButton(k) {
@@ -2156,6 +2168,8 @@
     } else if (kind === 'speaker') {
       P([[-0.85, -0.3], [-0.4, -0.3], [0.15, -0.8], [0.15, 0.8], [-0.4, 0.3], [-0.85, 0.3]]); fs('#ffffff');
       ctx.strokeStyle = '#ffffff'; ctx.lineCap = 'round'; ctx.lineWidth = Math.max(1.5, r / 6); for (const q of [0.45, 0.75]) { ctx.beginPath(); ctx.arc(x + r * 0.15, y, q * r, -0.8, 0.8); ctx.stroke(); }
+    } else if (kind === 'turbo') { // два треугольника «вперёд»
+      for (const ox of [-0.45, 0.35]) { P([[ox - 0.4, -0.7], [ox + 0.45, 0], [ox - 0.4, 0.7]]); fs(grad(y - r, y + r, '#fff1a8', '#ffb020')); }
     } else if (kind === 'phone') {
       rr(x - r * 0.42, y - r * 0.8, r * 0.84, r * 1.6, r * 0.18); fs('#ffffff');
       ctx.fillStyle = '#9fd0f0'; ctx.fillRect(x - r * 0.28, y - r * 0.6, r * 0.56, r * 1.05);
@@ -2183,7 +2197,7 @@
     }
   }
   // Текст со встроенными нарисованными иконками вместо капризных эмодзи
-  const INLINE_ICONS = { '💎': 'gem', '🎬': 'ad', '🫙': 'jar', '🔒': 'lock', '🌙': 'moon', '✨': 'sparkle', '👻': 'ghost', '🧹': 'attach', '👑': 'crown', '📜': 'scroll', '🌕': 'fullmoon', '🎁': 'gift', '🛒': 'cart', '⚙': 'gear', '📖': 'book', '🎡': 'wheel', '🏚': 'house', '🔁': 'loop', '⚔': 'swords', '🧲': 'magnet', '💚': 'ecto', '💠': 'rank', '⭐': 'star', '❄': 'snow', '🧪': 'flask', '🌿': 'leaf', '🧠': 'brain', '🌃': 'night', '🍀': 'clover', '⏳': 'hourglass', '💀': 'skull', '🎵': 'note', '🔊': 'speaker', '🔥': 'flame', '🎃': 'pumpkin', '📳': 'phone', '💥': 'boom', '🍬': 'candy', '🏆': 'trophy' };
+  const INLINE_ICONS = { '💎': 'gem', '🎬': 'ad', '🫙': 'jar', '🔒': 'lock', '🌙': 'moon', '✨': 'sparkle', '👻': 'ghost', '🧹': 'attach', '👑': 'crown', '📜': 'scroll', '🌕': 'fullmoon', '🎁': 'gift', '🛒': 'cart', '⚙': 'gear', '📖': 'book', '🎡': 'wheel', '🏚': 'house', '🔁': 'loop', '⚔': 'swords', '🧲': 'magnet', '💚': 'ecto', '💠': 'rank', '⭐': 'star', '❄': 'snow', '🧪': 'flask', '🌿': 'leaf', '🧠': 'brain', '🌃': 'night', '🍀': 'clover', '⏳': 'hourglass', '💀': 'skull', '🎵': 'note', '🔊': 'speaker', '🔥': 'flame', '🎃': 'pumpkin', '⏩': 'turbo', '📳': 'phone', '💥': 'boom', '🍬': 'candy', '🏆': 'trophy' };
   const ICON_RE = new RegExp('(' + Object.keys(INLINE_ICONS).join('|') + ')');
   function text(t, x, y, size, color, align, weight) {
     t = String(t).replace(/\uFE0F/g, '');
@@ -3394,6 +3408,7 @@
     fitText((circle() ? 'Круг ' + (circle() + 1) + ' · ' : '') + district().name, 14, 38, 100, 10, circle() ? '#ffd84d' : '#c9c3e6', 'left', '700');
     if (raid) text('РЕЙД · ' + Math.ceil(raid.t) + ' с', 14, 55, 11, '#d68cff', 'left');
     else text(isBossRoom() ? 'БОСС' : 'Комната ' + S.room + '/' + ROOMS_PER_HOUSE, 14, 55, 11, isBossRoom() ? '#ffc94d' : '#c9c3e6', 'left');
+    if (turboActive()) text('x2', 98, 55, 10, '#ffc94d', 'center', '900');
     const p = isBossRoom() ? (bossSpawned ? Math.max(0, bossTimer / bossTime()) : 1) : Math.min(1, S.cleared / GHOSTS_PER_ROOM);
     bar(118, 46, 124, 14, p, isBossRoom() ? '#ffc94d' : '#7dff9e');
     for (let i = 1; i < ROOMS_PER_HOUSE; i++) { const px = 118 + (124 * i) / ROOMS_PER_HOUSE; const done = S.room > i; ctx.fillStyle = done ? '#ffc94d' : '#6b5f86'; ctx.beginPath(); ctx.arc(px, 42, 3, 0, 7); ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = INK; ctx.stroke(); }
@@ -3425,6 +3440,19 @@
     if (ready) badge(346, 110);
     btn(304, 102, 52, 66, () => { S.fresh = S.fresh.filter((f) => f !== 'moon'); activateMoon(); });
     if (S.fresh.includes('moon')) newTag(330, 98);
+    }
+    // турбо x2 под автокнопками
+    if (unlocked('turbo') && !raid) {
+      const x = 306, y = unlocked('auto') ? 292 : 176, act = turboActive();
+      const dn = pressOff(x, y, 48, 50);
+      ctx.save(); ctx.translate(0, dn);
+      if (act) { const gg = ctx.createRadialGradient(x + 24, y + 25, 10, x + 24, y + 25, 40); gg.addColorStop(0, 'rgba(255,200,80,0.5)'); gg.addColorStop(1, 'rgba(255,200,80,0)'); ctx.fillStyle = gg; ctx.fillRect(x - 16, y - 15, 80, 80); }
+      plate(x, y, 48, 50, 12, act ? '#ffb020' : S.turbo !== false ? '#9b93b3' : '#8a7bd1');
+      ctx.save(); ctx.translate(x + 24 + (act ? Math.sin(time * 18) * 1.5 : 0), y + 18); text('⏩', 0, 0, 17, '#ffffff'); ctx.restore();
+      text(act ? 'x2' : S.turbo !== false ? 'рекорд' : 'выкл', x + 24, y + 39, act ? 12 : 9, '#ffffff');
+      ctx.restore();
+      btn(x, y, 48, 50, toggleTurbo);
+      if (S.fresh.includes('turbo')) newTag(x + 24, y - 4);
     }
     // автопрокачка и автослияние
     if (unlocked('auto')) ['up', 'merge'].forEach((k, i) => {
@@ -4583,6 +4611,7 @@
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     update(dt);
+    if (turboActive() && !modal && !panel && !splash) update(dt); // турбо: второй шаг мира за кадр
     draw();
     requestAnimationFrame(frame);
   }
@@ -4602,7 +4631,7 @@
       NATIVE.App.addListener('pause', () => save());
     }
   }
-  window.__game = { appArt: () => { appArt = !appArt; }, event: (on) => { S.evForce = on; }, icons: () => { iconSheet = !iconSheet; }, spawn: (t, o) => spawnGhost(t, o), behIntro: () => behIntro,
+  window.__game = { turbo: () => turboActive(), appArt: () => { appArt = !appArt; }, event: (on) => { S.evForce = on; }, icons: () => { iconSheet = !iconSheet; }, spawn: (t, o) => spawnGhost(t, o), behIntro: () => behIntro,
     state: () => S, sfx: SFX, mapImage: () => mapCanvas.toDataURL(), ghosts: () => ghosts, cat: () => cat, cam: () => cam, resetRoom: () => resetRoom(), open: (p) => { panel = p; }, gold: () => { goldCd = 0; }, goldObj: () => gold, toScreen,
     splash: () => { splash = { t: 0, out: 0 }; },
     tut: (n) => { S.tut = n; },
