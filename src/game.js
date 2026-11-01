@@ -1311,6 +1311,31 @@
   // Ввод
   // =====================================================================
   const buttons = []; // пересобирается каждый кадр
+  // Прокручиваемые списки: области пересобираются каждый кадр, смещение хранится между кадрами
+  const scrollAreas = [], scrollY = {};
+  let drag = null; // {area, sy, start, btn, moved}
+  function scrollArea(id, x, y, w, h, contentH) {
+    const max = Math.max(0, contentH - h);
+    scrollY[id] = Math.max(0, Math.min(max, scrollY[id] || 0));
+    const a = { id, x, y, w, h, max, off: scrollY[id] };
+    scrollAreas.push(a);
+    return a;
+  }
+  // Кнопка внутри списка: срабатывает по отпусканию, если палец не тянул список
+  function sbtn(a, x, y, w, h, on) {
+    const y1 = Math.max(y, a.y), y2 = Math.min(y + h, a.y + a.h);
+    if (y2 > y1) buttons.push({ x, y: y1, w, h: y2 - y1, on, scroll: a.id });
+  }
+  function scrollBar(a) {
+    if (a.max <= 0) return;
+    const th = Math.max(30, (a.h * a.h) / (a.h + a.max)), ty = a.y + ((a.h - th) * a.off) / a.max;
+    rr(a.x + a.w - 5, a.y, 5, a.h, 2.5); ctx.fillStyle = 'rgba(107,95,134,0.18)'; ctx.fill();
+    rr(a.x + a.w - 5, ty, 5, th, 2.5); ctx.fillStyle = '#8a7bd1'; ctx.fill();
+    // мягкое затухание у краёв, если там ещё есть содержимое
+    const fade = (y0, y1, up) => { const g = ctx.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, up ? 'rgba(250,244,234,0.95)' : 'rgba(240,229,213,0)'); g.addColorStop(1, up ? 'rgba(250,244,234,0)' : 'rgba(240,229,213,0.95)'); ctx.fillStyle = g; ctx.fillRect(a.x, y0, a.w - 7, y1 - y0); };
+    if (a.off > 1) fade(a.y, a.y + 14, true);
+    if (a.off < a.max - 1) fade(a.y + a.h - 14, a.y + a.h, false);
+  }
   function btn(x, y, w, h, on) { buttons.push({ x, y, w, h, on }); }
 
   function toGame(e) {
@@ -1324,6 +1349,15 @@
     SFX.init();
     if (splash) { if (!splash.out && splash.t > 0.4) { splash.out = 0.6; SFX.play('reward'); } return; }
     press = { x, y, t: time };
+    if (!modal) {
+      const a = scrollAreas.find((q) => x >= q.x && x <= q.x + q.w && y >= q.y && y <= q.y + q.h);
+      if (a) {
+        const b = buttons.slice().reverse().find((q) => q.scroll === a.id && x >= q.x && x <= q.x + q.w && y >= q.y && y <= q.y + q.h);
+        drag = { area: a.id, sy: y, start: scrollY[a.id] || 0, btn: b, moved: false, id: e.pointerId };
+        try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* старые браузеры */ }
+        return;
+      }
+    }
     for (let i = buttons.length - 1; i >= 0; i--) {
       const b = buttons[i];
       if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) { if (b.w < W - 1) SFX.play('click'); b.on(); return; }
@@ -1335,6 +1369,12 @@
   });
 
   canvas.addEventListener('pointermove', (e) => {
+    if (drag && e.pointerId === drag.id) {
+      const { y } = toGame(e);
+      if (Math.abs(y - drag.sy) > 6) drag.moved = true;
+      if (drag.moved) { scrollY[drag.area] = drag.start - (y - drag.sy); press = null; }
+      return;
+    }
     if (!joy || e.pointerId !== joy.id) return;
     const { x, y } = toGame(e);
     joy.x = x; joy.y = y;
@@ -1347,8 +1387,17 @@
     else manualUntil = time + 2;
     joy = null;
   }
-  window.addEventListener('pointerup', () => { press = null; });
-  window.addEventListener('pointercancel', () => { press = null; });
+  window.addEventListener('pointerup', (e) => {
+    press = null;
+    if (drag && e.pointerId === drag.id) { const d = drag; drag = null; if (!d.moved && d.btn) { SFX.play('click'); d.btn.on(); } }
+  });
+  window.addEventListener('pointercancel', () => { press = null; drag = null; });
+  // колесо мыши на компьютере
+  canvas.addEventListener('wheel', (e) => {
+    const { x, y } = toGame(e);
+    const a = scrollAreas.find((q) => x >= q.x && x <= q.x + q.w && y >= q.y && y <= q.y + q.h);
+    if (a) { e.preventDefault(); scrollY[a.id] = (scrollY[a.id] || 0) + e.deltaY * 0.6; }
+  }, { passive: false });
   canvas.addEventListener('pointerup', endJoy);
   canvas.addEventListener('pointercancel', endJoy);
 
@@ -3111,14 +3160,18 @@
     const syn = Object.keys(counts).filter((d) => counts[d] >= 2).map((d) => DISTRICTS[d].name + (counts[d] >= 4 ? ' (сет!)' : ''));
     text(syn.length ? 'Синергия: ' + syn.join(', ') : 'Синергия: 2 духа из одного района +20%, 4 = сет', 180, 204, 10, syn.length ? '#2f8f4e' : '#6b5f86', 'center', '700');
 
-    const cols = 5, sx = 24, sy = 220;
-    const list = [...S.inventory].sort((a, b) => itemPower(b) - itemPower(a)).slice(0, 20);
+    const cols = 5, sx = 22;
+    const list = [...S.inventory].sort((a, b) => itemPower(b) - itemPower(a));
+    const area = scrollArea('squad', 18, 214, 324, 288, Math.ceil(list.length / cols) * 72 + 6);
+    ctx.save(); ctx.beginPath(); ctx.rect(area.x, area.y, area.w, area.h); ctx.clip();
     list.forEach((it, i) => {
-      const x = sx + (i % cols) * 63, y = sy + Math.floor(i / cols) * 72;
+      const x = sx + (i % cols) * 63, y = area.y + 8 + Math.floor(i / cols) * 72 - area.off;
+      if (y > area.y + area.h || y + 66 < area.y) return;
       drawJar(x, y, it, selectedJar === it.id);
-      if (S.squad.includes(it.id)) text('в отряде', x + 29, y + 46, 8, '#7dff9e');
-      btn(x, y, 58, 66, () => { selectedJar = selectedJar === it.id ? null : it.id; });
+      if (S.squad.includes(it.id)) text('в отряде', x + 29, y + 46, 8, '#2f8f4e');
+      sbtn(area, x, y, 58, 66, () => { selectedJar = selectedJar === it.id ? null : it.id; });
     });
+    ctx.restore(); scrollBar(area);
     if (!list.length) {
       text('Пусто. Ослабь призрака и тапни по нему,', 180, 300, 13, INK, 'center', '600');
       text('чтобы засосать его в банку.', 180, 318, 13, INK, 'center', '600');
@@ -3128,7 +3181,7 @@
       const def = GHOSTS[sel.type];
       text(def.name + ' · ' + RARITY[def.rarity].name + ' · ' + sel.stars + '★ · ' + fmt(squadDamage(sel)), 180, 512, 11, INK, 'center', '700');
       text('Тапни слот отряда, чтобы поставить', 180, 527, 10, '#6b5f86', 'center', '700');
-    }
+    } else if (list.length) text('Духов в банках: ' + list.length + (area.max > 0 ? ' · листай список пальцем' : ''), 180, 518, 10, '#6b5f86', 'center', '700');
     button(22, 536, 100, 30, 'Слить всё', '#8ee08a', mergeSquad);
     button(130, 536, 100, 30, 'Лучший отряд', '#7fd1ff', () => { bestSquad(); showToast('Отряд собран'); });
     button(238, 536, 100, 30, 'Отпустить', '#ff9aa9', () => { if (sel) releaseJar(sel.id); else showToast('Выбери банку'); });
@@ -3163,13 +3216,17 @@
     });
     text('Урон x' + fmt(attachMult(), 2) + ' · крит ' + Math.round(critChance() * 100) + '% x' + fmt(critMult(), 1), 180, 196, 11, INK, 'center', '700');
 
-    const list = [...S.attach].sort((a, b) => b.rank - a.rank || a.kind.localeCompare(b.kind)).slice(0, 15);
+    const list = [...S.attach].sort((a, b) => b.rank - a.rank || a.kind.localeCompare(b.kind));
+    const area = scrollArea('attach', 18, 206, 324, 200, Math.ceil(list.length / 5) * 66 + 8);
+    ctx.save(); ctx.beginPath(); ctx.rect(area.x, area.y, area.w, area.h); ctx.clip();
     list.forEach((a, i) => {
-      const x = 24 + (i % 5) * 63, y = 212 + Math.floor(i / 5) * 66;
+      const x = 22 + (i % 5) * 63, y = area.y + 6 + Math.floor(i / 5) * 66 - area.off;
+      if (y > area.y + area.h || y + 60 < area.y) return;
       drawAttachCard(x, y, 58, 60, a, selectedAttach === a.id);
       if (S.equipped.includes(a.id)) { ctx.fillStyle = '#2f8f4e'; ctx.beginPath(); ctx.arc(x + 50, y + 9, 5, 0, 7); ctx.fill(); }
-      btn(x, y, 58, 60, () => { selectedAttach = selectedAttach === a.id ? null : a.id; });
+      sbtn(area, x, y, 58, 60, () => { selectedAttach = selectedAttach === a.id ? null : a.id; });
     });
+    ctx.restore(); scrollBar(area);
     if (!list.length) {
       text('Насадок пока нет.', 180, 300, 13, INK, 'center', '600');
       text('Призови первую за кристаллы.', 180, 318, 13, INK, 'center', '600');
@@ -3184,7 +3241,7 @@
     const freeReady = Date.now() >= S.adSummonAt;
     button(70, 448, 220, 30, freeReady ? '🎬 Бесплатный призыв' : 'Бесплатно через ' + Math.ceil((S.adSummonAt - Date.now()) / 60000) + ' мин', '#ffc94d',
       () => { if (freeReady) showAd('Бесплатный призыв насадки', () => { S.adSummonAt = Date.now() + 4 * 3600e3; S.crystals += SUMMON_COST; summon(1); }); }, 12, freeReady);
-    if (!vipActive()) text('4-й слот насадок — в VIP', 180, 494, 10, '#6b5f86', 'center', '700');
+    text('Насадок: ' + S.attach.length + (vipActive() ? '' : ' · +1 слот насадок в VIP'), 180, 494, 10, '#6b5f86', 'center', '700');
     button(22, 516, 100, 46, 'Призыв\n', '#d68cff', () => summon(1), 12, S.crystals >= SUMMON_COST);
     text(SUMMON_COST + ' 💎', 72, 550, 10, '#ffffff');
     button(130, 516, 100, 46, 'x10\n', '#ffc94d', () => summon(10), 12, S.crystals >= SUMMON_COST * 9);
@@ -3783,7 +3840,7 @@
   }
 
   function draw() {
-    buttons.length = 0;
+    buttons.length = 0; scrollAreas.length = 0;
     ctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
     if (splash && !splash.out) { drawSplash(1); return; }
     ctx.clearRect(0, 0, W, H);
