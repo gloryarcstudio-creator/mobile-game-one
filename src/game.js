@@ -44,37 +44,47 @@
   // shape: sheet | sock | fire | washer | king
   const GHOSTS = {
     sheet: { name: 'Простынка', rarity: 0, body: '#f6f3ff', shape: 'sheet', d: 0 },
-    sock: { name: 'Носок-полтергейст', rarity: 1, body: '#ffd6e3', shape: 'sock', d: 0 },
-    fire: { name: 'Дух камина', rarity: 2, body: '#ffc08a', shape: 'fire', d: 0 },
+    sock: { name: 'Носок-полтергейст', rarity: 1, body: '#ffd6e3', shape: 'sock', d: 0, beh: 'split' },
+    fire: { name: 'Дух камина', rarity: 2, body: '#ffc08a', shape: 'fire', d: 0, beh: 'kite' },
     washer: { name: 'Стиральная машина', rarity: 3, body: '#e3f1ff', shape: 'washer', d: 0 },
-    armor: { name: 'Пустые доспехи', rarity: 0, body: '#d9dde6', shape: 'sock', d: 1 },
-    portrait: { name: 'Портрет-шептун', rarity: 1, body: '#f3e2b8', shape: 'sheet', d: 1 },
-    candle: { name: 'Свечной дух', rarity: 2, body: '#fff0a8', shape: 'fire', d: 1 },
+    armor: { name: 'Пустые доспехи', rarity: 0, body: '#d9dde6', shape: 'sock', d: 1, beh: 'charge' },
+    portrait: { name: 'Портрет-шептун', rarity: 1, body: '#f3e2b8', shape: 'sheet', d: 1, beh: 'blink' },
+    candle: { name: 'Свечной дух', rarity: 2, body: '#fff0a8', shape: 'fire', d: 1, beh: 'heal' },
     headless: { name: 'Безголовый дворецкий', rarity: 3, body: '#cfc6ff', shape: 'king', d: 1 },
     drowned: { name: 'Утопленник', rarity: 0, body: '#bfe9e4', shape: 'sheet', d: 2 },
-    jelly: { name: 'Медуза-призрак', rarity: 1, body: '#ffc6f0', shape: 'sock', d: 2 },
-    lantern: { name: 'Маячный огонёк', rarity: 2, body: '#ffe08a', shape: 'fire', d: 2 },
+    jelly: { name: 'Медуза-призрак', rarity: 1, body: '#ffc6f0', shape: 'sock', d: 2, beh: 'split' },
+    lantern: { name: 'Маячный огонёк', rarity: 2, body: '#ffe08a', shape: 'fire', d: 2, beh: 'kite' },
     ship: { name: 'Корабль-призрак', rarity: 3, body: '#b9d7f0', shape: 'king', d: 2 },
-    mannequin: { name: 'Манекен', rarity: 0, body: '#f1d9cc', shape: 'sock', d: 3 },
-    toy: { name: 'Плюшевый мишка', rarity: 1, body: '#e8c49a', shape: 'sheet', d: 3 },
-    tv: { name: 'Телевизор-шипун', rarity: 2, body: '#c8f0ff', shape: 'fire', d: 3 },
+    mannequin: { name: 'Манекен', rarity: 0, body: '#f1d9cc', shape: 'sock', d: 3, beh: 'charge' },
+    toy: { name: 'Плюшевый мишка', rarity: 1, body: '#e8c49a', shape: 'sheet', d: 3, beh: 'heal' },
+    tv: { name: 'Телевизор-шипун', rarity: 2, body: '#c8f0ff', shape: 'fire', d: 3, beh: 'blink' },
     carousel: { name: 'Карусель-дух', rarity: 3, body: '#ffd1e8', shape: 'king', d: 3 },
-    skelecat: { name: 'Кот-скелет', rarity: 0, body: '#eeeeee', shape: 'sheet', d: 4 },
-    pumpkin: { name: 'Тыквенный дух', rarity: 1, body: '#ffb36b', shape: 'sock', d: 4 },
-    wisp: { name: 'Блуждающий огонёк', rarity: 2, body: '#a8ffcf', shape: 'fire', d: 4 },
+    skelecat: { name: 'Кот-скелет', rarity: 0, body: '#eeeeee', shape: 'sheet', d: 4, beh: 'charge' },
+    pumpkin: { name: 'Тыквенный дух', rarity: 1, body: '#ffb36b', shape: 'sock', d: 4, beh: 'bomber' },
+    wisp: { name: 'Блуждающий огонёк', rarity: 2, body: '#a8ffcf', shape: 'fire', d: 4, beh: 'blink' },
     ninelives: { name: 'Король девяти жизней', rarity: 3, body: '#bda8ff', shape: 'king', d: 4 },
     snowman: { name: 'Снеговик-бука', rarity: 0, body: '#eef8ff', shape: 'sheet', d: 5 },
-    icicle: { name: 'Сосулька-шептунья', rarity: 1, body: '#bfe6ff', shape: 'sock', d: 5 },
-    aurora: { name: 'Дух северного сияния', rarity: 2, body: '#9fffe0', shape: 'fire', d: 5 },
+    icicle: { name: 'Сосулька-шептунья', rarity: 1, body: '#bfe6ff', shape: 'sock', d: 5, beh: 'charge' },
+    aurora: { name: 'Дух северного сияния', rarity: 2, body: '#9fffe0', shape: 'fire', d: 5, beh: 'heal' },
     frostqueen: { name: 'Снежная королева', rarity: 3, body: '#cde8ff', shape: 'king', d: 5 },
-    slime: { name: 'Слизень из колбы', rarity: 0, body: '#b6f5a0', shape: 'sheet', d: 6 },
-    flask: { name: 'Летучая колба', rarity: 1, body: '#d8ffb8', shape: 'sock', d: 6 },
-    spark: { name: 'Шаровая молния', rarity: 2, body: '#fff27a', shape: 'fire', d: 6 },
+    slime: { name: 'Слизень из колбы', rarity: 0, body: '#b6f5a0', shape: 'sheet', d: 6, beh: 'split' },
+    flask: { name: 'Летучая колба', rarity: 1, body: '#d8ffb8', shape: 'sock', d: 6, beh: 'bomber' },
+    spark: { name: 'Шаровая молния', rarity: 2, body: '#fff27a', shape: 'fire', d: 6, beh: 'kite' },
     franken: { name: 'Доктор Мяукенштейн', rarity: 3, body: '#a8e0a0', shape: 'king', d: 6 },
     moth: { name: 'Лунная моль', rarity: 0, body: '#e6d6ff', shape: 'sheet', d: 7 },
-    mirror: { name: 'Зеркальный двойник', rarity: 1, body: '#d8e8ff', shape: 'sock', d: 7 },
-    starling: { name: 'Падающая звезда', rarity: 2, body: '#fff0c0', shape: 'fire', d: 7 },
+    mirror: { name: 'Зеркальный двойник', rarity: 1, body: '#d8e8ff', shape: 'sock', d: 7, beh: 'blink' },
+    starling: { name: 'Падающая звезда', rarity: 2, body: '#fff0c0', shape: 'fire', d: 7, beh: 'bomber' },
     moonking: { name: 'Лунный король', rarity: 3, body: '#e0c8ff', shape: 'king', d: 7 },
+  };
+
+  // Особое поведение обычных призраков
+  const BEHAVIORS = {
+    split: { name: 'Делится', color: '#ff8fb8', hint: 'делится надвое, когда его победишь' },
+    kite: { name: 'Стрелок', color: '#ffb35a', hint: 'держится подальше и чаще стреляет' },
+    charge: { name: 'Таран', color: '#8a9bd1', hint: 'замирает и бросается по прямой: отойди с линии' },
+    blink: { name: 'Прыгун', color: '#b48cff', hint: 'исчезает и появляется рядом с котом' },
+    heal: { name: 'Лекарь', color: '#5fd38a', hint: 'лечит соседей: лови или бей его первым' },
+    bomber: { name: 'Подрывник', color: '#ff6b5a', hint: 'подлетает и взрывается: беги из круга' },
   };
 
   // Насадки пылесоса
@@ -414,6 +424,7 @@
   let joy = null; // {sx, sy, x, y, id, drag}
   let manualUntil = 0;
   const motes = Array.from({ length: 26 }, () => ({ x: Math.random() * 1000, y: Math.random() * 1000, vx: (Math.random() - 0.5) * 12, vy: -4 - Math.random() * 10, r: 1 + Math.random() * 1.8 }));
+  let behIntro = null, behQueue = []; // знакомство с новым типом призрака
   let zones = [], featureCd = 6; // опасные зоны на полу: {x, y, r, tele, life, kind, dmg, color}
   let ghosts = [], beams = [], floaters = [], particles = [], drops = [], orbiters = [], rings = [];
   let spawnCd = 0.5, roomSpawned = 0, bossTimer = 0, bossSpawned = false;
@@ -438,17 +449,22 @@
     return r < 0.04 ? g[2] : r < 0.19 ? g[1] : g[0];
   }
 
-  function spawnGhost(type) {
+  function spawnGhost(type, o) {
+    o = o || {};
     const def = GHOSTS[type];
     const boss = def.rarity === 3;
-    const elite = !boss && unlocked('elite') && Math.random() < 0.04;
-    const hp = ghostHp(def.rarity) * (elite ? 6 : 1);
+    const elite = !boss && !o.small && unlocked('elite') && Math.random() < 0.04;
+    const hp = ghostHp(def.rarity) * (elite ? 6 : 1) * (o.small ? 0.3 : 1);
+    if (def.beh && !o.small && !raid) {
+      S.seenBeh = S.seenBeh || {};
+      if (!S.seenBeh[def.beh] && S.tut >= 9) { S.seenBeh[def.beh] = 1; behQueue.push({ kind: def.beh, type, life: 5 }); }
+    }
     ghosts.push({
-      type, boss, elite, hp, maxHp: hp,
-      ...spawnPoint(boss ? 300 : 430),
+      type, boss, elite, hp, maxHp: hp, beh: def.beh || null, bt: 2 + Math.random() * 2, small: !!o.small,
+      ...(o.x !== undefined ? { x: o.x, y: o.y } : spawnPoint(boss ? 300 : 430)),
       vx: (Math.random() - 0.5) * 30, vy: (boss ? 0.6 : 1) * (28 + Math.random() * 14),
-      r: boss ? 40 : elite ? 26 : def.rarity === 2 ? 22 : 19,
-      phase: Math.random() * 6, hit: 0, alpha: 0, dying: 0, capturing: 0,
+      r: (boss ? 40 : elite ? 26 : def.rarity === 2 ? 22 : 19) * (o.small ? 0.7 : 1),
+      phase: Math.random() * 6, hit: 0, alpha: o.small ? 0.7 : 0, dying: 0, capturing: 0,
       shootCd: 2 + Math.random() * 2,
     });
   }
@@ -680,7 +696,9 @@
   function killGhost(g) {
     g.hp = 0;
     const rar = GHOSTS[g.type].rarity;
-    const reward = ghostReward(rar) * (g.boss ? 1 : 0.45) * (g.elite ? 6 : 1);
+    const reward = ghostReward(rar) * (g.boss ? 1 : 0.45) * (g.elite ? 6 : 1) * (g.small ? 0.4 : 1);
+    cancelFuse(g);
+    if (g.beh === 'split' && !g.small) for (const sd of [-1, 1]) spawnGhost(g.type, { small: true, x: g.x + sd * 20, y: g.y + (Math.random() - 0.5) * 10 });
     if (g.elite) { S.crystals += 2; S.stats.elites++; floaters.push({ x: g.x, y: g.y - 40, text: 'Элита! +2 💎', life: 1.4, color: '#ffd84d', size: 15 }); }
     const n = g.boss ? 14 : 3;
     for (let i = 0; i < n; i++) {
@@ -703,7 +721,7 @@
       showToast('Дом ' + S.house + ' очищен! +' + cr + ' 💎');
       shake = 0.5;
       scheduleNextRoom();
-    } else {
+    } else if (!g.small) {
       S.cleared++;
     }
   }
@@ -721,11 +739,73 @@
     return true;
   }
 
+  function cancelFuse(g) { if (g.zone) { zones = zones.filter((z) => z !== g.zone); g.zone = null; g.fuse = 0; } }
+
+  // Поведение обычных призраков. true — движение уже сделано
+  function behave(g, dt) {
+    const dx = cat.x - g.x, dy = cat.y - 10 - g.y, d = Math.hypot(dx, dy) || 1;
+    g.bt -= dt;
+    switch (g.beh) {
+      case 'kite': { // держит дистанцию и кружит вокруг кота
+        const want = 190, sp = g.vy * 1.2;
+        const k = d < want - 30 ? -1 : d > want + 40 ? 1 : 0;
+        const side = Math.sin(g.phase * 0.25) > 0 ? 1 : -1;
+        g.x += ((dx / d) * k * sp + (-dy / d) * side * sp * 0.6) * dt;
+        g.y += ((dy / d) * k * sp + (dx / d) * side * sp * 0.6) * dt;
+        return true;
+      }
+      case 'charge': { // замирает, показывает линию и бросается
+        if (g.windup) {
+          g.windup.t -= dt;
+          if (g.windup.t <= 0) { const a = g.windup.line.a; g.windup = null; g.dash = { vx: Math.cos(a) * 420, vy: Math.sin(a) * 420, t: 0.5, hit: false, dmg: 16 }; g.bt = 3.5 + Math.random() * 2; }
+          return true;
+        }
+        if (g.bt <= 0 && d < 300 && !g.dash) { g.windup = { t: 0.75, line: { a: Math.atan2(dy, dx), len: 210 } }; return true; }
+        return false;
+      }
+      case 'blink': { // исчезает и появляется рядом с котом
+        if (g.blink) {
+          g.blink -= dt; g.alpha = Math.max(0, g.blink / 0.4);
+          if (g.blink <= 0) {
+            g.blink = 0; burst(g.x, g.y, 8, GHOSTS[g.type].body);
+            const a = Math.random() * Math.PI * 2, r = 130 + Math.random() * 60;
+            g.x = Math.max(FIELD.x1, Math.min(FIELD.x2, cat.x + Math.cos(a) * r)); g.y = Math.max(FIELD.y1, Math.min(FIELD.y2, cat.y + Math.sin(a) * r));
+            g.alpha = 0; g.trail = []; g.bt = 3.5 + Math.random() * 2;
+          }
+          return true;
+        }
+        if (g.bt <= 0 && !lowHp(g)) { g.blink = 0.4; return true; }
+        return false;
+      }
+      case 'heal': { // лечит соседей
+        if (g.bt <= 0) {
+          g.bt = 4 + Math.random() * 1.5;
+          let healed = 0;
+          for (const o of ghosts) if (o !== g && !o.boss && !o.raid && o.hp > 0 && !o.capturing && !o.dying && Math.hypot(o.x - g.x, o.y - g.y) < 140 && o.hp < o.maxHp) { o.hp = Math.min(o.maxHp, o.hp + o.maxHp * 0.3); healed++; floaters.push({ x: o.x, y: o.y - o.r, text: '+', life: 0.8, color: '#5fd38a', size: 18 }); }
+          if (healed) { rings.push({ x: g.x, y: g.y, r: 10, max: 140, life: 0.45, color: '#5fd38a' }); SFX.play('crystal'); }
+        }
+        if (d < 150) { g.x -= (dx / d) * g.vy * 0.5 * dt; g.y -= (dy / d) * g.vy * 0.5 * dt; g.x += Math.sin(g.phase * 0.7) * 12 * dt; return true; }
+        return false;
+      }
+      case 'bomber': { // подлетает и взрывается
+        if (g.fuse) {
+          g.fuse -= dt;
+          if (g.fuse <= 0) { g.zone = null; g.fuse = 0; g.hp = 0; g.dying = 0.2; burst(g.x, g.y, 18, '#ff9a3a'); if (!g.small) S.cleared++; }
+          return true;
+        }
+        if (d < 75 && !lowHp(g)) { g.fuse = 0.9; g.zone = { x: g.x, y: g.y, r: 64, tele: 0.9, life: 0.35, kind: 'blast', dmg: 22, color: '#ff8a3a', max: 0.9 }; zones.push(g.zone); SFX.play('spawn'); return true; }
+        if (d > g.r + 14) { g.x += (dx / d) * g.vy * 1.5 * dt; g.y += (dy / d) * g.vy * 1.5 * dt; }
+        return true;
+      }
+    }
+    return false;
+  }
+
   function tryCapture(g) {
     if (S.jars <= 0) { offerJars(); return; }
     const rar = GHOSTS[g.type].rarity;
     const chance = g.boss ? captureChance() * 0.45 : captureChance() * (1 - rar * 0.12);
-    g.capturing = 0.6;
+    g.capturing = 0.6; cancelFuse(g);
     SFX.play('suck');
     g.captureOk = (S.tut === 0 && !g.boss) || Math.random() < chance;
     g.captureStart = { x: g.x, y: g.y };
@@ -743,7 +823,7 @@
         showToast('Босс пойман! +' + cr + ' 💎');
         burst(cat.x, cat.y, 30, '#ffc94d');
         scheduleNextRoom();
-      } else {
+      } else if (!g.small) {
         S.cleared++;
       }
       g.hp = 0; g.dying = 0.01;
@@ -1659,12 +1739,12 @@
       if (cat.safeFor <= 0) cat.hp = Math.min(CAT_MAX_HP, cat.hp + 12 * dt);
       for (const g of ghosts) {
         if (!targetable(g)) continue;
-        if (Math.hypot(g.x - cat.x, g.y - (cat.y - 10)) < g.r + 18) hurtCat((g.boss ? 25 : 8) * dt);
+        if (g.beh !== 'bomber' && Math.hypot(g.x - cat.x, g.y - (cat.y - 10)) < g.r + 18) hurtCat((g.boss ? 25 : 8) * dt);
         // редкие и сильнее стреляют сгустками эктоплазмы
         if (GHOSTS[g.type].rarity >= 1) {
           g.shootCd -= dt;
           if (g.shootCd <= 0) {
-            g.shootCd = g.boss || g.raid ? 1.6 : 3.2;
+            g.shootCd = g.boss || g.raid ? 1.6 : g.beh === 'kite' ? 2 : 3.2;
             const a = Math.atan2(cat.y - 10 - g.y, cat.x - g.x);
             const big = g.boss || g.raid;
             const spread = big ? [-0.3, 0, 0.3] : [0];
@@ -1743,12 +1823,13 @@
         continue;
       }
       if (g.dying) { g.dying -= dt; continue; }
+      if (g.beh && !modal && behave(g, dt)) { g.x = Math.max(WALL, Math.min(MAP_W - WALL, g.x)); g.y = Math.max(WALL, Math.min(MAP_H - WALL, g.y)); continue; }
       if (g.windup && !modal) continue; // замах: босс замирает
       if (g.dash) {
         if (!modal) {
           g.x += g.dash.vx * dt; g.y += g.dash.vy * dt; g.dash.t -= dt;
           if (Math.random() < 0.6) particles.push({ x: g.x, y: g.y, vx: 0, vy: 0, life: 0.4, color: GHOSTS[g.type].body, r: 6 });
-          if (!g.dash.hit && Math.hypot(g.x - cat.x, g.y - cat.y) < g.r + 20) { g.dash.hit = true; hurtCat(32); }
+          if (!g.dash.hit && Math.hypot(g.x - cat.x, g.y - cat.y) < g.r + 20) { g.dash.hit = true; hurtCat(g.dash.dmg || 32); }
           if (g.dash.t <= 0) g.dash = null;
         }
         g.x = Math.max(WALL, Math.min(MAP_W - WALL, g.x)); g.y = Math.max(WALL, Math.min(MAP_H - WALL, g.y));
@@ -1796,6 +1877,8 @@
     }
     drops = drops.filter((d) => !d.done);
     if (toast) { toast.life -= dt; if (toast.life <= 0) toast = null; }
+    if (!behIntro && behQueue.length) behIntro = behQueue.shift();
+    if (behIntro && !panel && !modal) { behIntro.life -= dt; if (behIntro.life <= 0) behIntro = null; }
   }
 
   function nozzle() {
@@ -2677,7 +2760,7 @@
     let a = g.alpha;
     if (g.dying) a *= Math.max(0, g.dying / 0.35);
     ctx.globalAlpha = a;
-    const x = g.x + (g.windup ? Math.sin(time * 50) * 2.5 : 0), y = g.y + Math.sin(g.phase) * 4;
+    const x = g.x + (g.windup || g.fuse ? Math.sin(time * 50) * 2.5 : 0), y = g.y + Math.sin(g.phase) * 4;
     let r = g.r;
     if (g.capturing) {
       const k = g.capturing / 0.6;
@@ -2697,8 +2780,10 @@
       ctx.fillStyle = eg; ctx.beginPath(); ctx.arc(x, y, r * 1.9, 0, 7); ctx.fill();
       for (let i = 0; i < 4; i++) { const an = time * 2.5 + i * Math.PI / 2; ctx.fillStyle = '#fff3a6'; ctx.beginPath(); ctx.arc(x + Math.cos(an) * r * 1.35, y + Math.sin(an) * r * 0.9, 3, 0, 7); ctx.fill(); }
     }
+    if (g.fuse) { const f = 0.5 + 0.5 * Math.sin(time * 30); ctx.fillStyle = `rgba(255,90,60,${0.25 + 0.35 * f})`; ctx.beginPath(); ctx.arc(x, y, r * 1.5, 0, 7); ctx.fill(); }
+    if (g.beh === 'heal' && !g.dying && g.bt < 1) { ctx.fillStyle = `rgba(95,211,138,${0.35 * (1 - g.bt)})`; ctx.beginPath(); ctx.arc(x, y, r * 1.7, 0, 7); ctx.fill(); }
     const dx = cat.x - g.x, dy = cat.y - g.y, dl = Math.hypot(dx, dy) || 1;
-    ghostSprite(g.type, x, y, r, { hit: g.hit > 0, phase: g.phase, lookX: dx / dl, lookY: dy / dl });
+    ghostSprite(g.type, x, y, r, { hit: g.hit > 0 || (g.fuse && Math.sin(time * 30) > 0), phase: g.phase, lookX: dx / dl, lookY: dy / dl });
     if (g.elite && !g.dying) { // корона
       ctx.save(); ctx.translate(x, y - r * 1.05);
       ctx.beginPath(); ctx.moveTo(-10, 4); ctx.lineTo(-11, -6); ctx.lineTo(-5, -1); ctx.lineTo(0, -9); ctx.lineTo(5, -1); ctx.lineTo(11, -6); ctx.lineTo(10, 4); ctx.closePath();
@@ -2712,9 +2797,28 @@
         const w = r * 2;
         rr(x - w / 2, g.y - r - 14, w, 5, 2); ctx.fillStyle = INK; ctx.fill();
         rr(x - w / 2, g.y - r - 14, w * Math.max(0, g.hp / g.maxHp), 5, 2); ctx.fillStyle = low ? '#7dff9e' : '#ff6b8a'; ctx.fill();
+        if (g.beh) behIcon(g.beh, x - w / 2 - 8, g.y - r - 11.5, 6.5);
       }
       if (low) text('ТАП!', x, g.y + r + 22, 12, '#7dff9e');
     }
+  }
+
+  // Значок поведения призрака: кружок цвета поведения и рисунок внутри
+  function behIcon(kind, x, y, s) {
+    const c = BEHAVIORS[kind].color;
+    ctx.save(); ctx.translate(x, y);
+    ctx.fillStyle = c; ctx.strokeStyle = INK; ctx.lineWidth = Math.max(1.2, s * 0.25);
+    ctx.beginPath(); ctx.arc(0, 0, s, 0, 7); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(1.2, s * 0.22); ctx.lineCap = 'round';
+    const k = s * 0.55;
+    ctx.beginPath();
+    if (kind === 'split') { ctx.arc(-k * 0.5, 0, k * 0.42, 0, 7); ctx.moveTo(k * 0.92, 0); ctx.arc(k * 0.5, 0, k * 0.42, 0, 7); ctx.fill(); }
+    else if (kind === 'kite') { ctx.arc(0, 0, k * 0.7, 0, 7); ctx.moveTo(-k, 0); ctx.lineTo(k, 0); ctx.moveTo(0, -k); ctx.lineTo(0, k); ctx.stroke(); }
+    else if (kind === 'charge') { ctx.moveTo(-k, -k * 0.7); ctx.lineTo(0, 0); ctx.lineTo(-k, k * 0.7); ctx.moveTo(-k * 0.1, -k * 0.7); ctx.lineTo(k * 0.9, 0); ctx.lineTo(-k * 0.1, k * 0.7); ctx.stroke(); }
+    else if (kind === 'blink') { for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2; ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * k, Math.sin(a) * k); } ctx.stroke(); ctx.beginPath(); ctx.arc(0, 0, k * 0.3, 0, 7); ctx.fill(); }
+    else if (kind === 'heal') { ctx.fillRect(-k * 0.25, -k * 0.8, k * 0.5, k * 1.6); ctx.fillRect(-k * 0.8, -k * 0.25, k * 1.6, k * 0.5); }
+    else if (kind === 'bomber') { ctx.arc(-k * 0.1, k * 0.15, k * 0.6, 0, 7); ctx.fill(); ctx.beginPath(); ctx.moveTo(k * 0.3, -k * 0.3); ctx.lineTo(k * 0.75, -k * 0.8); ctx.stroke(); }
+    ctx.restore();
   }
 
   // Спрайт кота со скинами: используется в бою и в магазине
@@ -3447,6 +3551,7 @@
       const got = S.bestClaimed[type] || 0;
       card(x, y, 152, 174, 12, RARITY[def.rarity].color);
       ghostSprite(type, x + 76, y + 48, 24, { silhouette: n === 0, phase: time * 2 });
+      if (def.beh && n) { const b = BEHAVIORS[def.beh]; behIcon(def.beh, x + 16, y + 16, 8); text(b.name, x + 28, y + 17, 9, b.color === '#5fd38a' ? '#2f8f4e' : INK, 'left', '800'); }
       text(n ? def.name : '???', x + 76, y + 96, 11, INK, 'center', '800');
       text(RARITY[def.rarity].name + ' · поймано ' + n, x + 76, y + 112, 9, '#6b5f86', 'center', '700');
       if (got < BEST_MILESTONES.length) {
@@ -4048,8 +4153,8 @@
       text('ТАП!', gold.x, gy + 34, 11, '#ffd84d');
     }
     for (const rg of rings) {
-      ctx.globalAlpha = Math.max(0, rg.life / 0.3);
-      ctx.strokeStyle = '#ffcf8a'; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(rg.x, rg.y, rg.r, 0, 7); ctx.stroke();
+      ctx.globalAlpha = Math.min(1, Math.max(0, rg.life / 0.3));
+      ctx.strokeStyle = rg.color || '#ffcf8a'; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(rg.x, rg.y, rg.r, 0, 7); ctx.stroke();
     }
     ctx.globalCompositeOperation = 'lighter';
     ctx.lineCap = 'round';
@@ -4107,6 +4212,17 @@
     drawTopBar();
     drawBottom();
     drawTutorial();
+    if (behIntro && !panel && !modal && !splash) {
+      const b = BEHAVIORS[behIntro.kind], k = Math.min(1, behIntro.life * 2, (5 - behIntro.life) * 4);
+      ctx.save(); ctx.globalAlpha = k; ctx.translate(0, (1 - k) * 20);
+      rr(14, 448, 332, 52, 16); ctx.fillStyle = 'rgba(10,5,25,0.4)'; ctx.fill();
+      plate(14, 444, 332, 52, 16, '#fffaf2', { lw: 3 });
+      ghostSprite(behIntro.type, 44, 470, 15, { phase: time * 2 });
+      behIcon(behIntro.kind, 58, 458, 7);
+      fitText('Новый враг: ' + GHOSTS[behIntro.type].name + ' · ' + b.name, 72, 461, 264, 12, INK, 'left', '800');
+      fitText(b.hint[0].toUpperCase() + b.hint.slice(1), 72, 479, 264, 11, '#6b5f86', 'left', '700');
+      ctx.restore();
+    }
     if (panel === 'squad') drawSquadPanel();
     else if (panel === 'attach') drawAttachPanel();
     else if (panel === 'bestiary') drawBestiaryPanel();
@@ -4144,7 +4260,7 @@
   requestAnimationFrame(frame);
 
   // Для отладки в консоли браузера.
-  window.__game = {
+  window.__game = { spawn: (t, o) => spawnGhost(t, o), behIntro: () => behIntro,
     state: () => S, sfx: SFX, mapImage: () => mapCanvas.toDataURL(), ghosts: () => ghosts, cat: () => cat, cam: () => cam, resetRoom: () => resetRoom(), open: (p) => { panel = p; }, gold: () => { goldCd = 0; }, goldObj: () => gold, toScreen,
     splash: () => { splash = { t: 0, out: 0 }; },
     tut: (n) => { S.tut = n; },
