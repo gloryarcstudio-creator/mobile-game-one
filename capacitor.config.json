@@ -1,0 +1,17 @@
+{
+  "appId": "com.gloryarc.catexorcist",
+  "appName": "Кот-экзорцист",
+  "webDir": "www",
+  "backgroundColor": "#1d1729",
+  "android": {
+    "backgroundColor": "#1d1729",
+    "allowMixedContent": false
+  },
+  "ios": {
+    "backgroundColor": "#1d1729",
+    "contentInset": "never"
+  },
+  "plugins": {
+    "StatusBar": { "overlaysWebView": true, "style": "DARK", "backgroundColor": "#00000000" }
+  }
+}

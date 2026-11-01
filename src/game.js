@@ -8,9 +8,13 @@
   const ctx = canvas.getContext('2d');
   let scale = 1, dpr = 1;
 
+  // Нативная обёртка Capacitor: плагины доступны как window.Capacitor.Plugins, в браузере их нет
+  const NATIVE = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() ? window.Capacitor.Plugins : null;
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 3);
-    scale = Math.min(window.innerWidth / W, window.innerHeight / H);
+    // вырезы и скругления экрана телефона (safe area) не занимаем
+    const cs = getComputedStyle(document.documentElement), inset = (k) => parseFloat(cs.getPropertyValue(k)) || 0;
+    scale = Math.min((window.innerWidth - inset('--sal') - inset('--sar')) / W, (window.innerHeight - inset('--sat') - inset('--sab')) / H);
     canvas.style.width = Math.floor(W * scale) + 'px';
     canvas.style.height = Math.floor(H * scale) + 'px';
     canvas.width = Math.floor(W * scale * dpr);
@@ -492,7 +496,7 @@
   let joy = null; // {sx, sy, x, y, id, drag}
   let manualUntil = 0;
   const motes = Array.from({ length: 26 }, () => ({ x: Math.random() * 1000, y: Math.random() * 1000, vx: (Math.random() - 0.5) * 12, vy: -4 - Math.random() * 10, r: 1 + Math.random() * 1.8 }));
-  let behIntro = null, behQueue = [], iconSheet = false; // знакомство с новым типом призрака
+  let behIntro = null, behQueue = [], iconSheet = false, appArt = false; // знакомство с новым типом призрака
   let zones = [], featureCd = 6; // опасные зоны на полу: {x, y, r, tele, life, kind, dmg, color}
   let ghosts = [], beams = [], floaters = [], particles = [], drops = [], orbiters = [], rings = [];
   let spawnCd = 0.5, roomSpawned = 0, bossTimer = 0, bossSpawned = false;
@@ -1006,7 +1010,11 @@
   const bossGems = () => Math.round(10 * (1 + circle()) * (1 + 0.2 * talent('luck')));
   function bossDown() { S.stats.bosses++; addPassXp(15); vibrate([40, 40, 80]); }
   const opt = (k) => S.settings[k] !== false;
-  function vibrate(p) { if (opt('vibro') && navigator.vibrate) try { navigator.vibrate(p); } catch (e) { /* не везде доступно */ } }
+  function vibrate(p) {
+    if (!opt('vibro')) return;
+    const H = NATIVE && NATIVE.Haptics; // в приложении: нативная отдача (iOS не умеет navigator.vibrate)
+    try { if (H) H.impact({ style: Array.isArray(p) ? 'HEAVY' : 'LIGHT' }); else if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* не везде доступно */ }
+  }
 
   function scheduleNextRoom() {
     const tok = roomToken;
@@ -4549,6 +4557,18 @@
       text(toast.text, 180, (panel ? 592 : 108) + 17, 14, '#ffffff');
       ctx.globalAlpha = 1;
     }
+    if (appArt) { // отладка: картинка для иконки приложения (квадрат 360×360)
+      ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 360, 640);
+      ctx.save(); ctx.beginPath(); ctx.rect(0, 0, 360, 360); ctx.clip();
+      const sky = ctx.createRadialGradient(180, 150, 20, 180, 180, 260); sky.addColorStop(0, '#6a4ab0'); sky.addColorStop(1, '#1d1240'); ctx.fillStyle = sky; ctx.fillRect(0, 0, 360, 360);
+      const mg = ctx.createRadialGradient(100, 100, 10, 100, 100, 120); mg.addColorStop(0, 'rgba(255,240,180,0.55)'); mg.addColorStop(1, 'rgba(255,240,180,0)'); ctx.fillStyle = mg; ctx.fillRect(0, 0, 360, 360);
+      ctx.fillStyle = '#ffe9a8'; ctx.beginPath(); ctx.arc(100, 100, 52, 0, 7); ctx.fill();
+      ctx.fillStyle = 'rgba(220,190,120,0.45)'; [[-16, -10, 9], [14, 12, 12], [18, -20, 6]].forEach(([dx, dy, r]) => { ctx.beginPath(); ctx.arc(100 + dx, 100 + dy, r, 0, 7); ctx.fill(); });
+      for (let i = 0; i < 26; i++) { ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fillRect((i * 97.3) % 360, (i * 53.7) % 200, 2, 2); }
+      ghostSprite('sheet', 272, 104, 30, { phase: 1, lookX: -0.6, lookY: 0.4 });
+      ctx.save(); ctx.translate(168, 272); ctx.scale(2.3, 2.3); catSprite(0, 0, { skin: 'ginger', aim: -0.75, blinkSeed: 3, eqColor: '#9ff3ff' }); ctx.restore();
+      ctx.restore();
+    }
     if (iconSheet) { // отладка: все нарисованные иконки
       ctx.fillStyle = '#fffaf2'; ctx.fillRect(0, 0, 360, 640);
       Object.keys(INLINE_ICONS).forEach((e, i) => { const x = 30 + (i % 6) * 60, y = 40 + Math.floor(i / 6) * 70; drawIcon(INLINE_ICONS[e], x, y, 34); text(INLINE_ICONS[e], x, y + 28, 9, INK); text(e + ' 12', x, y + 44, 12, INK); });
@@ -4570,7 +4590,19 @@
   requestAnimationFrame(frame);
 
   // Для отладки в консоли браузера.
-  window.__game = { event: (on) => { S.evForce = on; }, icons: () => { iconSheet = !iconSheet; }, spawn: (t, o) => spawnGhost(t, o), behIntro: () => behIntro,
+  if (NATIVE) {
+    try { NATIVE.StatusBar && NATIVE.StatusBar.hide(); } catch (e) { /* нет плагина */ }
+    if (NATIVE.App) {
+      // «Назад» на Android: закрыть окно, потом панель, иначе свернуть игру
+      NATIVE.App.addListener('backButton', () => {
+        if (modal && !modal.ad) closeModal();
+        else if (panel && panel !== 'offline') panel = null;
+        else { save(); NATIVE.App.minimizeApp(); }
+      });
+      NATIVE.App.addListener('pause', () => save());
+    }
+  }
+  window.__game = { appArt: () => { appArt = !appArt; }, event: (on) => { S.evForce = on; }, icons: () => { iconSheet = !iconSheet; }, spawn: (t, o) => spawnGhost(t, o), behIntro: () => behIntro,
     state: () => S, sfx: SFX, mapImage: () => mapCanvas.toDataURL(), ghosts: () => ghosts, cat: () => cat, cam: () => cam, resetRoom: () => resetRoom(), open: (p) => { panel = p; }, gold: () => { goldCd = 0; }, goldObj: () => gold, toScreen,
     splash: () => { splash = { t: 0, out: 0 }; },
     tut: (n) => { S.tut = n; },
