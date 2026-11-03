@@ -386,7 +386,7 @@
   // =====================================================================
   const defaultState = () => ({
     house: 1, room: 1, cleared: 0,
-    settings: { music: true, sfx: true, vibro: true, numbers: true, shake: true },
+    settings: { music: true, sfx: true, vibro: true, numbers: true, shake: true, art: true },
     ach: {},
     exp: [null, null, null],
     ecto: 0, crystals: 60, jars: 8,
@@ -2042,6 +2042,22 @@
   // =====================================================================
   // Отрисовка: базовые функции
   // =====================================================================
+  // Нарисованный арт (стартовый набор «Спальный квартал»): Мурзик, насадка, три призрака и босс.
+  // Пока картинка не загрузилась, рисуется процедурный вариант, остальные районы пока тоже процедурные.
+  const ART_SRC = { murzik: 'art/murzik.png', nozzle: 'art/nozzle.png', sheet: 'art/ghost-sheet.png', sock: 'art/ghost-sock.png', fire: 'art/ghost-fire.png', washer: 'art/ghost-washer.png' };
+  const ART_FIT = { sheet: 196 / 256, sock: 217 / 256, fire: 218 / 256, washer: 212 / 256 }; // доля высоты картинки, занятая фигурой
+  const ART = {};
+  const tintCopy = (img, color) => {
+    const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
+    const x = c.getContext('2d'); x.drawImage(img, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = color; x.fillRect(0, 0, c.width, c.height); return c;
+  };
+  for (const k in ART_SRC) {
+    const img = new Image();
+    img.onload = () => { ART[k] = { img, white: tintCopy(img, '#ffffff'), shadow: tintCopy(img, '#6b5f86') }; };
+    img.src = ART_SRC[k];
+  }
+  const useArt = () => !S.settings || S.settings.art !== false;
+
   const INK = '#2b2340';
   const DARK = new Set([INK, '#6b5f86', '#2f8f4e', '#9b93b3', '#9a8fb5', '#8f86ad']);
   // Цветовые помощники для объёма: светлее/темнее и прозрачность
@@ -2392,6 +2408,17 @@
     o = o || {};
     const def = GHOSTS[type];
     const phase = o.phase || 0;
+    const A = useArt() && ART[type];
+    if (A) { // нарисованный спрайт: лёгкое покачивание ±1°, белая вспышка при попадании
+      const D = (r * 2.5) / ART_FIT[type];
+      ctx.save(); ctx.translate(x, y); ctx.rotate(Math.sin(phase) * 0.018);
+      if (o.silhouette) ctx.drawImage(A.shadow, -D / 2, -D / 2, D, D);
+      else {
+        ctx.drawImage(A.img, -D / 2, -D / 2, D, D);
+        if (o.hit) { ctx.globalAlpha *= 0.7; ctx.drawImage(A.white, -D / 2, -D / 2, D, D); }
+      }
+      ctx.restore(); return;
+    }
     if (o.silhouette) ctx.fillStyle = '#6b5f86';
     else { const gr = ctx.createRadialGradient(x - r * 0.4, y - r * 0.5, r * 0.1, x, y + r * 0.2, r * 1.7); gr.addColorStop(0, shade(def.body, 0.6)); gr.addColorStop(0.45, def.body); gr.addColorStop(1, shade(def.body, -0.3)); ctx.fillStyle = gr; }
     ctx.strokeStyle = INK; ctx.lineWidth = r > 15 ? 3 : 2;
@@ -3138,8 +3165,46 @@
   }
 
   // Спрайт кота со скинами: используется в бою и в магазине
+  // Мурзик из арт-набора (стартовый скин «Рыжик»): поворачивается к цели, насадка в лапе
+  let murzikFace = 1;
+  function murzikSprite(x, gy, o) {
+    const A = ART.murzik, N = ART.nozzle, PI = Math.PI;
+    const walk = o.walk || 0, y = gy + (o.bobY || 0), aim = o.aim === undefined ? -PI / 2 : o.aim, rec = o.recoil || 0;
+    const D = 96, fy = 0.91; // опорная точка у ног
+    const c = Math.cos(aim);
+    if (Math.abs(c) > 0.15) murzikFace = c < 0 ? -1 : 1;
+    const f = murzikFace;
+    let la = f > 0 ? aim : PI - aim; // угол в «зеркальном» пространстве кота
+    while (la > PI) la -= 2 * PI; while (la < -PI) la += 2 * PI;
+    const breath = 1 + 0.018 * (0.5 - 0.5 * Math.cos(time * 2 * PI / 2.8));
+    // тень
+    ctx.fillStyle = 'rgba(30,15,50,0.25)'; ctx.beginPath(); ctx.ellipse(x, gy + 28, 30 - Math.abs(walk) * 3, 8, 0, 0, PI * 2); ctx.fill();
+    ctx.save(); ctx.translate(x, y + 27); ctx.scale(f, 1); ctx.rotate(walk * 0.05); ctx.scale(1, breath);
+    ctx.drawImage(A.img, -D / 2, -D * fy, D, D);
+    if (o.tool !== false && N) {
+      const px = 0.35 * D, py = (0.585 - fy) * D; // ладонь
+      const L = 46, H = 23 * (o.wide ? 1.3 : 1);
+      ctx.save(); ctx.translate(px, py); ctx.scale(1, 1 / breath); ctx.rotate(la); ctx.translate(-rec * 5, 0);
+      if (o.rocket) { ctx.fillStyle = alpha(ATTACH.rocket.color, 0.5); ctx.beginPath(); ctx.arc(-4, 0, 9, 0, 7); ctx.fill(); }
+      ctx.drawImage(N.img, -0.18 * L, -H / 2, L, H);
+      const tip = 0.8 * L, col = o.eqColor || '#ff7a9c';
+      ctx.fillStyle = alpha(col, 0.55); rr(tip - 3, -H * 0.4, 5, H * 0.8, 2); ctx.fill();
+      if (rec > 0.2) {
+        ctx.globalCompositeOperation = 'lighter';
+        const mg = ctx.createRadialGradient(tip + 6, 0, 1, tip + 6, 0, 18 * rec + 6);
+        mg.addColorStop(0, 'rgba(255,255,255,0.9)'); mg.addColorStop(0.4, alpha(col, 0.6)); mg.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = mg; ctx.beginPath(); ctx.arc(tip + 6, 0, 18 * rec + 6, 0, 7); ctx.fill();
+        ctx.globalCompositeOperation = 'source-over';
+      }
+      ctx.restore();
+    }
+    ctx.restore();
+    if (o.halo) { ctx.strokeStyle = '#fff1a8'; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(x, y - 62, 14, 4, 0, 0, PI * 2); ctx.stroke(); }
+  }
+
   function catSprite(x, gy, o) {
     const k = SKINS[o.skin] ? o.skin : 'ginger', SK = SKINS[k];
+    if (k === 'ginger' && ART.murzik && useArt()) return murzikSprite(x, gy, o);
     const walk = o.walk || 0, y = gy + (o.bobY || 0), aim = o.aim === undefined ? -Math.PI / 2 : o.aim, rec = o.recoil || 0;
     const PI = Math.PI, pat = SK.pat || 'none', metal = !!SK.metal, ghost = !!SK.ghost;
     const fur = (cx, cy, rad) => {
@@ -3910,25 +3975,25 @@
   // Настройки
   function drawSettingsPanel() {
     panelFrame('Настройки');
-    const rows = [['music', '🎵', 'Музыка'], ['sfx', '🔊', 'Звуки'], ['vibro', '📳', 'Вибрация'], ['numbers', '✨', 'Цифры урона'], ['shake', '💥', 'Тряска экрана']];
+    const rows = [['music', '🎵', 'Музыка'], ['sfx', '🔊', 'Звуки'], ['vibro', '📳', 'Вибрация'], ['numbers', '✨', 'Цифры урона'], ['shake', '💥', 'Тряска экрана'], ['art', '👻', 'Новый арт (1-й район)']];
     rows.forEach(([k, icon, name], i) => {
-      const y = 108 + i * 50, on = opt(k);
-      card(28, y, 304, 42, 12, '#d9cff0');
-      orb(52, y + 21, 13, '#8a7bd1'); text(icon, 52, y + 22, 13, '#ffffff');
-      text(name, 76, y + 21, 13, INK, 'left', '800');
+      const y = 104 + i * 46, on = opt(k);
+      card(28, y, 304, 40, 12, '#d9cff0');
+      orb(52, y + 20, 13, '#8a7bd1'); text(icon, 52, y + 21, 13, '#ffffff');
+      text(name, 76, y + 20, 13, INK, 'left', '800');
       // переключатель
-      rr(258, y + 9, 56, 24, 12); ctx.fillStyle = on ? '#7dd99a' : '#c9c0dc'; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.stroke();
-      ctx.beginPath(); ctx.arc(on ? 302 : 270, y + 21, 9, 0, 7); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.stroke();
-      btn(28, y, 304, 42, () => { S.settings[k] = !on; if (k === 'music' || k === 'sfx') SFX.apply(); if (k === 'vibro' && !on) vibrate(40); save(); });
+      rr(258, y + 8, 56, 24, 12); ctx.fillStyle = on ? '#7dd99a' : '#c9c0dc'; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.stroke();
+      ctx.beginPath(); ctx.arc(on ? 302 : 270, y + 20, 9, 0, 7); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.stroke();
+      btn(28, y, 304, 40, () => { S.settings[k] = !on; if (k === 'music' || k === 'sfx') SFX.apply(); if (k === 'vibro' && !on) vibrate(40); save(); });
     });
-    text('Прогресс сохраняется на этом устройстве', 180, 372, 10, '#6b5f86', 'center', '700');
-    button(40, 388, 280, 40, 'Политика конфиденциальности', '#8a7bd1', () => showToast('Ссылка появится в релизе'), 12);
-    button(40, 436, 280, 40, 'Сбросить прогресс', '#ff6b8a', () => ask('Сбросить прогресс?', ['Пропадут дома, духи, насадки, камни и скины.', 'Покупки восстановятся через магазин.'], [
+    text('Прогресс сохраняется на этом устройстве', 180, 386, 10, '#6b5f86', 'center', '700');
+    button(40, 400, 280, 40, 'Политика конфиденциальности', '#8a7bd1', () => showToast('Ссылка появится в релизе'), 12);
+    button(40, 446, 280, 40, 'Сбросить прогресс', '#ff6b8a', () => ask('Сбросить прогресс?', ['Пропадут дома, духи, насадки, камни и скины.', 'Покупки восстановятся через магазин.'], [
       { label: 'Отмена', color: '#8a7bd1', on: closeModal },
       { label: 'Сбросить', color: '#ff6b8a', on: () => { closeModal(); panel = null; localStorage.removeItem(SAVE_KEY); S = defaultState(); ensureQuests(); dailyReset(); syncSlots(); resetRoom(); splash = { t: 0, out: 0 }; } },
     ]), 12);
-    text('Кот-экзорцист · версия ' + VERSION, 180, 498, 10, '#6b5f86', 'center', '700');
-    text('Вся графика и музыка нарисованы кодом', 180, 514, 9, '#9a8fb5', 'center', '700');
+    text('Кот-экзорцист · версия ' + VERSION, 180, 504, 10, '#6b5f86', 'center', '700');
+    text('Герои 1-го района: арт-набор, остальное нарисовано кодом', 180, 520, 9, '#9a8fb5', 'center', '700');
   }
 
   // Панель походов
