@@ -4823,7 +4823,18 @@
       NATIVE.App.addListener('pause', () => save());
     }
   }
-  window.__game = { turbo: () => turboActive(), appArt: () => { appArt = !appArt; }, event: (on) => { S.evForce = on; }, icons: () => { iconSheet = !iconSheet; }, spawn: (t, o) => spawnGhost(t, o), behIntro: () => behIntro,
+  window.__game = {
+    // рисует один спрайт на чистом холсте и возвращает PNG (для референсов арта)
+    ref: (kind, key, scale, noArt) => {
+      const keep = S.settings.art; if (noArt) S.settings.art = false;
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.translate(canvas.width / 2, canvas.height / 2); ctx.scale(scale, scale);
+      if (kind === 'cat') catSprite(0, 20, { skin: key, aim: 0.35, blinkSeed: 9, eqColor: '#9ff3ff' });
+      else ghostSprite(key, 0, 0, 20, { phase: 1.2, lookX: 0, lookY: 0.4 });
+      ctx.restore(); S.settings.art = keep;
+      return canvas.toDataURL('image/png');
+    },
+    turbo: () => turboActive(), appArt: () => { appArt = !appArt; }, event: (on) => { S.evForce = on; }, icons: () => { iconSheet = !iconSheet; }, spawn: (t, o) => spawnGhost(t, o), behIntro: () => behIntro,
     state: () => S, sfx: SFX, mapImage: () => mapCanvas.toDataURL(), ghosts: () => ghosts, cat: () => cat, cam: () => cam, resetRoom: () => resetRoom(), open: (p) => { panel = p; }, gold: () => { goldCd = 0; }, goldObj: () => gold, toScreen,
     splash: () => { splash = { t: 0, out: 0 }; },
     tut: (n) => { S.tut = n; },
