@@ -8,8 +8,11 @@ const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const js = fs.readFileSync(path.join(root, 'src', 'game.js'), 'utf8');
 const tag = '<script src="src/game.js"></script>';
 if (!html.includes(tag)) throw new Error('index.html: не найден тег ' + tag);
+// шрифты встраиваем как data: URI, чтобы один файл работал без сети и внутри приложения
+const fontUri = (f) => 'data:font/woff2;base64,' + fs.readFileSync(path.join(root, 'fonts', f)).toString('base64');
+const htmlFonts = html.replace(/url\(fonts\/([\w.-]+\.woff2)\)/g, (m, f) => 'url(' + fontUri(f) + ')');
 // функция вместо строки: в коде игры есть «$», который replace иначе понял бы как шаблон
-const single = html.replace(tag, () => '<script>\n' + js + '\n</script>');
+const single = htmlFonts.replace(tag, () => '<script>\n' + js + '\n</script>');
 
 for (const [dir, name] of [['www', 'index.html'], ['dist', 'cat-exorcist.html']]) {
   fs.mkdirSync(path.join(root, dir), { recursive: true });
