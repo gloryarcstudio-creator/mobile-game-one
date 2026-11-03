@@ -535,7 +535,7 @@
   const cam = { x: MAP_W / 2, y: MAP_H / 2 };
   const toScreen = (x, y) => ({ x: (x - cam.x) * ZOOM + VIEW_CX, y: (y - cam.y) * ZOOM + VIEW_CY });
   const toWorld = (x, y) => ({ x: (x - VIEW_CX) / ZOOM + cam.x, y: (y - VIEW_CY) / ZOOM + cam.y });
-  let mapCanvas = null, mapKey = '', solids = [];
+  let mapCanvas = null, mapKey = '', solids = [], keepCatOnRebuild = false;
 
   const cat = { x: MAP_W / 2, y: MAP_H / 2, aim: -Math.PI / 2, bob: 0, fireCd: 0, recoil: 0, shots: 0, rocketCd: 1, hp: 100, hurt: 0, safeFor: 0, moving: 0, face: 1 };
   const CAT_MAX_HP = 100;
@@ -2044,18 +2044,152 @@
   // =====================================================================
   // Нарисованный арт (стартовый набор «Спальный квартал»): Мурзик, насадка, три призрака и босс.
   // Пока картинка не загрузилась, рисуется процедурный вариант, остальные районы пока тоже процедурные.
-  const ART_SRC = { murzik: 'art/murzik.png', nozzle: 'art/nozzle.png', sheet: 'art/ghost-sheet.png', sock: 'art/ghost-sock.png', fire: 'art/ghost-fire.png', washer: 'art/ghost-washer.png' };
-  const ART_FIT = { sheet: 196 / 256, sock: 217 / 256, fire: 218 / 256, washer: 212 / 256 }; // доля высоты картинки, занятая фигурой
+  // ART-META-BEGIN (создаётся tools/prepare-art.py, не править руками)
+  const ART_SRC = {
+    'cat-angel': 'art/cat-angel.webp',
+    'cat-astro': 'art/cat-astro.webp',
+    'cat-black': 'art/cat-black.webp',
+    'cat-chef': 'art/cat-chef.webp',
+    'cat-devil': 'art/cat-devil.webp',
+    'cat-ginger': 'art/cat-ginger.webp',
+    'cat-golden': 'art/cat-golden.webp',
+    'cat-jack': 'art/cat-jack.webp',
+    'cat-ninja': 'art/cat-ninja.webp',
+    'cat-peach': 'art/cat-peach.webp',
+    'cat-phantom': 'art/cat-phantom.webp',
+    'cat-pirate': 'art/cat-pirate.webp',
+    'cat-reaper': 'art/cat-reaper.webp',
+    'cat-santa': 'art/cat-santa.webp',
+    'cat-siam': 'art/cat-siam.webp',
+    'cat-spotty': 'art/cat-spotty.webp',
+    'cat-tabby': 'art/cat-tabby.webp',
+    'cat-vampire': 'art/cat-vampire.webp',
+    'cat-white': 'art/cat-white.webp',
+    'cat-wizard': 'art/cat-wizard.webp',
+    'floor-d1': 'art/floor-d1.webp',
+    'floor-d2': 'art/floor-d2.webp',
+    'floor-d3': 'art/floor-d3.webp',
+    'floor-d4': 'art/floor-d4.webp',
+    'floor-d5': 'art/floor-d5.webp',
+    'floor-d6': 'art/floor-d6.webp',
+    'floor-d7': 'art/floor-d7.webp',
+    'floor-d8': 'art/floor-d8.webp',
+    'ghost-armor': 'art/ghost-armor.webp',
+    'ghost-aurora': 'art/ghost-aurora.webp',
+    'ghost-candle': 'art/ghost-candle.webp',
+    'ghost-carousel': 'art/ghost-carousel.webp',
+    'ghost-drowned': 'art/ghost-drowned.webp',
+    'ghost-fire': 'art/ghost-fire.webp',
+    'ghost-flask': 'art/ghost-flask.webp',
+    'ghost-franken': 'art/ghost-franken.webp',
+    'ghost-frostqueen': 'art/ghost-frostqueen.webp',
+    'ghost-golden': 'art/ghost-golden.webp',
+    'ghost-headless': 'art/ghost-headless.webp',
+    'ghost-icicle': 'art/ghost-icicle.webp',
+    'ghost-jacko': 'art/ghost-jacko.webp',
+    'ghost-jelly': 'art/ghost-jelly.webp',
+    'ghost-lantern': 'art/ghost-lantern.webp',
+    'ghost-mannequin': 'art/ghost-mannequin.webp',
+    'ghost-mansion': 'art/ghost-mansion.webp',
+    'ghost-mirror': 'art/ghost-mirror.webp',
+    'ghost-moonking': 'art/ghost-moonking.webp',
+    'ghost-moth': 'art/ghost-moth.webp',
+    'ghost-ninelives': 'art/ghost-ninelives.webp',
+    'ghost-portrait': 'art/ghost-portrait.webp',
+    'ghost-pumpkin': 'art/ghost-pumpkin.webp',
+    'ghost-sheet': 'art/ghost-sheet.webp',
+    'ghost-ship': 'art/ghost-ship.webp',
+    'ghost-skelecat': 'art/ghost-skelecat.webp',
+    'ghost-slime': 'art/ghost-slime.webp',
+    'ghost-snowman': 'art/ghost-snowman.webp',
+    'ghost-sock': 'art/ghost-sock.webp',
+    'ghost-spark': 'art/ghost-spark.webp',
+    'ghost-starling': 'art/ghost-starling.webp',
+    'ghost-toy': 'art/ghost-toy.webp',
+    'ghost-tv': 'art/ghost-tv.webp',
+    'ghost-washer': 'art/ghost-washer.webp',
+    'ghost-wisp': 'art/ghost-wisp.webp',
+    'nozzle': 'art/nozzle.webp',
+    'prop-d1-bed': 'art/prop-d1-bed.webp',
+    'prop-d1-box': 'art/prop-d1-box.webp',
+    'prop-d1-lamp': 'art/prop-d1-lamp.webp',
+    'prop-d1-plant': 'art/prop-d1-plant.webp',
+    'prop-d1-rug': 'art/prop-d1-rug.webp',
+    'prop-d1-sofa': 'art/prop-d1-sofa.webp',
+    'prop-d1-table': 'art/prop-d1-table.webp',
+    'prop-d1-yarn': 'art/prop-d1-yarn.webp',
+    'prop-d2-armor': 'art/prop-d2-armor.webp',
+    'prop-d2-chest': 'art/prop-d2-chest.webp',
+    'prop-d2-lamp': 'art/prop-d2-lamp.webp',
+    'prop-d2-plant': 'art/prop-d2-plant.webp',
+    'prop-d2-rug': 'art/prop-d2-rug.webp',
+    'prop-d2-shelf': 'art/prop-d2-shelf.webp',
+    'prop-d2-table': 'art/prop-d2-table.webp',
+    'prop-d3-anchor': 'art/prop-d3-anchor.webp',
+    'prop-d3-barrel': 'art/prop-d3-barrel.webp',
+    'prop-d3-box': 'art/prop-d3-box.webp',
+    'prop-d3-buoy': 'art/prop-d3-buoy.webp',
+    'prop-d3-lamp': 'art/prop-d3-lamp.webp',
+    'prop-d3-net': 'art/prop-d3-net.webp',
+    'prop-d3-rope': 'art/prop-d3-rope.webp',
+    'prop-d4-box': 'art/prop-d4-box.webp',
+    'prop-d4-lamp': 'art/prop-d4-lamp.webp',
+    'prop-d4-mannequin': 'art/prop-d4-mannequin.webp',
+    'prop-d4-plant': 'art/prop-d4-plant.webp',
+    'prop-d4-rack': 'art/prop-d4-rack.webp',
+    'prop-d4-rug': 'art/prop-d4-rug.webp',
+    'prop-d4-table': 'art/prop-d4-table.webp',
+    'prop-d5-bush': 'art/prop-d5-bush.webp',
+    'prop-d5-candles': 'art/prop-d5-candles.webp',
+    'prop-d5-grave': 'art/prop-d5-grave.webp',
+    'prop-d5-lamp': 'art/prop-d5-lamp.webp',
+    'prop-d5-pumpkin': 'art/prop-d5-pumpkin.webp',
+    'prop-d5-tree': 'art/prop-d5-tree.webp',
+    'prop-d6-armor': 'art/prop-d6-armor.webp',
+    'prop-d6-chest': 'art/prop-d6-chest.webp',
+    'prop-d6-crystal': 'art/prop-d6-crystal.webp',
+    'prop-d6-lamp': 'art/prop-d6-lamp.webp',
+    'prop-d6-rug': 'art/prop-d6-rug.webp',
+    'prop-d6-snowman': 'art/prop-d6-snowman.webp',
+    'prop-d7-barrel': 'art/prop-d7-barrel.webp',
+    'prop-d7-box': 'art/prop-d7-box.webp',
+    'prop-d7-flasks': 'art/prop-d7-flasks.webp',
+    'prop-d7-lamp': 'art/prop-d7-lamp.webp',
+    'prop-d7-shelf': 'art/prop-d7-shelf.webp',
+    'prop-d7-vat': 'art/prop-d7-vat.webp',
+    'prop-d8-candles': 'art/prop-d8-candles.webp',
+    'prop-d8-chest': 'art/prop-d8-chest.webp',
+    'prop-d8-mirror': 'art/prop-d8-mirror.webp',
+    'prop-d8-pillar': 'art/prop-d8-pillar.webp',
+    'prop-d8-plant': 'art/prop-d8-plant.webp',
+    'prop-d8-rug': 'art/prop-d8-rug.webp',
+    'splash': 'art/splash.webp',
+    'wall-d1': 'art/wall-d1.webp',
+    'wall-d2': 'art/wall-d2.webp',
+    'wall-d3': 'art/wall-d3.webp',
+    'wall-d4': 'art/wall-d4.webp',
+    'wall-d5': 'art/wall-d5.webp',
+    'wall-d6': 'art/wall-d6.webp',
+    'wall-d7': 'art/wall-d7.webp',
+    'wall-d8': 'art/wall-d8.webp',
+  };
+  const ART_ASPECT = {"ghost-armor": 0.816, "ghost-aurora": 0.891, "ghost-candle": 0.535, "ghost-carousel": 1.016, "ghost-drowned": 0.836, "ghost-fire": 0.688, "ghost-flask": 0.918, "ghost-franken": 0.74, "ghost-frostqueen": 0.805, "ghost-golden": 1.02, "ghost-headless": 0.992, "ghost-icicle": 0.438, "ghost-jacko": 0.742, "ghost-jelly": 0.965, "ghost-lantern": 0.699, "ghost-mannequin": 0.672, "ghost-mansion": 0.987, "ghost-mirror": 0.789, "ghost-moonking": 0.789, "ghost-moth": 1.008, "ghost-ninelives": 1.139, "ghost-portrait": 0.977, "ghost-pumpkin": 0.953, "ghost-sheet": 0.957, "ghost-ship": 0.951, "ghost-skelecat": 0.867, "ghost-slime": 1.185, "ghost-snowman": 0.777, "ghost-sock": 0.941, "ghost-spark": 0.902, "ghost-starling": 0.766, "ghost-toy": 0.867, "ghost-tv": 0.73, "ghost-washer": 0.99, "ghost-wisp": 0.809, "prop-d1-bed": 1.074, "prop-d1-box": 0.944, "prop-d1-lamp": 0.441, "prop-d1-plant": 0.719, "prop-d1-rug": 1.553, "prop-d1-sofa": 1.155, "prop-d1-table": 1.19, "prop-d1-yarn": 0.994, "prop-d2-armor": 0.591, "prop-d2-chest": 0.938, "prop-d2-lamp": 0.316, "prop-d2-plant": 0.925, "prop-d2-rug": 1.788, "prop-d2-shelf": 0.675, "prop-d2-table": 0.994, "prop-d3-anchor": 0.928, "prop-d3-barrel": 0.775, "prop-d3-box": 0.912, "prop-d3-buoy": 1.245, "prop-d3-lamp": 0.516, "prop-d3-net": 1.301, "prop-d3-rope": 1.25, "prop-d4-box": 1.067, "prop-d4-lamp": 0.516, "prop-d4-mannequin": 0.372, "prop-d4-plant": 0.834, "prop-d4-rack": 0.919, "prop-d4-rug": 1.553, "prop-d4-table": 1.151, "prop-d5-bush": 1.356, "prop-d5-candles": 0.884, "prop-d5-grave": 0.75, "prop-d5-lamp": 0.672, "prop-d5-pumpkin": 0.997, "prop-d5-tree": 0.931, "prop-d6-armor": 0.544, "prop-d6-chest": 1.019, "prop-d6-crystal": 0.9, "prop-d6-lamp": 0.669, "prop-d6-rug": 1.73, "prop-d6-snowman": 0.722, "prop-d7-barrel": 0.616, "prop-d7-box": 0.872, "prop-d7-flasks": 0.956, "prop-d7-lamp": 0.503, "prop-d7-shelf": 1.236, "prop-d7-vat": 0.894, "prop-d8-candles": 0.678, "prop-d8-chest": 0.947, "prop-d8-mirror": 0.5, "prop-d8-pillar": 0.544, "prop-d8-plant": 0.641, "prop-d8-rug": 1.749};
+  // ART-META-END
   const ART = {};
+  let artPending = 0;
   const tintCopy = (img, color) => {
     const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
     const x = c.getContext('2d'); x.drawImage(img, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = color; x.fillRect(0, 0, c.width, c.height); return c;
   };
+  const tinted = (A, key, color) => A[key] || (A[key] = tintCopy(A.img, color)); // белая вспышка и силуэт — по запросу
   for (const k in ART_SRC) {
-    const img = new Image();
-    img.onload = () => { ART[k] = { img, white: tintCopy(img, '#ffffff'), shadow: tintCopy(img, '#6b5f86') }; };
+    const img = new Image(); artPending++;
+    img.onload = () => { ART[k] = { img }; if (--artPending === 0) artLoaded(); };
+    img.onerror = () => { if (--artPending === 0) artLoaded(); };
     img.src = ART_SRC[k];
   }
+  // когда картинки готовы, карту перерисовываем с ними, не сдвигая кота
+  function artLoaded() { mapKey = null; keepCatOnRebuild = true; }
   const useArt = () => !S.settings || S.settings.art !== false;
 
   const INK = '#2b2340';
@@ -2408,14 +2542,15 @@
     o = o || {};
     const def = GHOSTS[type];
     const phase = o.phase || 0;
-    const A = useArt() && ART[type];
+    const A = useArt() && ART['ghost-' + type];
     if (A) { // нарисованный спрайт: лёгкое покачивание ±1°, белая вспышка при попадании
-      const D = (r * 2.5) / ART_FIT[type];
+      const asp = ART_ASPECT['ghost-' + type] || 1;
+      const dw = asp >= 1 ? r * 2.6 : r * 2.5 * asp, dh = dw / asp;
       ctx.save(); ctx.translate(x, y); ctx.rotate(Math.sin(phase) * 0.018);
-      if (o.silhouette) ctx.drawImage(A.shadow, -D / 2, -D / 2, D, D);
+      if (o.silhouette) ctx.drawImage(tinted(A, 'shadow', '#6b5f86'), -dw / 2, -dh / 2, dw, dh);
       else {
-        ctx.drawImage(A.img, -D / 2, -D / 2, D, D);
-        if (o.hit) { ctx.globalAlpha *= 0.7; ctx.drawImage(A.white, -D / 2, -D / 2, D, D); }
+        ctx.drawImage(A.img, -dw / 2, -dh / 2, dw, dh);
+        if (o.hit) { ctx.globalAlpha *= 0.7; ctx.drawImage(tinted(A, 'white', '#ffffff'), -dw / 2, -dh / 2, dw, dh); }
       }
       ctx.restore(); return;
     }
@@ -2527,7 +2662,11 @@
     // пол
     c.fillStyle = F.base; c.fillRect(0, 0, MAP_W, MAP_H);
     c.fillStyle = F.line;
-    if (F.style === 'planks' || F.style === 'deck') {
+    const floorArt = useArt() && ART['floor-d' + (d + 1)];
+    if (floorArt) { // нарисованная плитка, повтор каждые 300 единиц
+      const pat = c.createPattern(floorArt.img, 'repeat'); pat.setTransform(new DOMMatrix([300 / floorArt.img.width, 0, 0, 300 / floorArt.img.width, 0, 0]));
+      c.fillStyle = pat; c.fillRect(0, 0, MAP_W, MAP_H);
+    } else if (F.style === 'planks' || F.style === 'deck') {
       const h = F.style === 'deck' ? 34 : 26;
       for (let y = 0; y < MAP_H; y += h) { c.fillRect(0, y, MAP_W, 3); for (let x = ((y / h) % 2) * 60; x < MAP_W; x += 120) c.fillRect(x, y, 3, h); }
     } else if (F.style === 'checker' || F.style === 'tiles') {
@@ -2568,7 +2707,7 @@
       c.fillStyle = g; c.fillRect(x - rad, y - rad, rad * 2, rad * 2);
     }
     c.fillStyle = 'rgba(40,20,60,0.10)';
-    for (let i = 0; i < 700; i++) c.fillRect(R() * MAP_W, R() * MAP_H, 2, 2);
+    for (let i = 0; i < 700; i++) { const px = R() * MAP_W, py = R() * MAP_H; if (!floorArt) c.fillRect(px, py, 2, 2); }
     // стены по краю
     drawBorder(c, d, F, R);
     // мебель
@@ -2578,15 +2717,29 @@
     for (let i = 0; i < 90; i++) {
       const kind = kinds[Math.floor(R() * kinds.length)];
       const big = kind === 'rug' || kind === 'net' || kind === 'bed' || kind === 'sofa' || kind === 'tree';
-      const w = big ? 100 + R() * 50 : 42 + R() * 24, h = big ? 70 + R() * 40 : 42 + R() * 20;
+      let w = big ? 100 + R() * 50 : 42 + R() * 24, h = big ? 70 + R() * 40 : 42 + R() * 20;
+      const pa = useArt() && ART['prop-d' + (d + 1) + '-' + kind];
+      if (pa) { // размер по пропорциям картинки
+        const asp = ART_ASPECT['prop-d' + (d + 1) + '-' + kind] || 1;
+        w = big ? 110 + (w - 100) * 0.8 : 52 + (w - 42) * 0.8; h = w / asp;
+        if (h > w * 1.7) { h = w * 1.7; w = h * asp; }
+      }
       const x = WALL + 30 + R() * (MAP_W - WALL * 2 - 60 - w), y = WALL + 30 + R() * (MAP_H - WALL * 2 - 60 - h);
       if (Math.hypot(x + w / 2 - MAP_W / 2, y + h / 2 - MAP_H / 2) < 140) continue; // центр свободен для старта
       if (placed.length >= 30 || placed.some((p) => x < p.x + p.w + 56 && x + w + 56 > p.x && y < p.y + p.h + 56 && y + h + 56 > p.y)) continue;
       placed.push({ x, y, w, h });
-      drawDecor(c, kind, x, y, w, h, R, F);
-      if (SOLID[kind]) solids.push({ x: x + 4, y: y + 4, w: w - 8, h: h - 8 });
+      if (pa) {
+        const flat = kind === 'rug' || kind === 'net';
+        if (!flat) { c.fillStyle = 'rgba(30,15,50,0.22)'; c.beginPath(); c.ellipse(x + w / 2, y + h - 4, w * 0.46, Math.min(14, h * 0.16), 0, 0, 7); c.fill(); }
+        c.drawImage(pa.img, x, y, w, h);
+        if (SOLID[kind]) { const top = h > w ? h - w * 0.75 : h * 0.3; solids.push({ x: x + 6, y: y + top, w: w - 12, h: h - top - 4 }); }
+      } else {
+        drawDecor(c, kind, x, y, w, h, R, F);
+        if (SOLID[kind]) solids.push({ x: x + 4, y: y + 4, w: w - 8, h: h - 8 });
+      }
     }
-    cat.x = MAP_W / 2; cat.y = MAP_H / 2; cam.x = cat.x; cam.y = cat.y;
+    if (!keepCatOnRebuild) { cat.x = MAP_W / 2; cat.y = MAP_H / 2; cam.x = cat.x; cam.y = cat.y; }
+    keepCatOnRebuild = false;
   }
 
   // Края карты: у каждого района своя текстура стены и детали
@@ -2607,7 +2760,14 @@
     c.save();
     c.beginPath(); c.rect(0, 0, MAP_W, MAP_H); c.rect(W, W, IW, IH); c.clip('evenodd');
     c.fillStyle = F.wall; c.fillRect(0, 0, MAP_W, MAP_H);
-    if (d === 0) { // кирпич
+    const wallArt = useArt() && ART['wall-d' + (d + 1)];
+    if (wallArt) { // нарисованная стена: полоса вдоль каждого края, верх картинки — к внешнему краю
+      const sc = W / wallArt.img.height, pat = c.createPattern(wallArt.img, 'repeat-x');
+      pat.setTransform(new DOMMatrix([sc, 0, 0, sc, 0, 0])); c.fillStyle = pat;
+      for (const [tx, ty, rot, len] of [[0, 0, 0, MAP_W], [MAP_W, MAP_H, Math.PI, MAP_W], [0, MAP_H, -Math.PI / 2, MAP_H], [MAP_W, 0, Math.PI / 2, MAP_H]]) {
+        c.save(); c.translate(tx, ty); c.rotate(rot); c.fillRect(0, 0, len, W); c.restore();
+      }
+    } else if (d === 0) { // кирпич
       for (let y = 0, row = 0; y < MAP_H; y += 16, row++) for (let x = (row % 2) * -16; x < MAP_W; x += 32) {
         c.fillStyle = ['#b8674f', '#a95c46', '#c2735a'][Math.floor(R() * 3)]; c.fillRect(x + 2, y + 2, 28, 12);
       }
@@ -2677,7 +2837,7 @@
 
     // детали на верхней и нижней стенах: окна, фонари, вывески
     const lamp = (x, y) => { c.fillStyle = 'rgba(255,230,140,0.30)'; c.beginPath(); c.arc(x, y + 10, 46, 0, 7); c.fill(); c.fillStyle = '#ffe28a'; c.beginPath(); c.arc(x, y, 9, 0, 7); c.fill(); c.lineWidth = 2.5; c.strokeStyle = INK; c.stroke(); };
-    for (let x = 150; x < MAP_W - 100; x += 260) {
+    for (let x = 150; x < MAP_W - 100 && !wallArt; x += 260) {
       if (d === 0 || d === 1) { // окно с луной
         const wx = x - 34, wy = 10, ww = 68, wh = W - 22;
         c.fillStyle = d === 0 ? '#f3e2c8' : '#9d93b8'; c.fillRect(wx - 5, wy - 5, ww + 10, wh + 10);
@@ -3126,7 +3286,7 @@
     if (g.beh === 'heal' && !g.dying && g.bt < 1) { ctx.fillStyle = `rgba(95,211,138,${0.35 * (1 - g.bt)})`; ctx.beginPath(); ctx.arc(x, y, r * 1.7, 0, 7); ctx.fill(); }
     const dx = cat.x - g.x, dy = cat.y - g.y, dl = Math.hypot(dx, dy) || 1;
     ghostSprite(g.type, x, y, r, { hit: g.hit > 0 || (g.fuse && Math.sin(time * 30) > 0), phase: g.phase, lookX: dx / dl, lookY: dy / dl });
-    if (g.type === 'jacko' && !g.dying) drawIcon('pumpkin', x, y - r * 0.95, r * 1.1);
+    if (g.type === 'jacko' && !g.dying && !(useArt() && ART['ghost-jacko'])) drawIcon('pumpkin', x, y - r * 0.95, r * 1.1);
     if (g.elite && !g.dying) { // корона
       ctx.save(); ctx.translate(x, y - r * 1.05);
       ctx.beginPath(); ctx.moveTo(-10, 4); ctx.lineTo(-11, -6); ctx.lineTo(-5, -1); ctx.lineTo(0, -9); ctx.lineTo(5, -1); ctx.lineTo(11, -6); ctx.lineTo(10, 4); ctx.closePath();
@@ -3167,8 +3327,8 @@
   // Спрайт кота со скинами: используется в бою и в магазине
   // Мурзик из арт-набора (стартовый скин «Рыжик»): поворачивается к цели, насадка в лапе
   let murzikFace = 1;
-  function murzikSprite(x, gy, o) {
-    const A = ART.murzik, N = ART.nozzle, PI = Math.PI;
+  function murzikSprite(A, SK, x, gy, o) {
+    const N = ART.nozzle, PI = Math.PI;
     const walk = o.walk || 0, y = gy + (o.bobY || 0), aim = o.aim === undefined ? -PI / 2 : o.aim, rec = o.recoil || 0;
     const D = 96, fy = 0.91; // опорная точка у ног
     const c = Math.cos(aim);
@@ -3177,8 +3337,12 @@
     let la = f > 0 ? aim : PI - aim; // угол в «зеркальном» пространстве кота
     while (la > PI) la -= 2 * PI; while (la < -PI) la += 2 * PI;
     const breath = 1 + 0.018 * (0.5 - 0.5 * Math.cos(time * 2 * PI / 2.8));
-    // тень
+    // тень и аура скина
     ctx.fillStyle = 'rgba(30,15,50,0.25)'; ctx.beginPath(); ctx.ellipse(x, gy + 28, 30 - Math.abs(walk) * 3, 8, 0, 0, PI * 2); ctx.fill();
+    if (SK.aura) {
+      const ar = 50 + Math.sin(time * 3) * 4, ag = ctx.createRadialGradient(x, y - 14, 10, x, y - 14, ar);
+      ag.addColorStop(0, `rgba(${SK.aura},0.4)`); ag.addColorStop(1, `rgba(${SK.aura},0)`); ctx.fillStyle = ag; ctx.beginPath(); ctx.arc(x, y - 14, ar, 0, 7); ctx.fill();
+    }
     ctx.save(); ctx.translate(x, y + 27); ctx.scale(f, 1); ctx.rotate(walk * 0.05); ctx.scale(1, breath);
     ctx.drawImage(A.img, -D / 2, -D * fy, D, D);
     if (o.tool !== false && N) {
@@ -3204,7 +3368,7 @@
 
   function catSprite(x, gy, o) {
     const k = SKINS[o.skin] ? o.skin : 'ginger', SK = SKINS[k];
-    if (k === 'ginger' && ART.murzik && useArt()) return murzikSprite(x, gy, o);
+    if (useArt() && ART['cat-' + k]) return murzikSprite(ART['cat-' + k], SK, x, gy, o);
     const walk = o.walk || 0, y = gy + (o.bobY || 0), aim = o.aim === undefined ? -Math.PI / 2 : o.aim, rec = o.recoil || 0;
     const PI = Math.PI, pat = SK.pat || 'none', metal = !!SK.metal, ghost = !!SK.ghost;
     const fur = (cx, cy, rad) => {
@@ -3975,7 +4139,7 @@
   // Настройки
   function drawSettingsPanel() {
     panelFrame('Настройки');
-    const rows = [['music', '🎵', 'Музыка'], ['sfx', '🔊', 'Звуки'], ['vibro', '📳', 'Вибрация'], ['numbers', '✨', 'Цифры урона'], ['shake', '💥', 'Тряска экрана'], ['art', '👻', 'Новый арт (1-й район)']];
+    const rows = [['music', '🎵', 'Музыка'], ['sfx', '🔊', 'Звуки'], ['vibro', '📳', 'Вибрация'], ['numbers', '✨', 'Цифры урона'], ['shake', '💥', 'Тряска экрана'], ['art', '👻', 'Нарисованный арт']];
     rows.forEach(([k, icon, name], i) => {
       const y = 104 + i * 46, on = opt(k);
       card(28, y, 304, 40, 12, '#d9cff0');
@@ -3993,7 +4157,7 @@
       { label: 'Сбросить', color: '#ff6b8a', on: () => { closeModal(); panel = null; localStorage.removeItem(SAVE_KEY); S = defaultState(); ensureQuests(); dailyReset(); syncSlots(); resetRoom(); splash = { t: 0, out: 0 }; } },
     ]), 12);
     text('Кот-экзорцист · версия ' + VERSION, 180, 504, 10, '#6b5f86', 'center', '700');
-    text('Герои 1-го района: арт-набор, остальное нарисовано кодом', 180, 520, 9, '#9a8fb5', 'center', '700');
+    text('Арт: Higgsfield, музыка и звуки созданы кодом', 180, 520, 9, '#9a8fb5', 'center', '700');
   }
 
   // Панель походов
@@ -4054,7 +4218,7 @@
     for (let i = 0; i < 3; i++) { const bx = 60 + i * 90 + Math.sin(time * 2 + i) * 10, by = 118 + Math.cos(time * 3 + i) * 5; ctx.fillStyle = '#1a1230'; ctx.beginPath(); ctx.moveTo(bx, by); ctx.quadraticCurveTo(bx - 8, by - 8 - Math.sin(time * 12 + i) * 4, bx - 14, by); ctx.quadraticCurveTo(bx - 7, by - 2, bx, by + 3); ctx.quadraticCurveTo(bx + 7, by - 2, bx + 14, by); ctx.quadraticCurveTo(bx + 8, by - 8 - Math.sin(time * 12 + i) * 4, bx, by); ctx.fill(); }
     ctx.restore();
     drawIcon('pumpkin', 66, 168, 34); drawIcon('pumpkin', 300, 172, 26);
-    ghostSprite('jacko', 250, 160, 13, { phase: time * 3 }); drawIcon('pumpkin', 250, 147, 15);
+    ghostSprite('jacko', 250, 160, 13, { phase: time * 3 }); if (!(useArt() && ART['ghost-jacko'])) drawIcon('pumpkin', 250, 147, 15);
     text('Конфеты: ' + e.candy + ' 🍬', 150, 156, 17, '#ffffff', 'center', '900');
     const left = eventLeft(), days = Math.floor(left / 86400000), hrs = Math.floor((left % 86400000) / 3600000);
     text('до конца: ' + (days ? days + ' дн. ' : '') + hrs + ' ч', 150, 178, 10, '#ffd9a8', 'center', '800');
@@ -4571,6 +4735,13 @@
   function drawSplash(a) {
     const t = splash ? splash.t : 0;
     ctx.save(); ctx.globalAlpha = a;
+    const SA = useArt() && ART.splash;
+    if (SA) { // нарисованная заставка: лёгкое приближение
+      const z = 1.04 + Math.sin(t * 0.6) * 0.02;
+      ctx.drawImage(SA.img, W / 2 - (W * z) / 2, H / 2 - (H * z) / 2 + 10, W * z, H * z);
+      const vg = ctx.createLinearGradient(0, 0, 0, 260); vg.addColorStop(0, 'rgba(18,12,46,0.55)'); vg.addColorStop(1, 'rgba(18,12,46,0)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, 260);
+      const vb = ctx.createLinearGradient(0, H - 200, 0, H); vb.addColorStop(0, 'rgba(18,12,46,0)'); vb.addColorStop(1, 'rgba(18,12,46,0.7)'); ctx.fillStyle = vb; ctx.fillRect(0, H - 200, W, 200);
+    } else {
     // небо
     const sky = ctx.createLinearGradient(0, 0, 0, H); sky.addColorStop(0, '#120c2e'); sky.addColorStop(0.55, '#3b2a74'); sky.addColorStop(1, '#6a4a9a');
     ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
@@ -4616,6 +4787,7 @@
     ctx.save(); ctx.translate(cx, cy); ctx.scale(1.55, 1.55);
     catSprite(0, 0, { skin: S.skin, aim, bobY: Math.sin(t * 3) * 2, blinkSeed: 1, eqColor: '#9ff3ff' });
     ctx.restore();
+    }
     // логотип падает сверху с пружинкой
     const k = Math.min(1, t / 0.9), drop = 1 - Math.pow(1 - k, 3) * Math.cos(k * 9);
     const ly = -120 + drop * 230;
@@ -4834,6 +5006,7 @@
       ctx.restore(); S.settings.art = keep;
       return canvas.toDataURL('image/png');
     },
+    map: () => { buildMap(); return mapCanvas.toDataURL('image/jpeg', 0.75); }, // вся карта комнаты картинкой
     turbo: () => turboActive(), appArt: () => { appArt = !appArt; }, event: (on) => { S.evForce = on; }, icons: () => { iconSheet = !iconSheet; }, spawn: (t, o) => spawnGhost(t, o), behIntro: () => behIntro,
     state: () => S, sfx: SFX, mapImage: () => mapCanvas.toDataURL(), ghosts: () => ghosts, cat: () => cat, cam: () => cam, resetRoom: () => resetRoom(), open: (p) => { panel = p; }, gold: () => { goldCd = 0; }, goldObj: () => gold, toScreen,
     splash: () => { splash = { t: 0, out: 0 }; },
