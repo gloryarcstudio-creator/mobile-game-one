@@ -4125,19 +4125,19 @@
     TABS.forEach((t, i) => {
       const x = 4 + i * 59, y = 580, w = 56, h = 54, cx = x + w / 2;
       if (!unlocked(t.lock)) {
-        medal(cx, y + 21, 15, '#4a4068', t.icon, { dim: true, size: 15 });
-        orb(cx + 11, y + 10, 6.5, '#4a4068'); text('🔒', cx + 11, y + 10.5, 7, '#ffffff');
-        fitText(unlockWhere(UNLOCK[t.lock]).replace('Дом ', 'Д').replace(', комн. ', '·к'), cx, y + 45, w - 6, 8.5, '#8f86ad', 'center', '800');
+        medal(cx, y + 22, 13, '#4a4068', t.icon, { dim: true, size: 14 });
+        orb(cx + 11, y + 13, 6, '#4a4068'); text('🔒', cx + 11, y + 13, 7, '#ffffff');
+        fitText(unlockWhere(UNLOCK[t.lock]).replace('Дом ', 'Д').replace(', комн. ', '·к'), cx, y + 44, w - 6, 8.5, '#8f86ad', 'center', '800');
         btn(x, y, w, h, () => lockedToast(t.lock)); return;
       }
       const active = panel === t.id;
-      const dn = active ? -5 : pressOff(x, y, w, h);
+      const dn = active ? 0 : pressOff(x, y, w, h);
       ctx.save(); ctx.translate(0, dn); popIn(x, y, w, h, t.lock);
-      if (active) { const gg = ctx.createRadialGradient(cx, y + 22, 8, cx, y + 22, 46); gg.addColorStop(0, 'rgba(255,210,100,0.55)'); gg.addColorStop(1, 'rgba(255,210,100,0)'); ctx.fillStyle = gg; ctx.fillRect(x - 20, y - 26, w + 40, h + 40); plate(x + 1, y - 2, w - 2, h + 4, 14, '#ffc94d'); }
-      medal(cx, y + 21, active ? 17 : 15, t.color, t.icon, { size: active ? 19 : 17 });
-      text(t.name, cx, y + 45, 8.5, active ? INK : '#ffffff', 'center', '800');
+      if (active) { const gg = ctx.createRadialGradient(cx, y + 22, 8, cx, y + 22, 46); gg.addColorStop(0, 'rgba(255,210,100,0.55)'); gg.addColorStop(1, 'rgba(255,210,100,0)'); ctx.fillStyle = gg; ctx.fillRect(x - 20, y - 26, w + 40, h + 40); plate(x + 2, y + 5, w - 4, h - 4, 12, '#ffc94d', { noShadow: true }); }
+      medal(cx, y + 22, active ? 14.5 : 13, t.color, t.icon, { size: active ? 16 : 15 });
+      text(t.name, cx, y + 44, 8.5, active ? INK : '#ffffff', 'center', '800');
       ctx.restore();
-      if (t.badge()) badge(cx + 14, y + 8);
+      if (t.badge()) badge(cx + 13, y + 12);
       if (S.fresh.includes(t.lock)) { appear(x, y, w, h, t.lock); newTag(cx, y + 3); }
       btn(x, y, w, h, () => { if (panel === t.id) panel = null; else openPanel(t.id); selectedJar = null; selectedAttach = null; });
     });
@@ -4573,7 +4573,7 @@
     text('Новые задания через ' + untilMidnight() + ' · пропустишь день — серия сгорит', 180, 550, 9, '#6b5f86', 'center', '700');
   }
 
-  function drawPassCell(x, y, r, l, prem) {
+  function drawPassCell(x, y, r, l, prem, area) {
     const can = prem ? passCanPrem(l) : passCanFree(l), got = (prem ? S.pass.prem : S.pass.free).includes(l);
     const locked = prem && !S.pass.premium, reached = l <= passLevel();
     rr(x, y, 128, 52, 10);
@@ -4590,13 +4590,16 @@
     else if (can) text('ЗАБРАТЬ', x + 88, y + 36, 10, '#e07a00', 'center', '900');
     else if (locked) text('🔒 Премиум', x + 88, y + 36, 9, '#8a5ad6', 'center', '800');
     else text('Ур. ' + l, x + 88, y + 36, 9, '#9b93b3', 'center', '800');
-    if (can) btn(x, y, 128, 52, () => claimPass(l, prem));
-    else if (locked) btn(x, y, 128, 52, buyPass);
+    if (can) sbtn(area, x, y, 128, 52, () => claimPass(l, prem));
+    else if (locked) sbtn(area, x, y, 128, 52, buyPass);
   }
 
   function drawPass() {
     const lvl = passLevel();
-    if (passPage < 0) { let f = 1; while (f < lvl && !passCanFree(f) && !passCanPrem(f)) f++; passPage = Math.min(5, Math.floor((f - 1) / 5)); }
+    // список всех уровней листается пальцем; при открытии встаёт на первую несобранную награду
+    const ROW = 58;
+    if (passPage === -1) { let f = 1; while (f < lvl && !passCanFree(f) && !passCanPrem(f)) f++; scrollY.pass = (f - 1) * ROW; passPage = -2; }
+    else if (passPage >= 0) { scrollY.pass = passPage * 5 * ROW; passPage = -2; }
     card(24, 138, 312, 62, 12, '#a86bff');
     text('Уровень ' + lvl + ' / ' + PASS_LEVELS, 36, 154, 14, INK, 'left', '900');
     text('Сезон кончится через ' + passDaysLeft() + ' дн.', 36, 171, 10, '#6b5f86', 'left', '700');
@@ -4607,19 +4610,22 @@
     else { plate(212, 150, 114, 38, 12, '#3ddc97'); text('👑 Премиум ✓', 269, 169, 12, '#ffffff'); }
     text('Бесплатно', 92, 214, 10, '#6b5f86', 'center', '800');
     text('Премиум', 268, 214, 10, '#8a5ad6', 'center', '800');
+    const area = scrollArea('pass', 24, 222, 316, 286, PASS_LEVELS * ROW - 4);
+    ctx.save(); ctx.beginPath(); ctx.rect(area.x, area.y, area.w, area.h); ctx.clip();
     // линия уровней
-    ctx.fillStyle = '#d6cfe8'; ctx.fillRect(177, 224, 6, 286);
-    for (let j = 0; j < 5; j++) {
-      const l = passPage * 5 + j + 1, y = 224 + j * 58;
-      if (l <= lvl) { ctx.fillStyle = '#a86bff'; ctx.fillRect(177, y, 6, j < 4 ? 58 : 52); }
-      drawPassCell(28, y, PASS_FREE[l - 1], l, false);
-      drawPassCell(204, y, PASS_PREM[l - 1], l, true);
+    const y0 = area.y + 2 - area.off;
+    ctx.fillStyle = '#d6cfe8'; ctx.fillRect(177, y0, 6, PASS_LEVELS * ROW - 6);
+    for (let j = 0; j < PASS_LEVELS; j++) {
+      const l = j + 1, y = y0 + j * ROW;
+      if (y > area.y + area.h || y + ROW < area.y) continue;
+      if (l <= lvl) { ctx.fillStyle = '#a86bff'; ctx.fillRect(177, y, 6, l < PASS_LEVELS ? ROW : ROW - 6); }
+      drawPassCell(28, y, PASS_FREE[l - 1], l, false, area);
+      drawPassCell(204, y, PASS_PREM[l - 1], l, true, area);
       orb(180, y + 26, 13, l <= lvl ? '#a86bff' : '#b9afe8');
       text(String(l), 180, y + 27, 11, '#ffffff');
     }
-    button(28, 516, 40, 28, '‹', '#8a7bd1', () => { passPage = Math.max(0, passPage - 1); }, 16, passPage > 0);
-    button(292, 516, 40, 28, '›', '#8a7bd1', () => { passPage = Math.min(5, passPage + 1); }, 16, passPage < 5);
-    button(76, 516, 208, 28, '+1 уровень за ' + PASS_SKIP + ' 💎', '#7fd1ff', skipPassLevel, 11, lvl < PASS_LEVELS);
+    ctx.restore(); scrollBar(area);
+    button(28, 516, 304, 28, '+1 уровень за ' + PASS_SKIP + ' 💎', '#7fd1ff', skipPassLevel, 11, lvl < PASS_LEVELS);
     text('Опыт: задания и сундук дня, боссы, рейды, колесо · VIP +50%', 180, 556, 8.5, '#6b5f86', 'center', '700');
   }
 
