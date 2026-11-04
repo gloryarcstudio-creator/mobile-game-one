@@ -2523,6 +2523,7 @@
     plainText(t, x, y, size, color, align, weight);
   }
   function plainText(t, x, y, size, color, align, weight) {
+    y += size * 0.1; // центр по заглавным буквам: иначе текст выше иконок и выше середины плашки
     ctx.font = (weight || '800') + ' ' + size + 'px ' + FONT;
     ctx.textAlign = align || 'center'; ctx.textBaseline = 'middle';
     if (!DARK.has(color)) { // тёмный текст рисуем без обводки
@@ -2624,7 +2625,9 @@
     const dn = pressOff(x, y, w, h);
     ctx.save(); ctx.translate(0, dn);
     plate(x, y, w, h, Math.min(12, h / 2.6), en ? color : '#9b93b3', { noShadow: dn > 0 });
-    text(label, x + w / 2, y + h / 2, size || 12, '#ffffff');
+    const fy = y + h * 0.46, lines = String(label).split('\n').filter(Boolean), sz = size || 12;
+    if (lines.length > 1) { fitText(lines[0], x + w / 2, fy - sz * 0.55, w - 14, sz, '#ffffff'); fitText(lines[1], x + w / 2, fy + sz * 0.6, w - 14, sz * 0.85, '#ffffff'); }
+    else fitText(lines[0] || '', x + w / 2, fy, w - 14, sz, '#ffffff');
     ctx.restore();
     btn(x, y, w, h, on);
   }
@@ -2648,7 +2651,7 @@
     if (o.glow) { const gg = ctx.createRadialGradient(cx, cy, r * 0.6, cx, cy, r * 1.9); gg.addColorStop(0, alpha(o.glow, 0.55)); gg.addColorStop(1, alpha(o.glow, 0)); ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(cx, cy, r * 1.9, 0, 7); ctx.fill(); }
     const MA = ui('ui-medal-violet');
     if (MA) {
-      const [, sa] = hsl(color), A = ART['ui-medal-' + (sa < 0.3 ? 'violet' : nearHue(color, MEDAL_HUES))], R = r * 1.1;
+      const [, sa] = hsl(color), A = ART['ui-medal-' + (sa < 0.3 ? 'violet' : nearHue(color, MEDAL_HUES))], R = r * 1.04;
       ctx.fillStyle = 'rgba(15,8,30,0.35)'; ctx.beginPath(); ctx.arc(cx, cy + 3, r, 0, 7); ctx.fill();
       ctx.drawImage(o.dim || sa < 0.3 ? recolor(A, 'dim', 'rgba(40,30,70,0.6)', 'source-atop') : A.img, cx - R, cy - R, R * 2, R * 2);
     } else {
@@ -3473,6 +3476,18 @@
   // Спрайт кота со скинами: используется в бою и в магазине
   // Мурзик из арт-набора (стартовый скин «Рыжик»): поворачивается к цели, насадка в лапе
   let murzikFace = 1;
+  // Ходьба нарисованного кота: картинку режем на туловище и две лапы (поза у всех скинов одна),
+  // лапы шагают по очереди от бедра, туловище покачивается. Координаты в пикселях картинки 512×512.
+  const LEGS = [{ x: 178, w: 99 }, { x: 277, w: 89 }], LEG_TOP = 360, HIP = 398, LEG_CUT = 402, FOOT = 482;
+  function walkParts(A) {
+    if (A.parts !== undefined) return A.parts;
+    const S0 = A.img.naturalWidth / 512, mk = (w, h) => { const c = document.createElement('canvas'); c.width = Math.round(w * S0); c.height = Math.round(h * S0); return c; };
+    const body = mk(512, 512), bx = body.getContext('2d');
+    bx.drawImage(A.img, 0, 0, body.width, body.height);
+    bx.clearRect(LEGS[0].x * S0, LEG_CUT * S0, (LEGS[1].x + LEGS[1].w - LEGS[0].x) * S0, (512 - LEG_CUT) * S0);
+    const legs = LEGS.map((L) => { const c = mk(L.w, 512 - LEG_TOP); c.getContext('2d').drawImage(A.img, L.x * S0, LEG_TOP * S0, c.width, c.height, 0, 0, c.width, c.height); return c; });
+    return (A.parts = { body, legs });
+  }
   function murzikSprite(A, SK, x, gy, o) {
     const N = ART.nozzle, PI = Math.PI;
     const walk = o.walk || 0, y = gy + (o.bobY || 0), aim = o.aim === undefined ? -PI / 2 : o.aim, rec = o.recoil || 0;
@@ -3489,8 +3504,30 @@
       const ar = 50 + Math.sin(time * 3) * 4, ag = ctx.createRadialGradient(x, y - 14, 10, x, y - 14, ar);
       ag.addColorStop(0, `rgba(${SK.aura},0.4)`); ag.addColorStop(1, `rgba(${SK.aura},0)`); ctx.fillStyle = ag; ctx.beginPath(); ctx.arc(x, y - 14, ar, 0, 7); ctx.fill();
     }
-    ctx.save(); ctx.translate(x, y + 27); ctx.scale(f, 1); ctx.rotate(walk * 0.05); ctx.scale(1, breath);
-    ctx.drawImage(A.img, -D / 2, -D * fy, D, D);
+    const wa = SK.ghost ? 0 : o.walkAmt || 0, ph = o.walkPh || 0;
+    if (wa > 0.02) { // шаг: лапы от бедра, туловище выше всего, когда лапы проходят друг мимо друга
+      const P = walkParts(A), k = D / 512, ox = -D / 2, oy = -D * fy;
+      ctx.save(); ctx.translate(x, gy + (o.bobY || 0) * (1 - wa) + 27); ctx.scale(f, 1);
+      LEGS.forEach((L, i) => {
+        const pi = ph + i * PI, sw = Math.sin(pi), lift = Math.max(0, Math.cos(pi));
+        const hx = ox + (L.x + L.w / 2) * k, hy = oy + HIP * k;
+        // пыль из-под лапы сразу после шага
+        const t = (((pi - PI / 2) % (2 * PI)) + 2 * PI) % (2 * PI) / (2 * PI);
+        if (t < 0.28) { ctx.fillStyle = `rgba(235,225,255,${(1 - t / 0.28) * 0.35 * wa})`; ctx.beginPath(); ctx.ellipse(hx - sw * 4, oy + FOOT * k + 1, 3 + t * 22, 1.5 + t * 6, 0, 0, 7); ctx.fill(); }
+        ctx.save(); ctx.translate(hx, hy - lift * 4 * wa); ctx.rotate(-sw * 0.32 * wa);
+        ctx.drawImage(P.legs[i], -L.w / 2 * k, (LEG_TOP - HIP) * k, L.w * k, (512 - LEG_TOP) * k);
+        ctx.restore();
+      });
+      ctx.restore();
+    }
+    ctx.save(); ctx.translate(x, y + 27); ctx.scale(f, 1);
+    if (wa > 0.02) {
+      ctx.translate(0, (o.bobY ? -o.bobY : 0) * wa - (1 - Math.abs(Math.sin(ph))) * 2.4 * wa); ctx.rotate(Math.sin(ph) * 0.03 * wa + 0.03 * wa); ctx.scale(1, breath);
+      ctx.drawImage(walkParts(A).body, -D / 2, -D * fy, D, D);
+    } else {
+      ctx.rotate(walk * 0.05); ctx.scale(1, breath);
+      ctx.drawImage(A.img, -D / 2, -D * fy, D, D);
+    }
     if (o.tool !== false && N) {
       const px = 0.35 * D, py = (0.585 - fy) * D; // ладонь
       const L = 46, H = 23 * (o.wide ? 1.3 : 1);
@@ -3803,6 +3840,7 @@
 
   function drawCat() {
     const walk = cat.moving ? Math.sin(cat.bob * 3) : 0;
+    cat.wk = (cat.wk || 0) + ((cat.moving ? 1 : 0) - (cat.wk || 0)) * 0.18; // плавный переход шаг/стойка
     if (cat.hurt > 0 && Math.sin(time * 60) > 0) return;
     // тёплое пятно света под котом
     const lg = ctx.createRadialGradient(cat.x, cat.y + 20, 10, cat.x, cat.y + 20, 90);
@@ -3810,7 +3848,7 @@
     ctx.fillStyle = lg; ctx.beginPath(); ctx.arc(cat.x, cat.y + 20, 90, 0, 7); ctx.fill();
     const eq = equippedItems();
     catSprite(cat.x, cat.y, {
-      skin: S.skin, walk, bobY: cat.moving ? -Math.abs(walk) * 3 : Math.sin(cat.bob) * 1.5, aim: cat.aim, recoil: cat.recoil,
+      skin: S.skin, walk, walkPh: cat.bob * 2.6, walkAmt: cat.wk, bobY: cat.moving ? -Math.abs(walk) * 3 : Math.sin(cat.bob) * 1.5, aim: cat.aim, recoil: cat.recoil,
       eqColor: eq.length ? ATTACH[eq[0].kind].color : '#ff7a9c', wide: kindPower('wide') > 0, rocket: kindPower('rocket') > 0, halo: S.prestiges > 0,
     });
   }
@@ -3894,14 +3932,14 @@
     const sub = moonActive() ? Math.ceil((S.moonUntil - now) / 1000) + 'с' : ready ? 'x2' : Math.ceil((S.moonReadyAt - now) / 1000) + 'с';
     sideLabel(330, 160, moonActive() ? 'x2 · ' + sub : ready ? 'Луна x2' : sub, moonActive() || ready ? '#ffe08a' : null);
     btn(304, 102, 52, 66, () => { S.fresh = S.fresh.filter((f) => f !== 'moon'); activateMoon(); });
-    if (S.fresh.includes('moon')) newTag(330, 98);
+    if (S.fresh.includes('moon')) newTag(330, 104);
     }
     // турбо x2 под автокнопками
     if (unlocked('turbo') && !raid) {
       const x = 308, y = unlocked('auto') ? 292 : 176, act = turboActive();
       sideButton(x, y, { icon: '⏩', label: act ? 'турбо x2' : S.turbo !== false ? 'рекорд' : 'выкл', labelColor: act ? '#ffd84d' : null,
         color: act ? '#ffb020' : S.turbo !== false ? '#9b93b3' : '#8a7bd1', glow: act ? '#ffc94d' : null, onTap: toggleTurbo });
-      if (S.fresh.includes('turbo')) newTag(x + 23, y - 4);
+      if (S.fresh.includes('turbo')) newTag(x + 23, y + 2);
     }
     // автопрокачка и автослияние
     if (unlocked('auto')) ['up', 'merge'].forEach((k, i) => {
@@ -3913,7 +3951,7 @@
       else sub = '🎬 10 мин';
       sideButton(x, y, { icon: a.icon, label: sub, color: run ? '#6fd36a' : avail ? '#9b93b3' : '#8a7bd1', glow: run ? '#8ee08a' : null, spin: run && k === 'up' ? time * 2 : 0,
         onTap: () => { S.fresh = S.fresh.filter((f) => f !== 'auto'); autoButton(k); } });
-      if (i === 0 && S.fresh.includes('auto')) newTag(x + 24, y - 4);
+      if (i === 0 && S.fresh.includes('auto')) newTag(x + 24, y + 2);
     });
     // переключатель автопилота
     plate(132, 8, 92, 28, 14, S.auto ? '#6fd36a' : '#6b5f86');
@@ -3939,7 +3977,7 @@
         const lockU = f.lock && !unlocked(f.lock) && UNLOCK[f.lock];
         sideButton(x, y, { icon: f.icon, label: f.label, color: f.color, badge: f.b, lock: lockU ? 'Дом ' + lockU.house : null, glow: f.b && !lockU ? f.color : null,
           onTap: () => { if (lockU) lockedToast(f.lock); else { S.fresh = S.fresh.filter((q) => q !== f.lock); panel = f.id; } } });
-        if (S.fresh.includes(f.lock)) newTag(x + 23, y - 4);
+        if (S.fresh.includes(f.lock)) newTag(x + 23, y + 2);
       });
     }
     // настройки и достижения
@@ -4069,13 +4107,13 @@
       ctx.save(); ctx.translate(0, dn); popIn(x, y, w, h, u.lock);
       plate(x, y, w, h, 12, can ? u.color : '#6b5f86', { noShadow: dn > 0 });
       // медальон с иконкой и уровнем, справа название и эффект
-      medal(x + 19, y + 18, 13, shade(can ? u.color : '#6b5f86', -0.12), u.icon, { size: 14 });
-      rr(x + 7, y + 27, 24, 11, 5.5); ctx.fillStyle = INK; ctx.fill(); text(String(S[u.key]), x + 19, y + 32.5, 8, '#ffd84d', 'center', '900');
-      fitText(u.name, x + 36, y + 12, w - 42, 12, '#ffffff', 'left', '900');
-      fitText(u.desc(), x + 36, y + 27, w - 42, 9.5, INK, 'left', '800');
-      rr(x + 36, y + 37, w - 42, 16, 8); ctx.fillStyle = 'rgba(25,18,45,0.85)'; ctx.fill();
-      orb(x + 45, y + 45, 5.5, '#7dff9e');
-      fitText(fmt(cost), x + 36 + (w - 42) / 2 + 6, y + 45.5, w - 64, 11, can ? '#7dff9e' : '#ff9aa9', 'center', '900');
+      medal(x + 20, y + 21, 13, shade(can ? u.color : '#6b5f86', -0.12), u.icon, { size: 14 });
+      rr(x + 8, y + 33, 24, 12, 6); ctx.fillStyle = INK; ctx.fill(); text(String(S[u.key]), x + 20, y + 39, 8, '#ffd84d', 'center', '900');
+      fitText(u.name, x + 38, y + 14, w - 46, 12, '#ffffff', 'left', '900');
+      fitText(u.desc(), x + 38, y + 27, w - 46, 9.5, INK, 'left', '800');
+      rr(x + 38, y + 35, w - 47, 15, 7.5); ctx.fillStyle = 'rgba(25,18,45,0.85)'; ctx.fill();
+      orb(x + 46, y + 42.5, 5, '#7dff9e');
+      fitText(fmt(cost), x + 38 + (w - 47) / 2 + 5, y + 42.5, w - 66, 10.5, can ? '#7dff9e' : '#ff9aa9', 'center', '900');
       if (can && Math.sin(time * 4 + i) > 0.7) { ctx.save(); rr(x, y, w, h, 12); ctx.clip(); const sx = x - 30 + ((time * 120 + i * 40) % (w + 60)); ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.beginPath(); ctx.moveTo(sx, y + h); ctx.lineTo(sx + 14, y + h); ctx.lineTo(sx + 34, y); ctx.lineTo(sx + 20, y); ctx.closePath(); ctx.fill(); ctx.restore(); }
       ctx.restore();
       btn(x, y, w, h, () => buyUpgrade(u));
@@ -4100,7 +4138,7 @@
       text(t.name, cx, y + 45, 8.5, active ? INK : '#ffffff', 'center', '800');
       ctx.restore();
       if (t.badge()) badge(cx + 14, y + 8);
-      if (S.fresh.includes(t.lock)) { appear(x, y, w, h, t.lock); newTag(cx, y - 2); }
+      if (S.fresh.includes(t.lock)) { appear(x, y, w, h, t.lock); newTag(cx, y + 3); }
       btn(x, y, w, h, () => { if (panel === t.id) panel = null; else openPanel(t.id); selectedJar = null; selectedAttach = null; });
     });
   }
@@ -4126,8 +4164,8 @@
     gl.addColorStop(0, 'rgba(160,120,255,0.22)'); gl.addColorStop(1, 'rgba(160,120,255,0)'); ctx.fillStyle = gl; ctx.fillRect(x - 60, y - 60, w + 120, h + 120);
     rr(x, y + 7, w, h, 22); ctx.fillStyle = 'rgba(10,5,25,0.5)'; ctx.fill();
     if (ui('ui-window')) {
-      nine('ui-window', x, y, w, h, 0.36);
-      ctx.save(); rr(x + 16, y + 16, w - 32, h - 32, 8); ctx.clip(); windowPattern(x, y, w, h); ctx.restore();
+      nine('ui-window', x, y, w, h, 0.29);
+      ctx.save(); rr(x + 13, y + 13, w - 26, h - 26, 8); ctx.clip(); windowPattern(x, y, w, h); ctx.restore();
       if (title) ribbon(x + w / 2, y - 12, w, title, o.ribbon || '#ff7aa8');
       return;
     }
@@ -4230,12 +4268,12 @@
     const sel = selectedJar && findItem(selectedJar);
     if (sel) {
       const def = GHOSTS[sel.type];
-      text(def.name + ' · ' + RARITY[def.rarity].name + ' · ' + sel.stars + '★ · ' + fmt(squadDamage(sel)), 180, 512, 11, INK, 'center', '700');
-      text('Тапни слот отряда, чтобы поставить', 180, 527, 10, '#6b5f86', 'center', '700');
-    } else if (list.length) text('Духов в банках: ' + list.length + (area.max > 0 ? ' · листай список пальцем' : ''), 180, 518, 10, '#6b5f86', 'center', '700');
-    button(22, 536, 100, 30, 'Слить всё', '#8ee08a', mergeSquad);
-    button(130, 536, 100, 30, 'Лучший отряд', '#7fd1ff', () => { bestSquad(); showToast('Отряд собран'); });
-    button(238, 536, 100, 30, 'Отпустить', '#ff9aa9', () => { if (sel) releaseJar(sel.id); else showToast('Выбери банку'); });
+      text(def.name + ' · ' + RARITY[def.rarity].name + ' · ' + sel.stars + '★ · ' + fmt(squadDamage(sel)), 180, 507, 11, INK, 'center', '700');
+      text('Тапни слот отряда, чтобы поставить', 180, 520, 10, '#6b5f86', 'center', '700');
+    } else if (list.length) text('Духов в банках: ' + list.length + (area.max > 0 ? ' · листай список пальцем' : ''), 180, 513, 10, '#6b5f86', 'center', '700');
+    button(26, 528, 98, 30, 'Слить всё', '#8ee08a', mergeSquad);
+    button(131, 528, 98, 30, 'Лучший отряд', '#7fd1ff', () => { bestSquad(); showToast('Отряд собран'); });
+    button(236, 528, 98, 30, 'Отпустить', '#ff9aa9', () => { if (sel) releaseJar(sel.id); else showToast('Выбери банку'); });
   }
 
   function drawAttachCard(x, y, w, h, a, selected) {
@@ -4293,11 +4331,9 @@
     button(70, 448, 220, 30, freeReady ? '🎬 Бесплатный призыв' : 'Бесплатно через ' + Math.ceil((S.adSummonAt - Date.now()) / 60000) + ' мин', '#ffc94d',
       () => { if (freeReady) showAd('Бесплатный призыв насадки', () => { S.adSummonAt = Date.now() + 4 * 3600e3; S.crystals += SUMMON_COST; summon(1); }); }, 12, freeReady);
     text('Насадок: ' + S.attach.length + (vipActive() ? '' : ' · +1 слот насадок в VIP'), 180, 494, 10, '#6b5f86', 'center', '700');
-    button(22, 516, 100, 46, 'Призыв\n', '#d68cff', () => summon(1), 12, S.crystals >= SUMMON_COST);
-    text(SUMMON_COST + ' 💎', 72, 550, 10, '#ffffff');
-    button(130, 516, 100, 46, 'x10\n', '#ffc94d', () => summon(10), 12, S.crystals >= SUMMON_COST * 9);
-    text(SUMMON_COST * 9 + ' 💎', 180, 550, 10, '#ffffff');
-    button(238, 516, 100, 46, 'Слить всё', '#8ee08a', mergeAttach);
+    button(26, 510, 98, 46, 'Призыв\n' + SUMMON_COST + ' 💎', '#d68cff', () => summon(1), 12, S.crystals >= SUMMON_COST);
+    button(131, 510, 98, 46, 'x10\n' + SUMMON_COST * 9 + ' 💎', '#ffc94d', () => summon(10), 12, S.crystals >= SUMMON_COST * 9);
+    button(236, 510, 98, 46, 'Слить всё', '#8ee08a', mergeAttach);
   }
 
   function drawBestiaryPanel() {
