@@ -94,6 +94,12 @@ for d in range(1, 9):
     total += save(Image.open(os.path.join(A, 'wall-d%d.png' % d)).convert('RGB').resize((768, 240), Image.LANCZOS), 'wall-d%d' % d, 84)
 # фон заставки в игре
 total += save(Image.open(os.path.join(A, 'splash.png')).convert('RGB').resize((720, 1280), Image.LANCZOS), 'splash', 82)
+Image.open(os.path.join(A, 'splash.png')).convert('RGB').save(os.path.join(ROOT, 'assets', 'splash.png'))
+# фон живой заставки: та же картинка без призраков и луча (их рисует игра)
+import runpy
+runpy.run_path(os.path.join(ROOT, 'tools', 'splash-layers.py'))
+src_map['splash-bg'] = 'art/splash-bg.webp'
+total += os.path.getsize(os.path.join(OUT, 'splash-bg.webp'))
 print('art/: %d файлов, %d КБ' % (len(src_map), total // 1024))
 
 # блок в game.js
