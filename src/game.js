@@ -4394,6 +4394,93 @@
     text('Арт: Higgsfield, музыка и звуки созданы кодом', 180, 520, 9, '#9a8fb5', 'center', '700');
   }
 
+
+  // ---- Сцены-картинки в окнах (походы, рейд), собранные из нарисованного арта: тот же контур, свет и предметы, что в игре
+  function propArt(key, cx, by, h, o) { // предмет стоит низом на by
+    const A = ART[key]; if (!A) return;
+    const asp = ART_ASPECT[key] || A.img.naturalWidth / A.img.naturalHeight, w = h * asp;
+    ctx.save(); if (o && o.flip) { ctx.translate(cx, 0); ctx.scale(-1, 1); cx = 0; }
+    ctx.drawImage(A.img, cx - w / 2, by - h, w, h); ctx.restore();
+  }
+  function texFill(key, x, y, w, h, k) { // заливка текстурой пола
+    const A = ART[key]; if (!A) return;
+    const pt = ctx.createPattern(A.img, 'repeat'); if (pt.setTransform) pt.setTransform(new DOMMatrix().translate(x, y).scale(k));
+    ctx.fillStyle = pt; ctx.fillRect(x, y, w, h);
+  }
+  function glowAt(x, y, r, rgb, a) { const g = ctx.createRadialGradient(x, y, 1, x, y, r); g.addColorStop(0, `rgba(${rgb},${a})`); g.addColorStop(1, `rgba(${rgb},0)`); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); }
+  function twinkles(x, y, w, h, n, seed) {
+    for (let i = 0; i < n; i++) { const px = x + ((i * 97 + seed * 31) % w), py = y + ((i * 53 + seed * 17) % h), a = 0.35 + 0.65 * Math.abs(Math.sin(time * 1.8 + i * 1.7)); ctx.fillStyle = `rgba(255,250,225,${a})`; ctx.beginPath(); ctx.arc(px, py, 0.7 + a * 0.8, 0, 7); ctx.fill(); }
+  }
+  function moonArt(x, y, r) {
+    glowAt(x, y, r * 3, '255,240,190', 0.45);
+    const g = ctx.createRadialGradient(x - r * 0.35, y - r * 0.35, 1, x, y, r); g.addColorStop(0, '#fffbe8'); g.addColorStop(1, '#ffe08a');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+    ctx.fillStyle = 'rgba(214,170,80,0.35)'; for (const [a, b, c] of [[-0.3, -0.2, 0.2], [0.3, 0.25, 0.24], [0.15, -0.45, 0.12]]) { ctx.beginPath(); ctx.arc(x + a * r, y + b * r, c * r, 0, 7); ctx.fill(); }
+    ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.stroke();
+  }
+  function hill(x0, x1, yBase, yTop, fill, yBottom) { // холм с чернильным контуром
+    ctx.beginPath(); ctx.moveTo(x0 - 4, yBase); ctx.bezierCurveTo(x0 + (x1 - x0) * 0.3, yTop, x0 + (x1 - x0) * 0.7, yTop, x1 + 4, yBase); ctx.lineTo(x1 + 4, yBottom); ctx.lineTo(x0 - 4, yBottom); ctx.closePath();
+    ctx.fillStyle = fill; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = INK; ctx.stroke();
+  }
+  function bats(x, y, w, n) {
+    ctx.strokeStyle = '#1d1640'; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
+    for (let i = 0; i < n; i++) { const bx = x + ((time * 26 + i * 110) % (w + 40)) - 20, by = y + i * 14 + Math.sin(time * 4 + i) * 5, f = Math.sin(time * 14 + i) * 4; ctx.beginPath(); ctx.moveTo(bx - 7, by - f); ctx.quadraticCurveTo(bx - 3, by, bx, by + 2); ctx.quadraticCurveTo(bx + 3, by, bx + 7, by - f); ctx.stroke(); }
+    ctx.lineCap = 'butt';
+  }
+  // рамка картинки: чернильный контур и золотая кайма, как у сцены «Пока тебя не было»
+  function sceneFrame(x, y, w, h, r) {
+    rr(x, y, w, h, r); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke();
+    rr(x + 3, y + 3, w - 6, h - 6, r - 3); ctx.lineWidth = 2; ctx.strokeStyle = '#ffd66b'; ctx.stroke();
+  }
+  function lighthouse(cx, by, h) { // маяк в стиле набора: контур, объём, полосы, вращающийся луч
+    const w0 = h * 0.3, w1 = h * 0.2, top = by - h;
+    const body = () => { ctx.beginPath(); ctx.moveTo(cx - w0 / 2, by); ctx.lineTo(cx - w1 / 2, top + h * 0.22); ctx.lineTo(cx + w1 / 2, top + h * 0.22); ctx.lineTo(cx + w0 / 2, by); ctx.closePath(); };
+    body(); const g = ctx.createLinearGradient(cx - w0 / 2, 0, cx + w0 / 2, 0); g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#c9c0e6'); ctx.fillStyle = g; ctx.fill();
+    ctx.save(); body(); ctx.clip(); ctx.fillStyle = '#ff6b8a'; for (const f of [0.4, 0.62, 0.84]) ctx.fillRect(cx - w0, top + h * f, w0 * 2, h * 0.09); ctx.fillStyle = 'rgba(43,35,64,0.18)'; ctx.fillRect(cx + w1 * 0.15, top, w0, h); ctx.restore();
+    body(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke();
+    rr(cx - w1 * 0.75, top + h * 0.16, w1 * 1.5, h * 0.07, 2); ctx.fillStyle = '#5a46b0'; ctx.fill(); ctx.stroke();
+    const lg = 0.75 + 0.25 * Math.sin(time * 5); rr(cx - w1 * 0.42, top + h * 0.05, w1 * 0.84, h * 0.11, 2); ctx.fillStyle = `rgba(255,226,120,${lg})`; ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx - w1 * 0.55, top + h * 0.05); ctx.lineTo(cx, top - h * 0.03); ctx.lineTo(cx + w1 * 0.55, top + h * 0.05); ctx.closePath(); ctx.fillStyle = '#ff6b8a'; ctx.fill(); ctx.stroke();
+    // луч
+    const a = Math.sin(time * 1.2), ly = top + h * 0.1, L = h * 1.4, sp = 0.13;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (const dir of [-1, 1]) { const k = dir * a; if (Math.abs(k) < 0.1) continue; const lgr = ctx.createLinearGradient(cx, ly, cx + dir * L, ly); lgr.addColorStop(0, `rgba(255,230,140,${0.45 * Math.abs(k)})`); lgr.addColorStop(1, 'rgba(255,230,140,0)'); ctx.fillStyle = lgr; ctx.beginPath(); ctx.moveTo(cx, ly); ctx.lineTo(cx + dir * L, ly - L * sp); ctx.lineTo(cx + dir * L, ly + L * sp); ctx.closePath(); ctx.fill(); }
+    ctx.restore(); glowAt(cx, ly, h * 0.25, '255,226,120', 0.4);
+  }
+  function expScene(i, x, y, w, h) {
+    ctx.save(); rr(x, y, w, h, 10); ctx.clip();
+    if (i === 0) { // чердак: доски, скошенная крыша, круглое окошко с луной, коробки и лампа
+      const g = ctx.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, '#4a3360'); g.addColorStop(1, '#7a5478'); ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = '#3a2850'; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + w * 0.42, y); ctx.lineTo(x, y + h * 0.55); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(x + w, y); ctx.lineTo(x + w * 0.58, y); ctx.lineTo(x + w, y + h * 0.55); ctx.closePath(); ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.beginPath(); ctx.moveTo(x + w * 0.42, y); ctx.lineTo(x, y + h * 0.55); ctx.moveTo(x + w * 0.58, y); ctx.lineTo(x + w, y + h * 0.55); ctx.stroke();
+      const wx = x + w * 0.5, wy = y + h * 0.3; ctx.beginPath(); ctx.arc(wx, wy, h * 0.15, 0, 7); const sg = ctx.createLinearGradient(0, wy - 12, 0, wy + 12); sg.addColorStop(0, '#2b2152'); sg.addColorStop(1, '#6a52b8'); ctx.fillStyle = sg; ctx.fill();
+      ctx.save(); ctx.clip(); ctx.fillStyle = '#fff3c0'; ctx.beginPath(); ctx.arc(wx + 4, wy - 3, 4.5, 0, 7); ctx.fill(); twinkles(wx - 12, wy - 10, 24, 18, 5, 3); ctx.restore();
+      ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(wx, wy, h * 0.15, 0, 7); ctx.stroke(); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(wx - h * 0.15, wy); ctx.lineTo(wx + h * 0.15, wy); ctx.moveTo(wx, wy - h * 0.15); ctx.lineTo(wx, wy + h * 0.15); ctx.stroke();
+      texFill('floor-d1', x, y + h * 0.7, w, h * 0.3, 0.12); ctx.fillStyle = 'rgba(40,20,60,0.25)'; ctx.fillRect(x, y + h * 0.7, w, h * 0.3);
+      ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.beginPath(); ctx.moveTo(x, y + h * 0.7); ctx.lineTo(x + w, y + h * 0.7); ctx.stroke();
+      glowAt(x + w * 0.8, y + h * 0.55, 30, '255,220,140', 0.45 + 0.08 * Math.sin(time * 3));
+      propArt('prop-d1-box', x + w * 0.22, y + h * 0.92, h * 0.34); propArt('prop-d1-box', x + w * 0.36, y + h * 0.95, h * 0.24); propArt('prop-d1-lamp', x + w * 0.82, y + h * 0.93, h * 0.5);
+      ghostSprite('sheet', x + w * 0.55, y + h * 0.62 + Math.sin(time * 2) * 3, h * 0.14, { phase: time * 3 });
+    } else if (i === 1) { // заброшенный парк на закате: трава, деревья, кусты, фонарь
+      const g = ctx.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, '#ff9fb8'); g.addColorStop(0.6, '#ffd2a0'); g.addColorStop(1, '#ffe7c4'); ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
+      glowAt(x + w * 0.5, y + h * 0.62, h * 0.5, '255,246,210', 0.7); ctx.fillStyle = '#fff3d0'; ctx.beginPath(); ctx.arc(x + w * 0.5, y + h * 0.62, h * 0.13, Math.PI, 0); ctx.fill();
+      ctx.save(); hill(x, x + w, y + h * 0.7, y + h * 0.5, '#7dbf6a', y + h + 4); ctx.clip(); texFill('floor-d5', x, y + h * 0.45, w, h * 0.6, 0.14); ctx.restore();
+      ctx.lineWidth = 2.5; ctx.strokeStyle = INK; ctx.beginPath(); ctx.moveTo(x - 4, y + h * 0.7); ctx.bezierCurveTo(x + w * 0.3, y + h * 0.5, x + w * 0.7, y + h * 0.5, x + w + 4, y + h * 0.7); ctx.stroke();
+      propArt('prop-d5-tree', x + w * 0.2, y + h * 0.8, h * 0.62); propArt('prop-d5-tree', x + w * 0.84, y + h * 0.84, h * 0.52, { flip: true }); propArt('prop-d5-bush', x + w * 0.62, y + h * 0.9, h * 0.22);
+      glowAt(x + w * 0.42, y + h * 0.42, 18, '255,220,140', 0.5); propArt('prop-d2-lamp', x + w * 0.42, y + h * 0.92, h * 0.6);
+      ghostSprite('sock', x + w * 0.62, y + h * 0.42 + Math.sin(time * 2.2) * 3, h * 0.12, { phase: time * 3 });
+    } else { // старый маяк ночью: море, звёзды, луна, луч
+      const g = ctx.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, '#22184a'); g.addColorStop(1, '#5a46a0'); ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
+      twinkles(x, y, w, h * 0.55, 14, 7); moonArt(x + w * 0.82, y + h * 0.2, h * 0.09);
+      const sea = ctx.createLinearGradient(0, y + h * 0.66, 0, y + h); sea.addColorStop(0, '#3a5fae'); sea.addColorStop(1, '#22306a'); ctx.fillStyle = sea; ctx.fillRect(x, y + h * 0.66, w, h);
+      ctx.strokeStyle = 'rgba(180,220,255,0.45)'; ctx.lineWidth = 1.5; for (let k = 0; k < 4; k++) { const wy = y + h * (0.72 + k * 0.07), off = (time * 12 + k * 20) % 24; ctx.beginPath(); for (let wx = x - 24 + off; wx < x + w; wx += 24) { ctx.moveTo(wx, wy); ctx.quadraticCurveTo(wx + 6, wy - 3, wx + 12, wy); } ctx.stroke(); }
+      ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.beginPath(); ctx.moveTo(x, y + h * 0.66); ctx.lineTo(x + w, y + h * 0.66); ctx.stroke();
+      hill(x + w * 0.05, x + w * 0.6, y + h * 0.86, y + h * 0.66, '#4a3d6e', y + h + 4);
+      lighthouse(x + w * 0.33, y + h * 0.8, h * 0.66);
+      propArt('prop-d3-buoy', x + w * 0.78, y + h * 0.92 + Math.sin(time * 2) * 1.5, h * 0.18);
+    }
+    ctx.restore(); sceneFrame(x, y, w, h, 10);
+  }
   // Панель походов
   function drawExpeditionPanel() {
     panelFrame('Походы духов');
@@ -4403,6 +4490,8 @@
       const y = 120 + i * 140, e = S.exp[i];
       card(26, y, 308, 130, 14, ['#7dd99a', '#7fd1ff', '#d68cff'][i]);
       // картинка места: небо, холмы и цель похода
+      if (useArt() && ART['floor-d1']) expScene(i, 34, y + 8, 92, 76);
+      else {
       ctx.save(); rr(34, y + 8, 92, 76, 10); ctx.clip();
       const sky = ctx.createLinearGradient(0, y + 8, 0, y + 84); sky.addColorStop(0, ['#bfe9ff', '#ffd9b0', '#3b2a74'][i]); sky.addColorStop(1, ['#e8fff0', '#ffb3c6', '#8a6ad0'][i]); ctx.fillStyle = sky; ctx.fillRect(34, y + 8, 92, 76);
       ctx.fillStyle = ['#8ee08a', '#7dbf6a', '#2b2152'][i]; ctx.beginPath(); ctx.moveTo(34, y + 84); ctx.quadraticCurveTo(60, y + 52, 90, y + 66); ctx.quadraticCurveTo(110, y + 58, 126, y + 70); ctx.lineTo(126, y + 84); ctx.closePath(); ctx.fill();
@@ -4410,6 +4499,7 @@
       if (i === 1) { for (const tx of [56, 98]) { ctx.fillStyle = '#6a4a3a'; ctx.fillRect(tx - 2, y + 44, 5, 20); ctx.fillStyle = '#5fa04e'; ctx.beginPath(); ctx.arc(tx, y + 40, 13, 0, 7); ctx.fill(); } ctx.fillStyle = '#ff8fb1'; ctx.beginPath(); ctx.arc(78, y + 30, 9, Math.PI, 0); ctx.fill(); }
       if (i === 2) { ctx.fillStyle = '#fff3c0'; ctx.beginPath(); ctx.arc(108, y + 24, 8, 0, 7); ctx.fill(); ctx.fillStyle = '#e8e4ee'; ctx.beginPath(); ctx.moveTo(66, y + 72); ctx.lineTo(70, y + 30); ctx.lineTo(80, y + 30); ctx.lineTo(84, y + 72); ctx.fill(); ctx.fillStyle = '#ff6b8a'; ctx.fillRect(68, y + 40, 14, 6); ctx.fillRect(67, y + 56, 16, 6); const bl = 0.5 + 0.5 * Math.sin(time * 3); ctx.fillStyle = `rgba(255,230,120,${0.35 * bl})`; ctx.beginPath(); ctx.moveTo(75, y + 28); ctx.lineTo(34, y + 12); ctx.lineTo(34, y + 30); ctx.fill(); ctx.fillStyle = '#ffe680'; ctx.fillRect(70, y + 24, 10, 6); }
       ctx.restore(); rr(34, y + 8, 92, 76, 10); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke();
+      }
       text(m.name, 136, y + 18, 14, INK, 'left', '900');
       fitText(m.place + ' · ' + (m.min >= 60 ? m.min / 60 + ' ч' : m.min + ' мин'), 136, y + 35, 190, 10, '#6b5f86', 'left', '700');
       const k = e ? e.k : expPower(team);
@@ -4780,10 +4870,29 @@
     }
   }
 
+  // рейд: небо с заставки, луна, кладбищенский холм с надгробиями и фонарями, над ним парит особняк-призрак
+  function raidScene(x, y, w, h) {
+    ctx.save(); rr(x, y, w, h, 14); ctx.clip();
+    const SB = ART['splash-bg'].img, k = SB.naturalWidth / 360; ctx.drawImage(SB, 0, 0, 360 * k, 200 * k, x, y - 10, w, w * 200 / 360);
+    twinkles(x, y, w, h * 0.5, 10, 2);
+    moonArt(x + w * 0.83, y + h * 0.26, 20); bats(x, y + 26, w, 3);
+    hill(x, x + w, y + h * 0.82, y + h * 0.56, '#3a2d6e', y + h + 4);
+    ctx.save(); ctx.beginPath(); ctx.moveTo(x - 4, y + h * 0.82); ctx.bezierCurveTo(x + w * 0.3, y + h * 0.56, x + w * 0.7, y + h * 0.56, x + w + 4, y + h * 0.82); ctx.lineTo(x + w, y + h); ctx.lineTo(x, y + h); ctx.closePath(); ctx.clip(); texFill('floor-d5', x, y + h * 0.5, w, h * 0.5, 0.16); ctx.fillStyle = 'rgba(40,24,90,0.62)'; ctx.fillRect(x, y + h * 0.5, w, h * 0.5); ctx.restore();
+    propArt('prop-d5-grave', x + w * 0.14, y + h * 0.95, 34); propArt('prop-d5-grave', x + w * 0.27, y + h * 0.88, 26, { flip: true });
+    for (const [fx, fy] of [[0.72, 0.84], [0.9, 0.96]]) { glowAt(x + w * fx, y + h * fy - 26, 22, '255,210,120', 0.4 + 0.1 * Math.sin(time * 3 + fx * 9)); propArt('prop-d5-lamp', x + w * fx, y + h * fy, 34); }
+    propArt('prop-d5-tree', x + w * 0.04, y + h * 0.9, 70);
+    const my = y + h * 0.48 + Math.sin(time * 2) * 5;
+    glowAt(x + w * 0.5, my, 80, '190,140,255', 0.35);
+    ctx.fillStyle = 'rgba(20,10,40,0.3)'; ctx.beginPath(); ctx.ellipse(x + w * 0.5, y + h * 0.8, 44 - Math.sin(time * 2) * 4, 8, 0, 0, 7); ctx.fill();
+    ghostSprite('mansion', x + w * 0.5, my, 40, { phase: time * 2 });
+    ctx.restore(); sceneFrame(x, y, w, h, 14);
+  }
   function drawRaidPanel() {
     panelFrame('Рейд: Призрачный особняк');
     // сцена: ночное небо, холм, особняк
     const sx = 28, sy = 104, sw = 304, sh = 170;
+    if (useArt() && ART['splash-bg'] && ART['ghost-mansion']) raidScene(sx, sy, sw, sh);
+    else {
     ctx.save(); rr(sx, sy, sw, sh, 14); ctx.clip();
     const sky = ctx.createLinearGradient(0, sy, 0, sy + sh); sky.addColorStop(0, '#1d1640'); sky.addColorStop(1, '#5a3f8a'); ctx.fillStyle = sky; ctx.fillRect(sx, sy, sw, sh);
     for (let i = 0; i < 26; i++) { const px = sx + ((i * 97) % sw), py = sy + ((i * 53) % 90), tw = 0.4 + 0.6 * Math.abs(Math.sin(time * 2 + i)); ctx.fillStyle = `rgba(255,255,255,${tw})`; ctx.fillRect(px, py, 2, 2); }
@@ -4807,6 +4916,7 @@
     ghostSprite('mansion', sx + 58, sy + 92 + Math.sin(time * 2) * 6, 30, { phase: time * 2 });
     ctx.restore();
     rr(sx, sy, sw, sh, 14); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
+    }
     // что даёт рейд
     const rows = [['clock', '30 секунд бьёшь огромный особняк'], ['gem', '+15 за каждый пробитый этаж'], ['jar', '+1 банка за каждый этаж'], ['attach', 'Насадка за каждые 3 этажа']];
     rows.forEach(([ic, t], i) => {
