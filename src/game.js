@@ -5206,7 +5206,8 @@
     ctx.globalCompositeOperation = 'source-over';
     spl.slots.forEach((sl, i) => {
       const h = SPL_HOME[i], gp = splGhostPos(sl, h, i, t), c = { x: Math.max(gp.x, SPL_MOUTH.x) + 28, y: (gp.y + SPL_MOUTH.y) / 2 + 6 };
-      const pow = sl.st === 'enter' ? Math.max(0, sl.k - 0.6) / 0.4 : sl.st === 'suck' ? 1.3 : 1;
+      // после поимки луча к пустому месту нет: он снова появляется, когда прилетает новый призрак
+      const pow = sl.st === 'gone' ? 0 : sl.st === 'enter' ? Math.max(0, sl.k - 0.6) / 0.4 : sl.st === 'suck' ? 1.3 * Math.min(1, (1 - sl.k) * 6) : 1;
       if (pow <= 0) return;
       const from = { x: gp.x, y: gp.y + gp.r * 0.5 };
       const path = () => { ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.quadraticCurveTo(c.x, c.y, SPL_MOUTH.x, SPL_MOUTH.y); };
