@@ -2216,6 +2216,14 @@
   // иконка -> [лист, номер ячейки 0..15]
   const UI_ICONS = {"ad": [3, 3], "attach": [3, 6], "bolt": [3, 11], "book": [1, 8], "boom": [2, 15], "brain": [2, 3], "calendar": [3, 9], "candy": [2, 12], "cart": [1, 6], "chest": [3, 8], "clover": [2, 5], "compass": [3, 1], "crown": [3, 5], "ecto": [1, 0], "flame": [2, 10], "flask": [2, 1], "fullmoon": [1, 4], "gear": [1, 7], "gem": [1, 1], "ghost": [3, 10], "gift": [1, 5], "hammer": [3, 14], "heart": [3, 12], "hourglass": [2, 6], "house": [1, 10], "jar": [1, 2], "leaf": [2, 2], "lock": [3, 2], "loop": [1, 11], "magnet": [1, 13], "moon": [1, 3], "night": [2, 4], "note": [2, 8], "pack": [3, 15], "phone": [2, 14], "pumpkin": [2, 11], "rank": [1, 14], "scroll": [3, 4], "shield": [3, 13], "skull": [2, 7], "snow": [2, 0], "speaker": [2, 9], "star": [1, 15], "swords": [1, 12], "ticket": [3, 7], "trophy": [2, 13], "turbo": [3, 0], "wheel": [1, 9]};
   // UI-META-END
+  // SCENE-META-BEGIN (создаётся tools/prepare-scenes.py, не править руками)
+  const SCENE_SRC = {
+    'scene-attic': 'art/scene-attic.webp',
+    'scene-lighthouse': 'art/scene-lighthouse.webp',
+    'scene-park': 'art/scene-park.webp',
+    'scene-raid': 'art/scene-raid.webp',
+  };
+  // SCENE-META-END
   const ART = {};
   let artPending = 0;
   const tintCopy = (img, color) => {
@@ -2223,7 +2231,7 @@
     const x = c.getContext('2d'); x.drawImage(img, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = color; x.fillRect(0, 0, c.width, c.height); return c;
   };
   const tinted = (A, key, color) => A[key] || (A[key] = tintCopy(A.img, color)); // белая вспышка и силуэт — по запросу
-  const ALL_SRC = Object.assign({}, ART_SRC, UI_SRC);
+  const ALL_SRC = Object.assign({}, ART_SRC, UI_SRC, SCENE_SRC);
   for (const k in ALL_SRC) {
     const img = new Image(); artPending++;
     img.onload = () => { ART[k] = { img }; if (--artPending === 0) artLoaded(); };
@@ -4447,7 +4455,32 @@
     for (const dir of [-1, 1]) { const k = dir * a; if (Math.abs(k) < 0.1) continue; const lgr = ctx.createLinearGradient(cx, ly, cx + dir * L, ly); lgr.addColorStop(0, `rgba(255,230,140,${0.45 * Math.abs(k)})`); lgr.addColorStop(1, 'rgba(255,230,140,0)'); ctx.fillStyle = lgr; ctx.beginPath(); ctx.moveTo(cx, ly); ctx.lineTo(cx + dir * L, ly - L * sp); ctx.lineTo(cx + dir * L, ly + L * sp); ctx.closePath(); ctx.fill(); }
     ctx.restore(); glowAt(cx, ly, h * 0.25, '255,226,120', 0.4);
   }
+  // луч маяка: два конуса света поочерёдно в обе стороны
+  function lightBeam(cx, ly, L, sp) {
+    const a = Math.sin(time * 1.2);
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (const dir of [-1, 1]) { const k = dir * a; if (k < 0.1) continue; const lgr = ctx.createLinearGradient(cx, ly, cx + dir * L, ly); lgr.addColorStop(0, `rgba(255,230,140,${0.5 * k})`); lgr.addColorStop(1, 'rgba(255,230,140,0)'); ctx.fillStyle = lgr; ctx.beginPath(); ctx.moveTo(cx, ly); ctx.lineTo(cx + dir * L, ly - L * sp); ctx.lineTo(cx + dir * L, ly + L * sp); ctx.closePath(); ctx.fill(); }
+    ctx.restore();
+  }
+  // нарисованные сцены из Higgsfield: картинка и поверх живые детали (призрак, свет, звёзды, луч)
+  function drawnExpScene(i, A, x, y, w, h) {
+    ctx.save(); rr(x, y, w, h, 10); ctx.clip();
+    ctx.drawImage(A.img, x, y, w, h);
+    const P = (u, v) => [x + u * w, y + v * h];
+    ctx.globalCompositeOperation = 'lighter';
+    if (i === 0) { glowAt(...P(0.89, 0.42), h * 0.4, '255,220,140', 0.32 + 0.08 * Math.sin(time * 3)); twinkles(...P(0.42, 0.04), w * 0.16, h * 0.18, 4, 3); }
+    if (i === 1) glowAt(...P(0.32, 0.5), h * 0.32, '255,220,140', 0.38 + 0.1 * Math.sin(time * 3));
+    if (i === 2) { twinkles(x, y, w, h * 0.55, 10, 7); glowAt(...P(0.28, 0.22), h * 0.26, '255,226,120', 0.45 + 0.15 * Math.sin(time * 5)); }
+    ctx.globalCompositeOperation = 'source-over';
+    if (i === 2) lightBeam(...P(0.28, 0.22), w * 1.1, 0.14);
+    if (i === 0) ghostSprite('sheet', ...P(0.52, 0.5 + 0.03 * Math.sin(time * 2)), h * 0.14, { phase: time * 3 });
+    if (i === 1) ghostSprite('sock', ...P(0.68, 0.32 + 0.03 * Math.sin(time * 2.2)), h * 0.12, { phase: time * 3 });
+    if (i === 2) { const [gx, gy] = P(0.62, 0.42 + 0.03 * Math.sin(time * 1.8)); ctx.globalAlpha = 0.9; ghostSprite('wisp', gx, gy, h * 0.11, { phase: time * 3 }); ctx.globalAlpha = 1; }
+    ctx.restore(); sceneFrame(x, y, w, h, 10);
+  }
   function expScene(i, x, y, w, h) {
+    const SA = ui('scene-' + ['attic', 'park', 'lighthouse'][i]);
+    if (SA) return drawnExpScene(i, SA, x, y, w, h);
     ctx.save(); rr(x, y, w, h, 10); ctx.clip();
     if (i === 0) { // чердак: доски, скошенная крыша, круглое окошко с луной, коробки и лампа
       const g = ctx.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, '#4a3360'); g.addColorStop(1, '#7a5478'); ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
@@ -4872,6 +4905,22 @@
 
   // рейд: небо с заставки, луна, кладбищенский холм с надгробиями и фонарями, над ним парит особняк-призрак
   function raidScene(x, y, w, h) {
+    const RA = ui('scene-raid');
+    if (RA) { // нарисованный холм с надгробиями; фонари мерцают, мыши летают, над холмом парит особняк
+      ctx.save(); rr(x, y, w, h, 14); ctx.clip();
+      ctx.drawImage(RA.img, x, y, w, h);
+      ctx.globalCompositeOperation = 'lighter';
+      twinkles(x, y, w, h * 0.45, 10, 2);
+      for (const [u, v, k] of [[0.755, 0.66, 0], [0.905, 0.73, 2]]) glowAt(x + w * u, y + h * v, 26, '255,210,120', 0.3 + 0.12 * Math.sin(time * 3 + k));
+      glowAt(x + w * 0.84, y + h * 0.2, 46, '255,240,190', 0.18 + 0.05 * Math.sin(time * 1.5));
+      ctx.globalCompositeOperation = 'source-over';
+      bats(x, y + 22, w, 3);
+      const my = y + h * 0.44 + Math.sin(time * 2) * 5;
+      glowAt(x + w * 0.5, my, 80, '190,140,255', 0.32);
+      ctx.fillStyle = 'rgba(20,10,40,0.3)'; ctx.beginPath(); ctx.ellipse(x + w * 0.5, y + h * 0.8, 44 - Math.sin(time * 2) * 4, 8, 0, 0, 7); ctx.fill();
+      ghostSprite('mansion', x + w * 0.5, my, 40, { phase: time * 2 });
+      ctx.restore(); sceneFrame(x, y, w, h, 14); return;
+    }
     ctx.save(); rr(x, y, w, h, 14); ctx.clip();
     const SB = ART['splash-bg'].img, k = SB.naturalWidth / 360; ctx.drawImage(SB, 0, 0, 360 * k, 200 * k, x, y - 10, w, w * 200 / 360);
     twinkles(x, y, w, h * 0.5, 10, 2);
@@ -4891,7 +4940,7 @@
     panelFrame('Рейд: Призрачный особняк');
     // сцена: ночное небо, холм, особняк
     const sx = 28, sy = 104, sw = 304, sh = 170;
-    if (useArt() && ART['splash-bg'] && ART['ghost-mansion']) raidScene(sx, sy, sw, sh);
+    if (useArt() && ((ART['splash-bg'] && ART['ghost-mansion']) || ART['scene-raid'])) raidScene(sx, sy, sw, sh);
     else {
     ctx.save(); rr(sx, sy, sw, sh, 14); ctx.clip();
     const sky = ctx.createLinearGradient(0, sy, 0, sy + sh); sky.addColorStop(0, '#1d1640'); sky.addColorStop(1, '#5a3f8a'); ctx.fillStyle = sky; ctx.fillRect(sx, sy, sw, sh);
