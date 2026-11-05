@@ -195,13 +195,14 @@
 
   // Насадки пылесоса
   const ATTACH = {
-    narrow: { name: 'Узкая', color: '#7fd1ff', desc: 'пробивает ещё одну цель' },
-    wide: { name: 'Широкая', color: '#8ee08a', desc: 'задевает призраков рядом' },
-    turbo: { name: 'Турбо', color: '#ff9f5a', desc: 'каждый 5-й выстрел взрывается' },
-    brush: { name: 'Лазерная щётка', color: '#ff7a9c', desc: 'шанс и сила крита' },
-    frost: { name: 'Ледяная', color: '#9fe6ff', desc: 'замедляет призраков вокруг' },
-    magnet: { name: 'Магнитная', color: '#ffd84d', desc: 'больше эктоплазмы, осколки летят к коту' },
-    rocket: { name: 'Пылевые ракеты', color: '#d68cff', desc: 'самонаводящиеся ракеты' },
+    narrow: { name: 'Узкая', color: '#4fb4ff', desc: 'дальность и пробитие насквозь' },
+    wide: { name: 'Широкая', color: '#7ddc6a', desc: 'луч бьёт по площади' },
+    turbo: { name: 'Турбо', color: '#ff9a3d', desc: 'скорострельность' },
+    brush: { name: 'Лазерная щётка', color: '#ff6fa0', desc: 'шанс и сила крита' },
+    frost: { name: 'Ледяная', color: '#a8f0ff', desc: 'замедление и заморозка' },
+    magnet: { name: 'Магнитная', color: '#ffc93a', desc: 'эктоплазма и кристаллы' },
+    rocket: { name: 'Пылевые ракеты', color: '#c77dff', desc: 'самонаводящиеся ракеты со взрывом' },
+    storm: { name: 'Грозовая', color: '#e9ff5c', desc: 'цепная молния' },
   };
   const ATTACH_KINDS = Object.keys(ATTACH);
   const RANKS = ['D', 'C', 'B', 'A', 'S', 'SS', 'SSS'];
@@ -470,10 +471,50 @@
   function kindPower(kind) { return equippedItems().filter((a) => a.kind === kind).reduce((s, a) => s + rankPower(a.rank), 0); }
   // Ледяная насадка: призраки ближе 220 к коту двигаются медленнее (боссы вдвое слабее)
   function frostK(g) {
+    if (g.frozen > 0) return 0;
     const p = kindPower('frost'); if (!p || Math.hypot(g.x - cat.x, g.y - cat.y) > 220) return 1;
     const k = 1 / (1 + 0.12 * p); return g.boss || g.raid ? (1 + k) / 2 : Math.max(0.45, k);
   }
   const attachMult = () => 1 + equippedItems().reduce((s, a) => s + 0.2 * rankPower(a.rank), 0);
+  // Свои фишки каждой насадки (p — суммарная сила насадок этого вида, D=1, C=1.7, B=2.9, A=4.9, S=8.4…)
+  const AFX = {
+    range: (p) => 400 * (1 + Math.min(0.6, 0.06 * p)),
+    pierce: (p) => (p > 0 ? Math.min(4, 1 + Math.floor(p / 3)) : 0),
+    pierceDmg: (p) => Math.min(1, 0.4 + 0.1 * p),
+    splashR: (p) => 50 + Math.min(60, 8 * p),
+    splashDmg: (p) => Math.min(1, 0.25 + 0.08 * p),
+    rate: (p) => 1 + Math.min(1, 0.1 * p),
+    freeze: (p) => (p > 0 ? Math.min(0.35, 0.04 * p) : 0),
+    slow: (p) => 1 - Math.max(0.45, 1 / (1 + 0.12 * p)),
+    shardCh: (p) => Math.min(0.15, 0.015 * p),
+    pullR: (p) => Math.min(420, 140 + 30 * p),
+    rocketCd: (p) => Math.max(0.4, 1.5 / (1 + 0.3 * p)),
+    rocketR: (p) => Math.min(90, 55 + 5 * p),
+    rocketDmg: (p) => 0.6 + 0.3 * p,
+    chain: (p) => (p > 0 ? Math.min(6, 1 + Math.floor(p / 2)) : 0),
+    chainDmg: (p) => Math.min(0.9, 0.35 + 0.07 * p),
+  };
+  const catRange = () => AFX.range(kindPower('narrow'));
+  // главная насадка (самая сильная) задаёт вид луча
+  function mainKind() {
+    let best = null, bp = 0;
+    for (const a of equippedItems()) { const p = kindPower(a.kind); if (p > bp) { bp = p; best = a.kind; } }
+    return best;
+  }
+  const pct = (v) => Math.round(v * 100) + '%';
+  function attachInfo(kind, p) {
+    switch (kind) {
+      case 'narrow': return 'дальность +' + pct(Math.min(0.6, 0.06 * p)) + ', пробивает ' + AFX.pierce(p) + ' шт. за целью (' + pct(AFX.pierceDmg(p)) + ')';
+      case 'wide': return 'удар по площади: радиус ' + Math.round(AFX.splashR(p)) + ', ' + pct(AFX.splashDmg(p)) + ' урона';
+      case 'turbo': return 'скорострельность +' + pct(AFX.rate(p) - 1) + ', предел ' + fmt(12 * AFX.rate(p), 1) + '/с';
+      case 'brush': return 'крит +' + pct(Math.min(0.5, 0.04 * p)) + ' шанса, сила крита +x' + fmt(0.25 * p, 2);
+      case 'frost': return 'замедляет на ' + pct(AFX.slow(p)) + ', заморозка ' + pct(AFX.freeze(p)) + ' на 1.2 с';
+      case 'magnet': return 'эктоплазма +' + pct(0.1 * p) + ', 💎 +' + pct(AFX.shardCh(p)) + ', тянет 💎 с ' + Math.round(AFX.pullR(p));
+      case 'rocket': return 'ракета раз в ' + fmt(AFX.rocketCd(p), 1) + ' с, взрыв ' + Math.round(AFX.rocketR(p)) + ', урон x' + fmt(AFX.rocketDmg(p), 1);
+      case 'storm': return 'молния прыгает на ' + AFX.chain(p) + ' шт., ' + pct(AFX.chainDmg(p)) + ' урона';
+    }
+    return ATTACH[kind].desc;
+  }
 
   function squadDistrictCounts() {
     const c = {};
@@ -483,7 +524,7 @@
   const setMult = () => (Object.values(squadDistrictCounts()).some((n) => n >= 4) ? 1.25 : 1);
 
   const catDamage = () => 10 * Math.pow(1.15, S.lvPower - 1) * moonMult() * stoneDmg() * bestiaryMult() * attachMult() * setMult() * skinMult('dmg');
-  const fireRate = () => Math.min((3 + 0.06 * (S.lvPull - 1)) * skinMult('rate'), 12);
+  const fireRate = () => { const t = AFX.rate(kindPower('turbo')); return Math.min((3 + 0.06 * (S.lvPull - 1)) * skinMult('rate') * t, 12 * t); };
   const captureChance = () => Math.min(0.4 + 0.012 * (S.lvPull - 1) + 0.03 * talent('luck'), 0.95);
   // Тяга выше потолка 95%: уровни сверху не пропадают, а превращаются в «силу тяги»
   const pullOver = () => Math.max(0, (0.4 + 0.012 * (S.lvPull - 1) + 0.03 * talent('luck') - 0.95) / 0.012);
@@ -565,7 +606,7 @@
   let splash = { t: 0, out: 0 }; // титульная заставка при запуске
 
   function resetRoom() {
-    ghosts = []; shots = []; shards = []; zones = []; featureCd = 6; roomSpawned = 0; S.cleared = 0; cat.hp = CAT_MAX_HP; bossContinued = false; buildMap(); spawnCd = 0.6; bossSpawned = false; bossTimer = 0; roomToken++;
+    ghosts = []; shots = []; shards = []; rockets = []; zones = []; featureCd = 6; roomSpawned = 0; S.cleared = 0; cat.hp = CAT_MAX_HP; bossContinued = false; buildMap(); spawnCd = 0.6; bossSpawned = false; bossTimer = 0; roomToken++;
   }
 
   function pickType() {
@@ -810,6 +851,7 @@
       }
       return;
     }
+    if (g.frozen > 0) amount *= 1.25;
     g.hp -= amount;
     g.hit = 0.12;
     SFX.play(crit ? 'crit' : 'hit');
@@ -834,7 +876,7 @@
     burst(g.x, g.y, g.boss ? 40 : 14, GHOSTS[g.type].body);
     SFX.play(g.boss ? 'bossDown' : 'pop');
     S.stats.kills++;
-    if (Math.random() < (g.boss ? 1 : 0.08)) {
+    if (Math.random() < (g.boss ? 1 : 0.08 + AFX.shardCh(kindPower('magnet')))) {
       const n = g.boss ? 3 : 1;
       for (let i = 0; i < n; i++) shards.push({ x: Math.max(FIELD.x1, Math.min(FIELD.x2, g.x + (Math.random() - 0.5) * 80)), y: Math.max(FIELD.y1, Math.min(FIELD.y2, g.y + (Math.random() - 0.5) * 80)), life: 12 });
     }
@@ -1113,38 +1155,177 @@
   }
 
   // Выстрел кота с эффектами насадок
+  function zigzag(x1, y1, x2, y2, n, amp) {
+    const pts = [x1, y1], dx = x2 - x1, dy = y2 - y1, d = Math.hypot(dx, dy) || 1, nx = -dy / d, ny = dx / d;
+    for (let i = 1; i < n; i++) { const k = i / n, o = (Math.random() - 0.5) * 2 * amp; pts.push(x1 + dx * k + nx * o, y1 + dy * k + ny * o); }
+    pts.push(x2, y2); return pts;
+  }
+  function tryFreeze(g, p) {
+    if (!p || g.hp <= 0 || g.capturing) return;
+    const big = g.boss || g.raid;
+    if (Math.random() < AFX.freeze(p) * (big ? 0.5 : 1)) {
+      const fresh = !(g.frozen > 0);
+      g.frozen = big ? 0.4 : 1.2;
+      if (fresh) { burst(g.x, g.y, 8, '#dff8ff'); if (opt('numbers')) floaters.push({ x: g.x, y: g.y - g.r - 18, text: '❄', life: 0.8, color: '#bff4ff', size: 16 }); }
+    }
+  }
   function catShoot(target) {
     cat.shots++;
     const crit = Math.random() < critChance();
     const dmg = catDamage() * (crit ? critMult() : 1);
     const nz = nozzle();
-    const color = equippedItems().length ? ATTACH[equippedItems()[0].kind].color : '#9ff3ff';
-    beams.push({ x1: nz.x, y1: nz.y, x2: target.x, y2: target.y, life: 0.09, color, w: 5 });
+    const style = mainKind();
+    const color = style ? ATTACH[style].color : '#9ff3ff';
+    const tx = target.x, ty = target.y;
+    const pNarrow = kindPower('narrow'), pWide = kindPower('wide'), pFrost = kindPower('frost'), pStorm = kindPower('storm');
+    // узкая: луч проходит насквозь и бьёт призраков на линии за целью
+    let ex = tx, ey = ty;
+    const hitList = [];
+    if (pNarrow > 0) {
+      const dx = tx - nz.x, dy = ty - nz.y, d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d, reach = d + 240;
+      const line = ghosts.filter((g) => g !== target && targetable(g)).map((g) => {
+        const px = g.x - nz.x, py = g.y - nz.y, along = px * ux + py * uy, side = Math.abs(-px * uy + py * ux);
+        return { g, along, side };
+      }).filter((o) => o.along > d - 4 && o.along < reach && o.side < o.g.r + 10).sort((a, b) => a.along - b.along).slice(0, AFX.pierce(pNarrow));
+      line.forEach((o) => hitList.push(o.g));
+      const far = line.length ? line[line.length - 1].along + 30 : d + 60;
+      ex = nz.x + ux * far; ey = nz.y + uy * far;
+    }
+    const beam = { x1: nz.x, y1: nz.y, x2: ex, y2: ey, hx: tx, hy: ty, life: 0.09, max: 0.09, color, w: 5, style };
+    if (style === 'narrow') beam.w = 3;
+    if (style === 'wide') beam.w = 10;
+    if (style === 'turbo') { beam.w = 4; beam.life = beam.max = 0.07; }
+    if (style === 'storm') { beam.pts = zigzag(nz.x, nz.y, ex, ey, 7, 9); beam.life = beam.max = 0.11; }
+    if (style === 'rocket') beam.w = 6;
+    beams.push(beam);
     cat.recoil = 1;
     SFX.play('shoot');
-    const tx = target.x, ty = target.y;
     damage(target, dmg, crit);
+    tryFreeze(target, pFrost);
+    hitList.forEach((g) => { damage(g, dmg * AFX.pierceDmg(pNarrow), crit); tryFreeze(g, pFrost); });
 
-    const pNarrow = kindPower('narrow');
-    if (pNarrow > 0) {
-      const second = nearestGhost(tx, ty, target);
-      if (second) {
-        beams.push({ x1: tx, y1: ty, x2: second.x, y2: second.y, life: 0.09, color: ATTACH.narrow.color, w: 3 });
-        damage(second, dmg * Math.min(1, 0.3 + 0.1 * pNarrow), crit);
-      }
-    }
-    const pWide = kindPower('wide');
     if (pWide > 0) {
+      const R = AFX.splashR(pWide);
+      rings.push({ x: tx, y: ty, r: 8, max: R, life: 0.22, color: alpha(ATTACH.wide.color, 0.8), w: 4 });
       for (const g of ghosts) {
-        if (g !== target && targetable(g) && Math.hypot(g.x - tx, g.y - ty) < 60) damage(g, dmg * Math.min(1, 0.25 + 0.08 * pWide), false);
+        if (g !== target && targetable(g) && Math.hypot(g.x - tx, g.y - ty) < R) damage(g, dmg * AFX.splashDmg(pWide), false);
       }
     }
-    const pTurbo = kindPower('turbo');
-    if (pTurbo > 0 && cat.shots % 5 === 0) {
-      rings.push({ x: tx, y: ty, r: 10, max: 85, life: 0.3 });
-      burst(tx, ty, 18, '#ffcf8a');
-      shake = Math.max(shake, 0.15);
-      for (const g of ghosts) if (targetable(g) && Math.hypot(g.x - tx, g.y - ty) < 85) damage(g, catDamage() * (1 + 0.5 * pTurbo), false);
+    // грозовая: молния перескакивает на ближайших призраков
+    if (pStorm > 0) {
+      const hit = new Set([target]);
+      let from = target;
+      for (let i = 0; i < AFX.chain(pStorm); i++) {
+        let next = null, bd = 150;
+        for (const g of ghosts) { if (hit.has(g) || !targetable(g)) continue; const d = Math.hypot(g.x - from.x, g.y - from.y); if (d < bd) { bd = d; next = g; } }
+        if (!next) break;
+        hit.add(next);
+        beams.push({ x1: from.x, y1: from.y, x2: next.x, y2: next.y, life: 0.12, max: 0.12, color: ATTACH.storm.color, w: 3, style: 'storm', pts: zigzag(from.x, from.y, next.x, next.y, 5, 8) });
+        damage(next, dmg * AFX.chainDmg(pStorm), false);
+        from = next;
+      }
+    }
+  }
+
+  // Ракеты: настоящие самонаводящиеся снаряды со взрывом
+  let rockets = [];
+  function launchRocket(t, p) {
+    const side = Math.random() < 0.5 ? -1 : 1;
+    rockets.push({ x: cat.x - 22, y: cat.y - 10, vx: side * 120, vy: -160, target: t, life: 3, p, trail: 0 });
+  }
+  function rocketBoom(r) {
+    const R = AFX.rocketR(r.p), dmg = catDamage() * AFX.rocketDmg(r.p);
+    rings.push({ x: r.x, y: r.y, r: 8, max: R, life: 0.3, color: '#ffb26b', w: 6 });
+    burst(r.x, r.y, 16, '#ffcf8a'); burst(r.x, r.y, 8, ATTACH.rocket.color);
+    shake = Math.max(shake, 0.12);
+    for (const g of ghosts) { if (!targetable(g)) continue; const d = Math.hypot(g.x - r.x, g.y - r.y); if (d < R + g.r * 0.5) damage(g, g === r.target ? dmg : dmg * 0.6, false); }
+    r.life = 0;
+  }
+  function updateRockets(dt) {
+    for (const r of rockets) {
+      r.life -= dt;
+      if (!r.target || !targetable(r.target)) r.target = nearestGhost(r.x, r.y);
+      if (r.target) {
+        const dx = r.target.x - r.x, dy = r.target.y - r.y, d = Math.hypot(dx, dy) || 1;
+        const sp = 340, k = Math.min(1, dt * 5);
+        r.vx += ((dx / d) * sp - r.vx) * k; r.vy += ((dy / d) * sp - r.vy) * k;
+        if (d < r.target.r + 8) { rocketBoom(r); continue; }
+      }
+      r.x += r.vx * dt; r.y += r.vy * dt;
+      r.trail -= dt;
+      if (r.trail <= 0) { r.trail = 0.025; particles.push({ x: r.x, y: r.y, vx: -r.vx * 0.1 + (Math.random() - 0.5) * 20, vy: -r.vy * 0.1 + (Math.random() - 0.5) * 20, life: 0.35, color: Math.random() < 0.5 ? '#ffcf8a' : '#e8d2ff', r: 2.5 }); }
+      if (r.life <= 0) rocketBoom(r);
+    }
+    rockets = rockets.filter((r) => r.life > 0);
+  }
+  // Лучи: у каждой главной насадки свой вид
+  function drawBeam(b) {
+    const a = Math.min(1, b.life * 12), st = b.style;
+    const dx = b.x2 - b.x1, dy = b.y2 - b.y1, d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d, nx = -uy, ny = ux;
+    const mx = (b.x1 + b.x2) / 2 + (b.curve ? -40 : 0), my = (b.y1 + b.y2) / 2 + (b.curve ? -30 : 0);
+    let path;
+    if (b.pts) path = () => { ctx.beginPath(); ctx.moveTo(b.pts[0], b.pts[1]); for (let i = 2; i < b.pts.length; i += 2) ctx.lineTo(b.pts[i], b.pts[i + 1]); ctx.stroke(); };
+    else if (st === 'magnet') path = () => { // волна
+      ctx.beginPath(); const n = Math.max(6, Math.floor(d / 10)), ph = time * 40;
+      for (let i = 0; i <= n; i++) { const k = i / n, o = Math.sin(k * 14 + ph) * 5 * Math.sin(k * Math.PI); const x = b.x1 + dx * k + nx * o, y = b.y1 + dy * k + ny * o; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+      ctx.stroke();
+    };
+    else path = () => { ctx.beginPath(); ctx.moveTo(b.x1, b.y1); ctx.quadraticCurveTo(mx, my, b.x2, b.y2); ctx.stroke(); };
+    ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
+    ctx.strokeStyle = b.color;
+    if (st === 'turbo') { // очередь трассеров
+      const k = 1 - b.life / (b.max || 0.07);
+      ctx.globalAlpha = a * 0.25; ctx.lineWidth = b.w + 6; path();
+      for (let i = 0; i < 3; i++) {
+        const t0 = Math.min(1, k + i * 0.28), t1 = Math.min(1, t0 + 0.18);
+        ctx.globalAlpha = a; ctx.lineWidth = b.w + 2; ctx.strokeStyle = b.color;
+        ctx.beginPath(); ctx.moveTo(b.x1 + dx * t0, b.y1 + dy * t0); ctx.lineTo(b.x1 + dx * t1, b.y1 + dy * t1); ctx.stroke();
+        ctx.lineWidth = 2; ctx.strokeStyle = '#fff6c8'; ctx.stroke();
+      }
+      const fg = ctx.createRadialGradient(b.x1, b.y1, 1, b.x1, b.y1, 14);
+      fg.addColorStop(0, 'rgba(255,250,200,0.95)'); fg.addColorStop(0.5, 'rgba(255,150,60,0.6)'); fg.addColorStop(1, 'rgba(255,90,30,0)');
+      ctx.globalAlpha = a; ctx.fillStyle = fg; ctx.beginPath(); ctx.arc(b.x1, b.y1, 14, 0, 7); ctx.fill();
+    } else {
+      ctx.globalAlpha = a * (st === 'wide' ? 0.28 : 0.18); ctx.lineWidth = b.w + (st === 'narrow' ? 8 : 14); path();
+      ctx.globalAlpha = a * 0.5; ctx.lineWidth = b.w + (st === 'narrow' ? 2 : 5); path();
+      ctx.globalAlpha = a; ctx.lineWidth = Math.max(st === 'narrow' ? 1.5 : 2, b.w - (st === 'wide' ? 4 : 1)); ctx.strokeStyle = '#ffffff'; path();
+    }
+    ctx.globalAlpha = a;
+    if (st === 'brush' || st === 'frost') { // искры / снежинки вдоль луча
+      for (let i = 1; i < 6; i++) {
+        const k = (i / 6 + time * 3) % 1, o = Math.sin(i * 7.3 + time * 20) * 7;
+        const x = b.x1 + dx * k + nx * o, y = b.y1 + dy * k + ny * o;
+        if (st === 'brush') { ctx.fillStyle = i % 2 ? '#ffffff' : b.color; star4(x, y, 3.5); }
+        else { ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; for (let j = 0; j < 3; j++) { const an = j * Math.PI / 3 + i; ctx.beginPath(); ctx.moveTo(x - Math.cos(an) * 4, y - Math.sin(an) * 4); ctx.lineTo(x + Math.cos(an) * 4, y + Math.sin(an) * 4); ctx.stroke(); } }
+      }
+    }
+    if (st === 'narrow') { // прицел на цели
+      const hx = b.hx ?? b.x2, hy = b.hy ?? b.y2;
+      ctx.strokeStyle = b.color; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(hx, hy, 11, 0, 7); ctx.stroke();
+      for (let j = 0; j < 4; j++) { const an = j * Math.PI / 2; ctx.beginPath(); ctx.moveTo(hx + Math.cos(an) * 8, hy + Math.sin(an) * 8); ctx.lineTo(hx + Math.cos(an) * 15, hy + Math.sin(an) * 15); ctx.stroke(); }
+    }
+    // вспышка в точке попадания
+    const hx = b.hx ?? b.x2, hy = b.hy ?? b.y2, R = st === 'wide' ? 24 : st === 'storm' ? 20 : 16;
+    const ig = ctx.createRadialGradient(hx, hy, 1, hx, hy, R);
+    ig.addColorStop(0, 'rgba(255,255,255,0.9)'); ig.addColorStop(0.45, alpha(b.color, 0.5)); ig.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.globalAlpha = a * 0.85; ctx.fillStyle = ig; ctx.beginPath(); ctx.arc(hx, hy, R, 0, 7); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; ctx.lineCap = 'butt';
+  }
+  function star4(x, y, r) { ctx.beginPath(); ctx.moveTo(x, y - r); ctx.lineTo(x + r * 0.3, y - r * 0.3); ctx.lineTo(x + r, y); ctx.lineTo(x + r * 0.3, y + r * 0.3); ctx.lineTo(x, y + r); ctx.lineTo(x - r * 0.3, y + r * 0.3); ctx.lineTo(x - r, y); ctx.lineTo(x - r * 0.3, y - r * 0.3); ctx.closePath(); ctx.fill(); }
+  function drawRockets() {
+    for (const r of rockets) {
+      ctx.save(); ctx.translate(r.x, r.y); ctx.rotate(Math.atan2(r.vy, r.vx));
+      ctx.globalCompositeOperation = 'lighter';
+      const fl = ctx.createRadialGradient(-10, 0, 1, -10, 0, 12);
+      fl.addColorStop(0, 'rgba(255,240,180,0.95)'); fl.addColorStop(0.5, 'rgba(255,140,60,0.6)'); fl.addColorStop(1, 'rgba(255,80,40,0)');
+      ctx.fillStyle = fl; ctx.beginPath(); ctx.ellipse(-12, 0, 12 + Math.random() * 3, 6, 0, 0, 7); ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.lineWidth = 2; ctx.strokeStyle = INK;
+      ctx.fillStyle = ATTACH.rocket.color;
+      ctx.beginPath(); ctx.moveTo(-6, -4); ctx.lineTo(-11, -8); ctx.lineTo(-9, 0); ctx.lineTo(-11, 8); ctx.lineTo(-6, 4); ctx.closePath(); ctx.fill(); ctx.stroke();
+      rr(-8, -4.5, 13, 9, 3); ctx.fillStyle = '#f2e8ff'; ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(5, -4.5); ctx.quadraticCurveTo(13, 0, 5, 4.5); ctx.closePath(); ctx.fillStyle = '#ff5c7a'; ctx.fill(); ctx.stroke();
+      ctx.restore();
     }
   }
 
@@ -1899,6 +2080,7 @@
         if (!targetable(g)) continue;
         if (g.beh !== 'bomber' && Math.hypot(g.x - cat.x, g.y - (cat.y - 10)) < g.r + 18) hurtCat((g.boss ? 25 : 8) * dt);
         // редкие и сильнее стреляют сгустками эктоплазмы
+        if (g.frozen > 0) continue; // замороженный не стреляет
         if (GHOSTS[g.type].rarity >= 1) {
           g.shootCd -= dt;
           if (g.shootCd <= 0) {
@@ -1921,7 +2103,7 @@
       const pMag = kindPower('magnet');
       for (const sh of shards) {
         sh.life -= dt;
-        if (pMag) { const d = Math.hypot(cat.x - sh.x, cat.y - sh.y); if (d < 140 + 30 * pMag) { sh.x += ((cat.x - sh.x) / d) * 260 * dt; sh.y += ((cat.y - sh.y) / d) * 260 * dt; } }
+        if (pMag) { const d = Math.hypot(cat.x - sh.x, cat.y - sh.y); if (d < AFX.pullR(pMag)) { sh.mag = 1; sh.x += ((cat.x - sh.x) / d) * (260 + pMag * 12) * dt; sh.y += ((cat.y - sh.y) / d) * (260 + pMag * 12) * dt; } else sh.mag = 0; }
         if (Math.hypot(sh.x - cat.x, sh.y - cat.y) < 28) { sh.life = 0; S.crystals++; SFX.play('crystal'); floaters.push({ x: sh.x, y: sh.y - 10, text: '+1 💎', life: 1, color: '#9ff3ff', size: 14 }); }
       }
       shards = shards.filter((sh) => sh.life > 0);
@@ -1932,22 +2114,22 @@
       if (target) {
         const want = Math.atan2(target.y - (cat.y - 18), target.x - cat.x);
         cat.aim += (want - cat.aim) * Math.min(1, dt * 14);
-        if (cat.fireCd <= 0 && Math.hypot(target.x - cat.x, target.y - cat.y) < 400) { cat.fireCd = 1 / fireRate(); catShoot(target); }
+        if (cat.fireCd <= 0 && Math.hypot(target.x - cat.x, target.y - cat.y) < catRange()) { cat.fireCd = 1 / fireRate(); catShoot(target); }
       }
       // ракеты
       const pRocket = kindPower('rocket');
       if (pRocket > 0) {
         cat.rocketCd -= dt;
         if (cat.rocketCd <= 0) {
-          const alive = ghosts.filter((g) => targetable(g) && Math.hypot(g.x - cat.x, g.y - cat.y) < 420);
+          const alive = ghosts.filter((g) => targetable(g) && Math.hypot(g.x - cat.x, g.y - cat.y) < 460);
           if (alive.length) {
-            const t = alive[Math.floor(Math.random() * alive.length)];
-            cat.rocketCd = Math.max(0.4, 1.5 / (1 + 0.3 * pRocket));
-            beams.push({ x1: cat.x - 26, y1: cat.y - 6, x2: t.x, y2: t.y, life: 0.12, color: ATTACH.rocket.color, w: 4, curve: true });
-            damage(t, catDamage() * (0.5 + 0.3 * pRocket), false);
+            cat.rocketCd = AFX.rocketCd(pRocket);
+            launchRocket(alive[Math.floor(Math.random() * alive.length)], pRocket);
+            SFX.play('shoot');
           }
         }
       }
+      updateRockets(dt);
 
       // отряд
       orbiters = S.squad.map((id, i) => {
@@ -1983,6 +2165,7 @@
         continue;
       }
       if (g.dying) { g.dying -= dt; continue; }
+      if (g.frozen > 0) { g.frozen -= dt; if (g.frozen <= 0) burst(g.x, g.y, 6, '#dff8ff'); continue; }
       const gdt = dt * frostK(g);
       if (g.beh && !modal && behave(g, gdt)) { g.x = Math.max(WALL, Math.min(MAP_W - WALL, g.x)); g.y = Math.max(WALL, Math.min(MAP_H - WALL, g.y)); continue; }
       if (g.windup && !modal) continue; // замах: босс замирает
@@ -2043,6 +2226,10 @@
   }
 
   function nozzle() {
+    if (useArt() && ART['cat-' + (SKINS[S.skin] ? S.skin : 'ginger')] && ART.nozzle) { // нарисованный кот держит пылесос в лапе
+      const len = 37 - cat.recoil * 5;
+      return { x: cat.x + murzikFace * 33.6 + Math.cos(cat.aim) * len, y: cat.y - 4.7 + Math.sin(cat.aim) * len };
+    }
     const len = 30 - cat.recoil * 4;
     return { x: cat.x + Math.cos(cat.aim) * len, y: cat.y - 18 + Math.sin(cat.aim) * len };
   }
@@ -3455,6 +3642,19 @@
     const dx = cat.x - g.x, dy = cat.y - g.y, dl = Math.hypot(dx, dy) || 1;
     ghostSprite(g.type, x, y, r, { hit: g.hit > 0 || (g.fuse && Math.sin(time * 30) > 0), phase: g.phase, lookX: dx / dl, lookY: dy / dl });
     if (g.type === 'jacko' && !g.dying && !(useArt() && ART['ghost-jacko'])) drawIcon('pumpkin', x, y - r * 0.95, r * 1.1);
+    if (g.frozen > 0 && !g.dying && !g.capturing) { // ледяная глыба
+      const R = r * 1.25, fa = Math.min(1, g.frozen * 4);
+      ctx.save(); ctx.globalAlpha *= fa;
+      ctx.beginPath();
+      for (let i = 0; i < 7; i++) { const an = i / 7 * Math.PI * 2 + 0.3, rr2 = R * (i % 2 ? 0.92 : 1.08); i ? ctx.lineTo(x + Math.cos(an) * rr2, y + Math.sin(an) * rr2) : ctx.moveTo(x + Math.cos(an) * rr2, y + Math.sin(an) * rr2); }
+      ctx.closePath();
+      const ig = ctx.createLinearGradient(x - R, y - R, x + R, y + R);
+      ig.addColorStop(0, 'rgba(230,252,255,0.75)'); ig.addColorStop(0.5, 'rgba(150,225,255,0.45)'); ig.addColorStop(1, 'rgba(120,190,255,0.6)');
+      ctx.fillStyle = ig; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = '#ffffff'; ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x - R * 0.55, y - R * 0.2); ctx.lineTo(x - R * 0.2, y - R * 0.6); ctx.stroke();
+      ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x - R * 0.45, y + R * 0.1); ctx.lineTo(x - R * 0.35, y); ctx.stroke();
+      ctx.restore();
+    }
     if (g.elite && !g.dying) { // корона
       ctx.save(); ctx.translate(x, y - r * 1.05);
       ctx.beginPath(); ctx.moveTo(-10, 4); ctx.lineTo(-11, -6); ctx.lineTo(-5, -1); ctx.lineTo(0, -9); ctx.lineTo(5, -1); ctx.lineTo(11, -6); ctx.lineTo(10, 4); ctx.closePath();
@@ -3555,6 +3755,7 @@
       ctx.drawImage(N.img, -0.18 * L, -H / 2, L, H);
       const tip = 0.8 * L, col = o.eqColor || '#ff7a9c';
       ctx.fillStyle = alpha(col, 0.55); rr(tip - 3, -H * 0.4, 5, H * 0.8, 2); ctx.fill();
+      if (o.eqKind) nozzleFx(o.eqKind, tip + 2, 0);
       if (rec > 0.2) {
         ctx.globalCompositeOperation = 'lighter';
         const mg = ctx.createRadialGradient(tip + 6, 0, 1, tip + 6, 0, 18 * rec + 6);
@@ -3846,6 +4047,7 @@
       ctx.fillStyle = o.eqColor || '#ff7a9c';
       const wide = o.wide ? 6 : 0;
       rr(26 - rec * 4, -9 - wide / 2, 10, 18 + wide, 3); ctx.fill(); ctx.stroke();
+      if (o.eqKind) nozzleFx(o.eqKind, 36 - rec * 4, 0);
       if (rec > 0.2) {
         ctx.globalCompositeOperation = 'lighter';
         const mg = ctx.createRadialGradient(40, 0, 1, 40, 0, 18 * rec + 6);
@@ -3855,6 +4057,19 @@
       }
       ctx.restore();
     }
+  }
+
+  // маленький эффект на конце пылесоса от главной насадки
+  function nozzleFx(kind, x, y) {
+    const c = ATTACH[kind].color;
+    ctx.save(); ctx.translate(x, y);
+    if (kind === 'narrow') { rr(0, -2.5, 12, 5, 2); ctx.fillStyle = c; ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = INK; ctx.stroke(); }
+    ctx.globalCompositeOperation = 'lighter';
+    if (kind === 'frost') { ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; for (let i = 0; i < 3; i++) { const an = i * Math.PI / 3 + time * 2; ctx.beginPath(); ctx.moveTo(6 - Math.cos(an) * 5, -Math.sin(an) * 5); ctx.lineTo(6 + Math.cos(an) * 5, Math.sin(an) * 5); ctx.stroke(); } }
+    else if (kind === 'storm') { ctx.strokeStyle = c; ctx.lineWidth = 1.5; for (let i = 0; i < 2; i++) { const an = Math.sin(time * 13 + i * 3) * 1.2; ctx.beginPath(); ctx.moveTo(2, 0); ctx.lineTo(2 + Math.cos(an) * 6, Math.sin(an) * 6 + 2); ctx.lineTo(2 + Math.cos(an) * 11, Math.sin(an) * 11); ctx.stroke(); } }
+    else if (kind === 'turbo') { const f = 0.8 + 0.3 * Math.sin(time * 40); const g = ctx.createRadialGradient(4, 0, 0.5, 4, 0, 8 * f); g.addColorStop(0, 'rgba(255,250,200,0.9)'); g.addColorStop(1, 'rgba(255,120,40,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(4, 0, 8 * f, 0, 7); ctx.fill(); }
+    else if (kind === 'magnet' || kind === 'brush') { ctx.fillStyle = kind === 'brush' ? '#ff9ec0' : '#ffe27a'; const k = (time * 2) % 1; star4(4 + k * 6, Math.sin(time * 5) * 4, 3 * (1 - k) + 1); }
+    ctx.restore();
   }
 
   function drawCat() {
@@ -3868,7 +4083,7 @@
     const eq = equippedItems();
     catSprite(cat.x, cat.y, {
       skin: S.skin, walk, walkPh: cat.bob * 2.6, walkAmt: cat.wk, bobY: cat.moving ? -Math.abs(walk) * 3 : Math.sin(cat.bob) * 1.5, aim: cat.aim, recoil: cat.recoil,
-      eqColor: eq.length ? ATTACH[eq[0].kind].color : '#ff7a9c', wide: kindPower('wide') > 0, rocket: kindPower('rocket') > 0, halo: S.prestiges > 0,
+      eqColor: eq.length ? ATTACH[mainKind()].color : '#ff7a9c', eqKind: mainKind(), wide: kindPower('wide') > 0, rocket: kindPower('rocket') > 0, halo: S.prestiges > 0,
     });
   }
 
@@ -4298,16 +4513,95 @@
     button(236, 528, 98, 30, 'Отпустить', '#ff9aa9', () => { if (sel) releaseJar(sel.id); else showToast('Выбери банку'); });
   }
 
+  // Свой рисунок у каждой насадки: общий патрубок + уникальная головка
+  function drawAttachIcon(kind, cx, cy, s, t) {
+    const k = ATTACH[kind], c = k.color; t = t || 0;
+    ctx.save(); ctx.translate(cx, cy); ctx.scale(s / 44, s / 44); ctx.rotate(-0.55);
+    ctx.lineJoin = 'round'; ctx.lineWidth = 2.4; ctx.strokeStyle = INK;
+    const shade = (x0, y0, x1, y1, light, dark) => { const g = ctx.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, light); g.addColorStop(1, dark); return g; };
+    const dk = (hex, m) => { const n = parseInt(hex.slice(1), 16); return `rgb(${Math.round((n >> 16) * m)},${Math.round(((n >> 8) & 255) * m)},${Math.round((n & 255) * m)})`; };
+    const body = shade(0, -10, 0, 10, '#ffffff', c);
+    // патрубок
+    rr(-22, -5, 18, 10, 4); ctx.fillStyle = shade(0, -5, 0, 5, '#e3ddff', '#8f84cf'); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.fillRect(-19, -3, 12, 2);
+    if (kind === 'narrow') {
+      rr(-5, -4.5, 12, 9, 2); ctx.fillStyle = body; ctx.fill(); ctx.stroke();
+      rr(6, -2.5, 16, 5, 2); ctx.fillStyle = shade(0, -3, 0, 3, '#ffffff', dk(c, 0.7)); ctx.fill(); ctx.stroke();
+      rr(19, -4, 4, 8, 1.5); ctx.fillStyle = dk(c, 0.6); ctx.fill(); ctx.stroke();
+      rr(-2, -12, 11, 6, 2.5); ctx.fillStyle = '#4a3f78'; ctx.fill(); ctx.stroke(); // прицел
+      ctx.fillStyle = '#bff4ff'; ctx.beginPath(); ctx.arc(9, -9, 2.4, 0, 7); ctx.fill(); ctx.stroke();
+    } else if (kind === 'wide') {
+      ctx.beginPath(); ctx.moveTo(-5, -6); ctx.lineTo(16, -15); ctx.quadraticCurveTo(20, 0, 16, 15); ctx.lineTo(-5, 6); ctx.closePath();
+      ctx.fillStyle = body; ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(16.5, 0, 3.5, 13, 0, 0, 7); ctx.fillStyle = dk(c, 0.45); ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, -4); ctx.lineTo(12, -10); ctx.stroke();
+    } else if (kind === 'turbo') {
+      rr(-5, -7, 20, 14, 3); ctx.fillStyle = body; ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = dk(c, 0.5); ctx.lineWidth = 2; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(-1 + i * 5, -6); ctx.lineTo(-1 + i * 5, 6); ctx.stroke(); }
+      ctx.strokeStyle = INK; ctx.lineWidth = 2.4;
+      ctx.beginPath(); ctx.moveTo(15, -7); ctx.lineTo(20, -5); ctx.lineTo(20, 5); ctx.lineTo(15, 7); ctx.closePath(); ctx.fillStyle = '#7b6fb0'; ctx.fill(); ctx.stroke();
+      const f = 1 + 0.15 * Math.sin(t * 30);
+      ctx.beginPath(); ctx.moveTo(20, -4.5); ctx.quadraticCurveTo(28 * f, -5, 33 * f, 0); ctx.quadraticCurveTo(28 * f, 5, 20, 4.5); ctx.closePath();
+      ctx.fillStyle = '#ffd84d'; ctx.fill(); ctx.lineWidth = 1.6; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(20, -2); ctx.quadraticCurveTo(25 * f, 0, 20, 2); ctx.fillStyle = '#fff6c8'; ctx.fill();
+    } else if (kind === 'brush') {
+      rr(-5, -8, 16, 16, 4); ctx.fillStyle = body; ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = INK; ctx.lineWidth = 1.6;
+      for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.moveTo(11, i * 2.2); ctx.lineTo(19 + (i % 2 ? 1.5 : 0), i * 2.6); ctx.stroke(); }
+      ctx.strokeStyle = c; ctx.lineWidth = 1; for (let i = -3; i <= 3; i += 2) { ctx.beginPath(); ctx.moveTo(12, i * 2.2); ctx.lineTo(18, i * 2.6); ctx.stroke(); }
+      ctx.globalCompositeOperation = 'lighter';
+      const lg = ctx.createRadialGradient(24, 0, 0.5, 24, 0, 7); lg.addColorStop(0, '#ffffff'); lg.addColorStop(0.4, alpha(c, 0.9)); lg.addColorStop(1, alpha(c, 0));
+      ctx.fillStyle = lg; ctx.beginPath(); ctx.arc(24, 0, 7, 0, 7); ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+    } else if (kind === 'frost') {
+      rr(-5, -5, 8, 10, 2); ctx.fillStyle = body; ctx.fill(); ctx.stroke();
+      ctx.beginPath(); for (let i = 0; i < 6; i++) { const an = i / 6 * Math.PI * 2; const px = 12 + Math.cos(an) * 10, py = Math.sin(an) * 10; i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); } ctx.closePath();
+      ctx.fillStyle = shade(4, -10, 20, 10, '#ffffff', '#6fc8ff'); ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.8;
+      for (let i = 0; i < 3; i++) { const an = i * Math.PI / 3 + t; ctx.beginPath(); ctx.moveTo(12 - Math.cos(an) * 6.5, -Math.sin(an) * 6.5); ctx.lineTo(12 + Math.cos(an) * 6.5, Math.sin(an) * 6.5); ctx.stroke(); }
+      ctx.strokeStyle = INK; ctx.lineWidth = 1.6; ctx.fillStyle = '#e8fbff';
+      for (const yy of [-4, 4]) { ctx.beginPath(); ctx.moveTo(-3, yy + (yy > 0 ? 1 : -1)); ctx.lineTo(0, yy + (yy > 0 ? 7 : -7)); ctx.lineTo(2, yy); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+    } else if (kind === 'magnet') {
+      rr(-5, -4, 6, 8, 2); ctx.fillStyle = body; ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(18, -12); ctx.lineTo(8, -12); ctx.arc(8, 0, 12, -Math.PI / 2, Math.PI / 2, true); ctx.lineTo(18, 12); ctx.lineTo(18, 5); ctx.lineTo(8, 5); ctx.arc(8, 0, 5, Math.PI / 2, -Math.PI / 2); ctx.lineTo(18, -5); ctx.closePath();
+      ctx.fillStyle = shade(0, -12, 0, 12, '#ff8a8a', '#d23a4a'); ctx.fill(); ctx.stroke();
+      rr(13, -12, 6, 7, 1); ctx.fillStyle = '#eef0ff'; ctx.fill(); ctx.stroke();
+      rr(13, 5, 6, 7, 1); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = c; for (let i = 0; i < 3; i++) { const k2 = ((t * 1.5 + i / 3) % 1); star4(32 - k2 * 12, (i - 1) * 6 * (1 - k2), 2.8); }
+    } else if (kind === 'rocket') {
+      rr(-5, -9, 14, 18, 3); ctx.fillStyle = shade(0, -9, 0, 9, '#f2e8ff', dk(c, 0.75)); ctx.fill(); ctx.stroke();
+      for (const yy of [-5, 5]) {
+        rr(7, yy - 3, 11, 6, 3); ctx.fillStyle = '#f7f1ff'; ctx.fill(); ctx.lineWidth = 1.8; ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(18, yy - 3); ctx.quadraticCurveTo(24, yy, 18, yy + 3); ctx.closePath(); ctx.fillStyle = '#ff5c7a'; ctx.fill(); ctx.stroke();
+        ctx.fillStyle = c; ctx.beginPath(); ctx.moveTo(9, yy - 3); ctx.lineTo(7, yy - 5.5); ctx.lineTo(12, yy - 3); ctx.closePath(); ctx.fill(); ctx.stroke();
+      }
+    } else if (kind === 'storm') {
+      rr(-5, -4, 14, 8, 2); ctx.fillStyle = '#8f84cf'; ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = '#d9a441'; ctx.lineWidth = 2; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(-2 + i * 4, -4); ctx.lineTo(-2 + i * 4, 4); ctx.stroke(); }
+      ctx.strokeStyle = INK; ctx.lineWidth = 2.4;
+      const sg = ctx.createRadialGradient(13, -3, 1, 15, 0, 9); sg.addColorStop(0, '#ffffff'); sg.addColorStop(0.5, c); sg.addColorStop(1, dk(c, 0.55));
+      ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(15, 0, 8, 0, 7); ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = c; ctx.lineWidth = 1.8; ctx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 3; i++) { const an = -0.9 + i * 0.9 + Math.sin(t * 9 + i) * 0.2; ctx.beginPath(); ctx.moveTo(15 + Math.cos(an) * 8, Math.sin(an) * 8); ctx.lineTo(15 + Math.cos(an + 0.25) * 13, Math.sin(an + 0.25) * 13); ctx.lineTo(15 + Math.cos(an - 0.1) * 17, Math.sin(an - 0.1) * 17); ctx.stroke(); }
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    ctx.restore();
+  }
+
   function drawAttachCard(x, y, w, h, a, selected) {
     rr(x, y, w, h, 10); ctx.fillStyle = selected ? '#fff3c4' : '#ffffff'; ctx.fill();
+    if (a) { // мягкий фон цвета насадки
+      const k = ATTACH[a.kind], gx = x + w / 2, gy = y + h * 0.44, gr = Math.min(w, h) * 0.55;
+      const bg = ctx.createRadialGradient(gx, gy, 2, gx, gy, gr);
+      bg.addColorStop(0, alpha(k.color, 0.55)); bg.addColorStop(1, alpha(k.color, 0));
+      ctx.save(); rr(x, y, w, h, 10); ctx.clip(); ctx.fillStyle = bg; ctx.fillRect(x, y, w, h); ctx.restore();
+    }
+    rr(x, y, w, h, 10);
     ctx.lineWidth = 3; ctx.strokeStyle = a ? RANK_COLORS[a.rank] : '#c9c3e6'; ctx.stroke();
     if (!a) { text('пусто', x + w / 2, y + h / 2, 10, '#9b93b3', 'center', '700'); return; }
     const k = ATTACH[a.kind];
-    const cx = x + w / 2, cy = y + h * 0.42;
-    ctx.save(); ctx.translate(cx, cy); ctx.rotate(-0.6);
-    rr(-16, -4, 22, 8, 3); ctx.fillStyle = '#b9afe8'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke();
-    rr(4, -8, 10, 16, 3); ctx.fillStyle = k.color; ctx.fill(); ctx.stroke();
-    ctx.restore();
+    const cx = x + w / 2, cy = y + h * 0.44;
+    drawAttachIcon(a.kind, cx + 1, cy, Math.min(w * 0.72, h * 0.62), time);
     rr(x + 3, y + 3, 26, 15, 5); ctx.fillStyle = RANK_COLORS[a.rank]; ctx.fill();
     text(RANKS[a.rank], x + 16, y + 11, 10, '#ffffff');
     ctx.font = '800 8px ' + FONT;
@@ -4325,7 +4619,7 @@
         if (selectedAttach) { S.equipped = S.equipped.map((s) => (s === selectedAttach ? null : s)); S.equipped[i] = selectedAttach; selectedAttach = null; }
       });
     });
-    text('Урон x' + fmt(attachMult(), 2) + ' · крит ' + Math.round(critChance() * 100) + '% x' + fmt(critMult(), 1), 180, 196, 11, INK, 'center', '700');
+    fitText('Урон x' + fmt(attachMult(), 2) + ' · крит ' + Math.round(critChance() * 100) + '% x' + fmt(critMult(), 1) + ' · дальн. ' + Math.round(catRange()) + ' · ' + fmt(fireRate(), 1) + '/с', 180, 196, 316, 11, INK, 'center', '700');
 
     const list = [...S.attach].sort((a, b) => b.rank - a.rank || a.kind.localeCompare(b.kind));
     const area = scrollArea('attach', 18, 206, 324, 200, Math.ceil(list.length / 5) * 66 + 8);
@@ -4344,8 +4638,8 @@
     }
     const sel = selectedAttach && S.attach.find((a) => a.id === selectedAttach);
     if (sel) {
-      text(ATTACH[sel.kind].name + ' [' + RANKS[sel.rank] + ']: ' + ATTACH[sel.kind].desc, 180, 418, 11, INK, 'center', '700');
-      text('Тапни верхний слот, чтобы надеть', 180, 433, 10, '#6b5f86', 'center', '700');
+      fitText(ATTACH[sel.kind].name + ' [' + RANKS[sel.rank] + ']: ' + attachInfo(sel.kind, rankPower(sel.rank)), 180, 418, 320, 11, INK, 'center', '700');
+      text(S.equipped.includes(sel.id) ? 'Уже надета · все насадки дают +' + pct(0.2 * rankPower(sel.rank)) + ' урона' : 'Тапни верхний слот, чтобы надеть', 180, 433, 10, '#6b5f86', 'center', '700');
     } else {
       fitText('Шансы: ' + (unlocked('ranks') ? RANK_WEIGHTS_HIGH : RANK_WEIGHTS).map((w, i) => RANKS[i] + ' ' + Math.round(w * 1000) / 10 + '%').join(' · '), 180, 425, 300, 10, '#6b5f86', 'center', '700');
     }
@@ -5386,24 +5680,11 @@
     }
     for (const rg of rings) {
       ctx.globalAlpha = Math.min(1, Math.max(0, rg.life / 0.3));
-      ctx.strokeStyle = rg.color || '#ffcf8a'; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(rg.x, rg.y, rg.r, 0, 7); ctx.stroke();
+      ctx.strokeStyle = rg.color || '#ffcf8a'; ctx.lineWidth = rg.w || 6; ctx.beginPath(); ctx.arc(rg.x, rg.y, rg.r, 0, 7); ctx.stroke();
     }
+    for (const b of beams) drawBeam(b);
+    drawRockets();
     ctx.globalCompositeOperation = 'lighter';
-    ctx.lineCap = 'round';
-    for (const b of beams) {
-      const a = Math.min(1, b.life * 12);
-      const mx = (b.x1 + b.x2) / 2 + (b.curve ? -40 : 0), my = (b.y1 + b.y2) / 2 + (b.curve ? -30 : 0);
-      const path = () => { ctx.beginPath(); ctx.moveTo(b.x1, b.y1); ctx.quadraticCurveTo(mx, my, b.x2, b.y2); ctx.stroke(); };
-      ctx.strokeStyle = b.color;
-      ctx.globalAlpha = a * 0.18; ctx.lineWidth = b.w + 14; path();
-      ctx.globalAlpha = a * 0.45; ctx.lineWidth = b.w + 5; path();
-      ctx.globalAlpha = a; ctx.lineWidth = Math.max(2, b.w - 1); ctx.strokeStyle = '#ffffff'; path();
-      // искры в точке попадания
-      const ig = ctx.createRadialGradient(b.x2, b.y2, 1, b.x2, b.y2, 16);
-      ig.addColorStop(0, 'rgba(255,255,255,0.9)'); ig.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.globalAlpha = a * 0.8; ctx.fillStyle = ig; ctx.beginPath(); ctx.arc(b.x2, b.y2, 16, 0, 7); ctx.fill();
-    }
-    ctx.lineCap = 'butt';
     for (const p of particles) {
       const a = Math.min(1, p.life * 2);
       ctx.globalAlpha = a * 0.35; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 2.2, 0, 7); ctx.fill();
