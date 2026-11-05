@@ -485,6 +485,11 @@
   const catDamage = () => 10 * Math.pow(1.15, S.lvPower - 1) * moonMult() * stoneDmg() * bestiaryMult() * attachMult() * setMult() * skinMult('dmg');
   const fireRate = () => Math.min((3 + 0.06 * (S.lvPull - 1)) * skinMult('rate'), 12);
   const captureChance = () => Math.min(0.4 + 0.012 * (S.lvPull - 1) + 0.03 * talent('luck'), 0.95);
+  // Тяга выше потолка 95%: уровни сверху не пропадают, а превращаются в «силу тяги»
+  const pullOver = () => Math.max(0, (0.4 + 0.012 * (S.lvPull - 1) + 0.03 * talent('luck') - 0.95) / 0.012);
+  const pullRare = () => Math.max(0, 1 - pullOver() / 80); // штраф редких и боссов уходит за 80 уровней
+  const doubleCatch = () => 0.6 * (1 - Math.exp(-pullOver() / 150)); // шанс поймать сразу двух: растёт с каждым уровнем, к 60% всё медленнее
+  const catchChance = (rar, boss) => (boss ? captureChance() * (0.45 + 0.3 * (1 - pullRare())) : captureChance() * (1 - rar * 0.12 * pullRare()));
   const critChance = () => 0.1 + Math.min(0.5, 0.04 * kindPower('brush'));
   const critMult = () => 3 + 0.25 * kindPower('brush');
   const incomeMult = () => Math.pow(1.08, S.lvCollect - 1) * moonMult() * stoneInc() * skinMult('income') * (1 + 0.1 * kindPower('magnet'));
@@ -503,7 +508,7 @@
 
   const UPGRADES = [
     { key: 'lvPower', name: 'Мощность', icon: '💥', base: 10, color: '#ff7a9c', desc: () => fmt(catDamage()) + ' урон' },
-    { key: 'lvPull', lock: 'pull', name: 'Тяга', icon: '🧲', base: 14, color: '#7fd1ff', desc: () => Math.round(captureChance() * 100) + '% поимка' },
+    { key: 'lvPull', lock: 'pull', name: 'Тяга', icon: '🧲', base: 14, color: '#7fd1ff', desc: () => (pullOver() > 0 ? '95% · дубль ' + Math.round(doubleCatch() * 100) + '%' : Math.round(captureChance() * 100) + '% поимка') },
     { key: 'lvCollect', lock: 'collect', name: 'Сборник', icon: '💚', base: 12, color: '#8ee08a', desc: () => 'x' + fmt(incomeMult(), 2) + ' эктопл.' },
   ];
 
@@ -925,7 +930,7 @@
   function tryCapture(g) {
     if (S.jars <= 0) { offerJars(); return; }
     const rar = GHOSTS[g.type].rarity;
-    const chance = g.boss ? captureChance() * 0.45 : captureChance() * (1 - rar * 0.12);
+    const chance = catchChance(rar, g.boss);
     g.capturing = 0.6; cancelFuse(g);
     SFX.play('suck');
     g.captureOk = (S.tut === 0 && !g.boss) || Math.random() < chance;
@@ -937,6 +942,7 @@
     if (g.captureOk) {
       SFX.play('caught');
       capture(g.type, cat.x, cat.y - 20, false);
+      if (!g.boss && S.jars > 0 && Math.random() < doubleCatch()) { capture(g.type, cat.x + 18, cat.y - 34, true); floaters.push({ x: cat.x, y: cat.y - 70, text: 'Двойная поимка!', life: 1.4, color: '#9ff3ff', size: 14 }); }
       if (g.type === 'jacko') addCandy(5, cat.x, cat.y - 30);
       S.ecto += ghostReward(GHOSTS[g.type].rarity);
       if (g.boss) {
@@ -1449,8 +1455,10 @@
     if (u.lock) S.fresh = S.fresh.filter((f) => f !== u.lock);
     const cost = upgradeCost(S[u.key], u.base);
     if (S.ecto < cost) { showToast('Не хватает эктоплазмы'); SFX.play('deny'); return; }
+    const wasCap = pullOver() > 0;
     S.ecto -= cost; S[u.key]++; S.stats.upgrades++;
     SFX.play('upgrade');
+    if (u.key === 'lvPull' && !wasCap && pullOver() > 0) showToast('Поимка 95%! Дальше Тяга даёт двойную поимку и ловит редких и боссов');
   }
 
   function activateMoon() {
