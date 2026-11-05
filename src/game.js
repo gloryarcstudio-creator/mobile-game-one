@@ -5812,7 +5812,8 @@
       const keep = S.settings.art; if (noArt) S.settings.art = false;
       ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.translate(canvas.width / 2, canvas.height / 2); ctx.scale(scale, scale);
-      if (kind === 'cat') catSprite(0, 20, { skin: key, aim: 0.35, blinkSeed: 9, eqColor: '#9ff3ff' });
+      if (kind === 'attach') { ctx.rotate(0.55); drawAttachIcon(key, 0, 0, 44, 0.3); }
+      else if (kind === 'cat') catSprite(0, 20, { skin: key, aim: 0.35, blinkSeed: 9, eqColor: '#9ff3ff' });
       else ghostSprite(key, 0, 0, 20, { phase: 1.2, lookX: 0, lookY: 0.4 });
       ctx.restore(); S.settings.art = keep;
       return canvas.toDataURL('image/png');
