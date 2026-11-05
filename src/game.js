@@ -4119,7 +4119,10 @@
       plate(x, y, w, h, 12, can ? u.color : '#6b5f86', { noShadow: dn > 0 });
       // медальон с иконкой и уровнем, справа название и эффект
       medal(x + 20, y + 21, 13, shade(can ? u.color : '#6b5f86', -0.12), u.icon, { size: 14 });
-      rr(x + 8, y + 33, 24, 12, 6); ctx.fillStyle = INK; ctx.fill(); text(String(S[u.key]), x + 20, y + 39, 8, '#ffd84d', 'center', '900');
+      // уровень на плашке под медалью: ширина по числу цифр, тонкая золотая кайма
+      { const lv = String(S[u.key]); ctx.font = '900 9px ' + FONT; const bw = Math.min(34, Math.max(20, ctx.measureText(lv).width + 10));
+        rr(x + 20 - bw / 2, y + 35, bw, 13, 6.5); ctx.fillStyle = INK; ctx.fill(); ctx.lineWidth = 1.2; ctx.strokeStyle = '#ffd66b'; ctx.stroke();
+        fitText(lv, x + 20, y + 41.5, bw - 6, 9, '#ffd84d', 'center', '900'); }
       fitText(u.name, x + 38, y + 14, w - 46, 12, '#ffffff', 'left', '900');
       fitText(u.desc(), x + 38, y + 27, w - 46, 9.5, INK, 'left', '800');
       rr(x + 38, y + 35, w - 47, 15, 7.5); ctx.fillStyle = 'rgba(25,18,45,0.85)'; ctx.fill();
