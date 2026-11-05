@@ -2805,8 +2805,9 @@
   ];
   const SOLID = { bed: 1, table: 1, box: 1, sofa: 1, shelf: 1, armor: 1, barrel: 1, rack: 1, grave: 1, tree: 1, anchor: 1, chest: 1, mannequin: 1, crystal: 1, snowman: 1, vat: 1, flasks: 1, pillar: 1, mirror: 1 };
 
+  const mapKeyNow = () => S.house + ':' + districtIndex() + ':' + (useArt() ? 'art' : 'code');
   function buildMap() {
-    const key = S.house + ':' + districtIndex();
+    const key = mapKeyNow();
     if (key === mapKey) return;
     mapKey = key;
     const d = districtIndex(), F = FLOORS[d];
@@ -3365,7 +3366,9 @@
   }
 
   function drawMap() {
-    if (!mapCanvas) buildMap();
+    // карта перерисовывается, когда догрузился арт или переключили «Нарисованный арт»; кот остаётся на месте
+    if (mapCanvas && mapKey !== mapKeyNow()) keepCatOnRebuild = true;
+    buildMap();
     ctx.drawImage(mapCanvas, 0, 0, MAP_W, MAP_H);
     if (moonActive()) { ctx.fillStyle = 'rgba(255,240,150,0.10)'; ctx.fillRect(0, 0, MAP_W, MAP_H); }
   }
