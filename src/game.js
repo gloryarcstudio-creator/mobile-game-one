@@ -527,6 +527,8 @@
   const fireRate = () => { const t = AFX.rate(kindPower('turbo')); return Math.min((3 + 0.06 * (S.lvPull - 1)) * skinMult('rate') * t, 12 * t); };
   const captureChance = () => Math.min(0.4 + 0.012 * (S.lvPull - 1) + 0.03 * talent('luck'), 0.95);
   // Тяга выше потолка 95%: уровни сверху не пропадают, а превращаются в «силу тяги»
+  // сила тяги: растёт с каждым уровнем без потолка (40 + 1.2 за уровень + 3 за удачу); до 95 это шанс поимки, выше — бонусы сверх потолка
+  const pullPower = () => 40 + 1.2 * (S.lvPull - 1) + 3 * talent('luck');
   const pullOver = () => Math.max(0, (0.4 + 0.012 * (S.lvPull - 1) + 0.03 * talent('luck') - 0.95) / 0.012);
   const pullRare = () => Math.max(0, 1 - pullOver() / 80); // штраф редких и боссов уходит за 80 уровней
   const doubleCatch = () => 0.6 * (1 - Math.exp(-pullOver() / 150)); // шанс поймать сразу двух: растёт с каждым уровнем, к 60% всё медленнее
@@ -549,7 +551,7 @@
 
   const UPGRADES = [
     { key: 'lvPower', name: 'Мощность', icon: '💥', base: 10, color: '#ff7a9c', desc: () => fmt(catDamage()) + ' урон' },
-    { key: 'lvPull', lock: 'pull', name: 'Тяга', icon: '🧲', base: 14, color: '#7fd1ff', desc: () => (pullOver() > 0 ? '95% · дубль ' + Math.round(doubleCatch() * 100) + '%' : Math.round(captureChance() * 100) + '% поимка') },
+    { key: 'lvPull', lock: 'pull', name: 'Тяга', icon: '🧲', base: 14, color: '#7fd1ff', desc: () => fmt(pullPower()) + ' сила тяги' },
     { key: 'lvCollect', lock: 'collect', name: 'Сборник', icon: '💚', base: 12, color: '#8ee08a', desc: () => 'x' + fmt(incomeMult(), 2) + ' эктопл.' },
   ];
 
