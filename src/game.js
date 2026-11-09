@@ -890,7 +890,7 @@
     if (g.boss) {
       const cr = bossGems();
       S.crystals += cr; bossDown();
-      showToast('Дом ' + S.house + ' очищен! +' + cr + ' 💎');
+      showToast('Дом ' + S.house + ' очищен! +' + cr + ' 💎'); popEmo('victory');
       shake = 0.5;
       scheduleNextRoom();
     } else if (!g.small) {
@@ -1152,7 +1152,7 @@
     const more = fresh.slice(0, -1).map((f) => '+ ' + f.name);
     ask('Открыто!', [u.icon + ' ' + u.name, u.text].concat(more.slice(0, 2)), [
       { label: 'Ура!', color: '#8ee08a', on: closeModal },
-    ].concat(unlocked('quests') ? [{ label: 'Путь открытий', color: '#ffc94d', on: () => { closeModal(); openPanel('quests'); questTab = 'road'; roadPage = Math.floor(UNLOCKS.indexOf(u) / ROAD_PER_PAGE); } }] : []));
+    ].concat(unlocked('quests') ? [{ label: 'Путь открытий', color: '#ffc94d', on: () => { closeModal(); openPanel('quests'); questTab = 'road'; roadPage = Math.floor(UNLOCKS.indexOf(u) / ROAD_PER_PAGE); } }] : []), 'happy');
   }
 
   function burst(x, y, n, color) {
@@ -1499,7 +1499,7 @@
       { label: '🎬 10 мин', color: '#ffc94d', on: () => { closeModal(); showAd(a.name + ' на 10 минут', () => { S[a.until] = Math.max(Date.now(), S[a.until]) + 10 * 60000; S[a.on] = true; showToast(a.name + ' на 10 минут'); }); } },
       { label: 'Навсегда ' + a.price, color: '#8ee08a', on: () => { closeModal(); purchase(a.name + ' навсегда', a.price, () => { S[a.forever] = true; S[a.on] = true; }); } },
       { label: 'Закрыть', color: '#ff9aa9', on: closeModal },
-    ]);
+    ], 'thinking');
   }
   function buyAutoBundle() { purchase('Автоматизация навсегда', '$4.99', () => { S.autoUpForever = true; S.autoMergeForever = true; S.autoUpOn = true; S.autoMergeOn = true; }); }
 
@@ -1553,7 +1553,7 @@
       { label: 'Освятить', color: '#ffc94d', on: () => { closeModal(); doPrestige(1); } },
       { label: '🎬 +50% камней', color: '#8ee08a', on: () => { closeModal(); showAd('+50% лунных камней', () => doPrestige(1.5)); } },
       { label: 'Отмена', color: '#ff9aa9', on: closeModal },
-    ]);
+    ], 'thinking');
   }
   // Лунная память: сохраняет часть уровней и стартует с дальнего дома, где босс падает за ~12 с
   function prestigeStart() {
@@ -1671,12 +1671,15 @@
   function lockedToast(id) { const u = UNLOCK[id]; showToast(u.name + ': ' + unlockWhere(u).toLowerCase()); SFX.play('deny'); }
   // Открыть вкладку и снять с неё метку NEW
   function openPanel(id) { panel = id; S.fresh = S.fresh.filter((f) => f !== id); }
-  function showToast(text) { toast = { text, life: 2.2 }; }
+  function showToast(text, emo) { toast = { text, life: 2.2, emo }; }
+  // кот-рассказчик выпрыгивает сбоку: победа над боссом, испуг и т. п.
+  let emoPop = null;
+  const popEmo = (k, dur) => { if (ui('emo-' + k)) emoPop = { k, t: 0, dur: dur || 1.9 }; };
 
   // =====================================================================
   // Реклама (заглушка) и покупки (тестовый режим)
   // =====================================================================
-  function ask(title, lines, buttons) { modal = { title, lines, buttons }; }
+  function ask(title, lines, buttons, emo) { modal = { title, lines, buttons, emo }; }
   function closeModal() { modal = null; }
 
   // Rewarded-реклама: в релизе здесь вызов SDK (AdMob / AppLovin / Unity Ads).
@@ -1712,7 +1715,7 @@
       { label: '🎬 +5 банок', color: '#ffc94d', on: () => { closeModal(); showAd('+5 банок', () => { S.jars += 5; }); } },
       { label: '20 за 50 💎', color: '#7fd1ff', on: () => { closeModal(); if (S.crystals >= 50) { S.crystals -= 50; S.jars += 20; } else showToast('Нужно 50 💎'); } },
       { label: 'Закрыть', color: '#ff9aa9', on: closeModal },
-    ]);
+    ], 'sad');
   }
 
   // Второй шанс в бою с боссом
@@ -1722,9 +1725,9 @@
       ask(reason, ['Посмотри рекламу: +15 секунд', 'и полная смелость кота.'], [
         { label: '🎬 Продолжить', color: '#ffc94d', on: () => { closeModal(); showAd('Продолжение боя с боссом', () => { bossTimer = Math.max(bossTimer, 0) + 15; cat.hp = CAT_MAX_HP; }); } },
         { label: 'Отступить', color: '#ff9aa9', on: () => { closeModal(); S.room = ROOMS_PER_HOUSE - 1; resetRoom(); } },
-      ]);
+      ], 'defeat');
     } else {
-      showToast(reason + ' Прокачайся и попробуй снова');
+      showToast(reason + ' Прокачайся и попробуй снова'); popEmo('defeat');
       S.room = ROOMS_PER_HOUSE - 1; resetRoom();
     }
   }
@@ -1791,7 +1794,7 @@
     ask('Рейд завершён', ['Этажей пробито: ' + f, 'Награда: ' + cr + ' 💎, ' + jars + ' 🫙' + (att ? ', насадок: ' + att : '')], [
       { label: 'Забрать', color: '#8ee08a', on: () => { closeModal(); apply(1); } },
       { label: '🎬 x2', color: '#ffc94d', on: () => { closeModal(); showAd('Удвоение награды рейда', () => apply(2)); } },
-    ]);
+    ], 'victory');
   }
 
   // Магазин
@@ -1940,7 +1943,7 @@
       ask('Золотой призрак!', ['Он рассыпался на ' + fmt(reward) + ' эктоплазмы.', 'Посмотри рекламу, чтобы утроить.'], [
         { label: 'Забрать', color: '#8ee08a', on: () => { closeModal(); S.ecto += reward; } },
         { label: '🎬 x3', color: '#ffc94d', on: () => { closeModal(); showAd('Утроение награды', () => { S.ecto += reward * 3; }); } },
-      ]);
+      ], 'surprised');
       return;
     }
     for (const g of ghosts) {
@@ -2016,7 +2019,7 @@
       burst(cat.x, cat.y, 20, '#ff9aa9');
       if (raid) { cat.hp = CAT_MAX_HP; endRaid(); return; }
       if (isBossRoom()) { cat.hp = 1; bossFail('Мурзик испугался!'); return; }
-      showToast('Мурзик испугался! Попробуй увернуться');
+      showToast('Мурзик испугался! Попробуй увернуться', 'scared');
       resetRoom();
     }
   }
@@ -2085,7 +2088,7 @@
         ask('Ночь тыкв!', ['В городе событие до 10 ноября.', 'С призраков падают конфеты, а Джек-фонарь даёт сразу 5.', 'Меняй конфеты на скин «Кот-Тыква» и награды.'], [
           { label: 'Позже', color: '#8a7bd1', on: closeModal },
           { label: 'Открыть', color: '#ff9a3d', on: () => { closeModal(); panel = 'event'; } },
-        ]);
+        ], 'happy');
       }
       moveCat(dt);
       // смелость кота: урон от касаний и снарядов, восстановление
@@ -2241,6 +2244,7 @@
     }
     drops = drops.filter((d) => !d.done);
     if (toast) { toast.life -= dt; if (toast.life <= 0) toast = null; }
+    if (emoPop) { emoPop.t += dt; if (emoPop.t >= emoPop.dur) emoPop = null; }
     if (!behIntro && behQueue.length) behIntro = behQueue.shift();
     if (behIntro && !panel && !modal) { behIntro.life -= dt; if (behIntro.life <= 0) behIntro = null; }
   }
@@ -4437,13 +4441,15 @@
     ctx.restore();
   }
   function tapRipple(x, y) { const ph = (time * 1.6) % 1; ctx.strokeStyle = `rgba(255,255,255,${1 - ph})`; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, y, 8 + ph * 26, 0, 7); ctx.stroke(); }
-  function tutBubble(msg, y) {
+  function tutBubble(msg, y, emo) {
     ctx.font = '800 13px ' + FONT;
-    const w = Math.min(330, ctx.measureText(msg).width + 64), x = 180 - w / 2;
+    const E = emo && ui('emo-' + emo), pad = E ? 70 : 64;
+    const w = Math.min(340, ctx.measureText(msg).width + pad), x = 180 - w / 2;
     rr(x, y + 4, w, 40, 14); ctx.fillStyle = 'rgba(10,5,25,0.4)'; ctx.fill();
     plate(x, y, w, 40, 14, '#fffaf2', { lw: 3 });
-    ctx.save(); ctx.translate(x + 22, y + 22); ctx.scale(0.36, 0.36); catSprite(0, 0, { skin: S.skin, aim: -0.6, blinkSeed: 2, eqColor: '#9ff3ff' }); ctx.restore();
-    fitText(msg, x + 42, y + 20, w - 52, 13, INK, 'left', '800');
+    if (E) { const eh = 62, ew = eh * E.img.naturalWidth / E.img.naturalHeight; ctx.drawImage(E.img, x - 6, y + 40 - eh + Math.sin(time * 4) * 1.5, ew, eh); }
+    else { ctx.save(); ctx.translate(x + 22, y + 22); ctx.scale(0.36, 0.36); catSprite(0, 0, { skin: S.skin, aim: -0.6, blinkSeed: 2, eqColor: '#9ff3ff' }); ctx.restore(); }
+    fitText(msg, x + (E ? 56 : 42), y + 20, w - (E ? 64 : 52), 13, INK, 'left', '800');
   }
   function drawTutorial() {
     if (S.tut >= 9 || panel || modal || raid || splash) return;
@@ -4451,19 +4457,19 @@
     if (S.tut === 0) {
       const onView = (q) => { const p = toScreen(q.x, q.y); return p.x > 64 && p.x < 296 && p.y > VIEW.y + 40 && p.y < VIEW.y + VIEW.h - 70; };
       const g = ghosts.filter((q) => lowHp(q) && targetable(q) && onView(q)).sort((a, b) => Math.hypot(a.x - cat.x, a.y - cat.y) - Math.hypot(b.x - cat.x, b.y - cat.y))[0];
-      if (g) { const p = toScreen(g.x, g.y); tapRipple(p.x, p.y); drawHand(p.x + 4, p.y + 6, press); tutBubble('Призрак светится! Тапни, чтобы поймать', 452); }
-      else tutBubble('Кот стреляет сам. Жди, пока призрак засветится', 452);
+      if (g) { const p = toScreen(g.x, g.y); tapRipple(p.x, p.y); drawHand(p.x + 4, p.y + 6, press); tutBubble('Призрак светится! Тапни, чтобы поймать', 452, 'surprised'); }
+      else tutBubble('Кот стреляет сам. Жди, пока призрак засветится', 452, 'thinking');
     } else if (S.tut === 1) {
-      if (S.ecto >= upgradeCost(S.lvPower, UPGRADES[0].base)) { tapRipple(64, 546); drawHand(70, 548, press); tutBubble('Прокачай Мощность: кот станет сильнее', 452); }
-      else tutBubble('Собирай эктоплазму с призраков', 452);
+      if (S.ecto >= upgradeCost(S.lvPower, UPGRADES[0].base)) { tapRipple(64, 546); drawHand(70, 548, press); tutBubble('Прокачай Мощность: кот станет сильнее', 452, 'proud'); }
+      else tutBubble('Собирай эктоплазму с призраков', 452, 'happy');
     } else if (S.tut === 2) {
       const k = (time * 0.7) % 1, hx = 120 + k * 120;
       ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(120, 340); ctx.lineTo(hx, 340); ctx.stroke(); ctx.lineCap = 'butt';
       drawHand(hx, 344, 0);
-      tutBubble('Веди кота пальцем, чтобы уворачиваться', 452);
+      tutBubble('Веди кота пальцем, чтобы уворачиваться', 452, 'wink');
     } else if (S.tut === 3 && unlocked('squad') && S.inventory.length) {
       tapRipple(32, 606); drawHand(38, 610, press);
-      tutBubble('Пойманные духи бьются за тебя. Открой Отряд', 452);
+      tutBubble('Пойманные духи бьются за тебя. Открой Отряд', 452, 'love');
     }
   }
 
@@ -4914,7 +4920,7 @@
     button(40, 446, 280, 40, 'Сбросить прогресс', '#ff6b8a', () => ask('Сбросить прогресс?', ['Пропадут дома, духи, насадки, камни и скины.', 'Покупки восстановятся через магазин.'], [
       { label: 'Отмена', color: '#8a7bd1', on: closeModal },
       { label: 'Сбросить', color: '#ff6b8a', on: () => { closeModal(); panel = null; localStorage.removeItem(SAVE_KEY); S = defaultState(); ensureQuests(); dailyReset(); syncSlots(); resetRoom(); splash = { t: 0, out: 0 }; } },
-    ]), 12);
+    ], 'scared'), 12);
     text('Кот-экзорцист · версия ' + VERSION, 180, 504, 10, '#6b5f86', 'center', '700');
     text('Арт: Higgsfield, музыка и звуки созданы кодом', 180, 520, 9, '#9a8fb5', 'center', '700');
   }
@@ -5688,6 +5694,11 @@
     }
     const h = 110 + modal.lines.length * 20;
     const y0 = 320 - h / 2;
+    const ME = modal.emo && ui('emo-' + modal.emo);
+    if (ME) { // кот выглядывает из-за окна справа сверху
+      const eh = 100, ew = eh * ME.img.naturalWidth / ME.img.naturalHeight;
+      ctx.drawImage(ME.img, 346 - ew, y0 - 66 + Math.sin(time * 3) * 2, ew, eh);
+    }
     window_(30, y0, 300, h, modal.title);
     modal.lines.forEach((l, i) => fitText(l, 180, y0 + 60 + i * 20, 268, 12, INK, 'center', '700'));
     const n = modal.buttons.length, bw = (264 - (n - 1) * 8) / n;
@@ -6034,12 +6045,20 @@
     else if (panel === 'offline') drawOfflinePanel();
     if (modal) drawModal();
     if (splash && splash.out) { buttons.length = 0; drawSplash(splash.out / 0.6); }
+    if (emoPop && !panel && !modal) { // выезжает справа, подпрыгивает и уезжает
+      const E = ui('emo-' + emoPop.k), t = emoPop.t, inK = Math.min(1, t / 0.25), outK = Math.max(0, (t - emoPop.dur + 0.3) / 0.3);
+      const k = (1 - Math.pow(1 - inK, 3)) * (1 - outK * outK), hop = Math.abs(Math.sin(t * 7)) * 6 * (1 - outK);
+      const h = 130, w = h * E.img.naturalWidth / E.img.naturalHeight;
+      ctx.drawImage(E.img, W - w * k + 8, 420 - h - hop, w, h);
+    }
     if (toast) {
       ctx.globalAlpha = Math.min(1, toast.life * 3);
       ctx.font = '800 14px ' + FONT;
-      const w = ctx.measureText(toast.text).width + 30;
-      plate(180 - w / 2, panel ? 592 : 108, w, 34, 17, '#3d3160');
-      text(toast.text, 180, (panel ? 592 : 108) + 17, 14, '#ffffff');
+      const TE = toast.emo && ui('emo-' + toast.emo), ew = TE ? 34 : 0;
+      const w = ctx.measureText(toast.text).width + 30 + ew, ty = panel ? 592 : 108, tx = 180 - w / 2;
+      plate(tx, ty, w, 34, 17, '#3d3160');
+      if (TE) { const eh = 44; ctx.drawImage(TE.img, tx + 2, ty + 32 - eh, eh * TE.img.naturalWidth / TE.img.naturalHeight, eh); }
+      text(toast.text, 180 + ew / 2, ty + 17, 14, '#ffffff');
       ctx.globalAlpha = 1;
     }
     if (appArt) { // отладка: картинка для иконки приложения (квадрат 360×360)
@@ -6107,6 +6126,7 @@
     tut: (n) => { S.tut = n; },
     zones: () => zones,
     fx: () => ({ shots, shards, rockets, drops, addBoom, addCandy, booms }),
+    emo: (k) => popEmo(k), toast: (t, e) => showToast(t, e), ask: (t, l, e) => ask(t, l, [{ label: 'OK', color: '#8ee08a', on: closeModal }], e),
     reset: () => { localStorage.removeItem(SAVE_KEY); S = defaultState(); ensureQuests(); dailyReset(); syncSlots(); resetRoom(); },
     close: () => { modal = null; },
     tab: (q, pr, pp) => { if (q) questTab = q; if (pr) prestTab = pr; if (pp !== undefined) passPage = pp; },
