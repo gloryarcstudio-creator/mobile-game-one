@@ -83,6 +83,10 @@
     starling: { name: 'Падающая звезда', rarity: 2, body: '#fff0c0', shape: 'fire', d: 7, beh: 'bomber' },
     moonking: { name: 'Лунный король', rarity: 3, body: '#e0c8ff', shape: 'king', d: 7 },
     jacko: { name: 'Джек-фонарь', rarity: 1, body: '#ffb35a', shape: 'fire', d: 4, event: true }, // только в «Ночь тыкв»
+    gift: { name: 'Подарочный дух', rarity: 1, body: '#ff7a8a', shape: 'sheet', d: 4, event: true }, // Новый год
+    heart: { name: 'Дух-валентинка', rarity: 1, body: '#ff9fc4', shape: 'sheet', d: 4, event: true }, // День влюблённых
+    egg: { name: 'Пасхальный дух', rarity: 1, body: '#fff1b8', shape: 'sheet', d: 4, event: true }, // Весна
+    sandcastle: { name: 'Песочный замок', rarity: 1, body: '#f2d29a', shape: 'king', d: 4, event: true }, // Лето
   };
 
   // Походы духов: духи не из отряда уходят на время и приносят награды
@@ -118,41 +122,61 @@
     showAd('Поход вдвое быстрее', () => { e.adUsed = true; e.until = Date.now() + (e.until - Date.now()) / 2; });
   }
 
-  // Событие «Ночь тыкв»: каждый год с 20 октября по 10 ноября
-  const EVENT_SHOP = [
-    { id: 'skin', icon: '🎃', name: 'Скин «Кот-Тыква»', desc: '+30% урон и доход, только в событие', price: 300, max: 1, apply: () => { if (!S.skins.includes('jack')) S.skins.push('jack'); S.skin = 'jack'; } },
-    { id: 'att', icon: '🧹', name: 'Насадка A', desc: 'редкая насадка пылесоса', price: 60, max: 3, apply: () => giveAttach(3) },
-    { id: 'ghost', icon: '👻', name: 'Джек-фонарь 3★', desc: 'дух события в отряд', price: 90, max: 2, apply: () => giveGhost('jacko', 3) },
-    { id: 'stones', icon: '🌙', name: '3 лунных камня', desc: 'для Лунного алтаря', price: 50, max: 5, apply: () => { S.stones += 3; } },
-    { id: 'gems', icon: '💎', name: '100 кристаллов', desc: '', price: 30, max: 10, apply: () => { S.crystals += 100; } },
-    { id: 'jars', icon: '🫙', name: '10 банок', desc: '', price: 15, max: 10, apply: () => { S.jars += 10; } },
+  // События года: у каждого свои даты, валюта, скин, дух и украшения комнат.
+  // Даты: месяц*100 + день (месяц с нуля, как в Date). Новый год переходит через 1 января.
+  const EVENTS = [
+    { id: 'halloween', name: 'Ночь тыкв', from: 920, to: 1010, cur: '🍬', art: 'candy', curName: 'Конфеты', btn: '🎃', btnName: 'Тыквы', color: '#ff9a3d', skin: 'jack', ghost: 'jacko', props: [], gpS: 'Джек-фонарь даёт сразу 5' },
+    { id: 'newyear', name: 'Новогодняя ночь', from: 1120, to: 10, cur: '❅', art: 'cur-snowflake', curName: 'Снежинки', btn: '❅', btnName: 'Ёлка', color: '#5fb8ff', skin: 'tree', ghost: 'gift', props: ['ny-tree', 'ny-gifts', 'ny-snowman'], gpS: 'Подарочный дух даёт сразу 5' },
+    { id: 'valentine', name: 'Кошачий Валентин', from: 107, to: 115, cur: '💗', art: 'cur-heart', curName: 'Сердечки', btn: '💗', btnName: 'Валентин', color: '#ff6b9a', skin: 'cupid', ghost: 'heart', props: ['val-roses', 'val-balloons', 'val-choco'], gpS: 'Дух-валентинка даёт сразу 5' },
+    { id: 'spring', name: 'Весенний сад', from: 220, to: 320, cur: '🌸', art: 'cur-petal', curName: 'Лепестки', btn: '🌸', btnName: 'Весна', color: '#6fd36a', skin: 'bunny', ghost: 'egg', props: ['sp-tulips', 'sp-basket', 'sp-sakura'], gpS: 'Пасхальный дух даёт сразу 5' },
+    { id: 'summer', name: 'Летние каникулы', from: 600, to: 630, cur: '🐚', art: 'cur-shell', curName: 'Ракушки', btn: '🐚', btnName: 'Лето', color: '#ffb84d', skin: 'beach', ghost: 'sandcastle', props: ['su-umbrella', 'su-castle', 'su-board'], gpS: 'Песочный замок даёт сразу 5' },
   ];
-  function eventActive() {
-    if (S.evForce) return true;
+  const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+  const evDate = (v) => (v % 100) + ' ' + MONTHS[Math.floor(v / 100)];
+  const evIn = (ev, v) => (ev.from <= ev.to ? v >= ev.from && v <= ev.to : v >= ev.from || v <= ev.to);
+  function curEvent() {
+    if (S.evForce) return EVENTS.find((e) => e.id === S.evForce) || EVENTS[0];
     const d = new Date(), v = d.getMonth() * 100 + d.getDate();
-    return v >= 920 && v <= 1010; // 20.10 – 10.11
+    return EVENTS.find((e) => evIn(e, v)) || null;
   }
-  function eventLeft() {
-    const d = new Date();
-    return Math.max(0, new Date(d.getFullYear(), 10, 11).getTime() - d.getTime()); // до 11 ноября 00:00
+  const eventActive = () => !!curEvent();
+  // конец события: полночь после последнего дня
+  function eventEnd(ev) {
+    const d = new Date(), v = d.getMonth() * 100 + d.getDate();
+    let y = d.getFullYear(); if (ev.from > ev.to && v >= ev.from) y++;
+    return new Date(y, Math.floor(ev.to / 100), (ev.to % 100) + 1).getTime();
   }
+  const eventLeft = () => { const ev = curEvent(); return ev ? Math.max(0, eventEnd(ev) - Date.now()) : 0; };
   function evState() {
-    const key = 'halloween-' + new Date().getFullYear();
+    const ev = curEvent() || EVENTS[0], key = ev.id + '-' + new Date(eventEnd(ev) - 864e5).getFullYear();
     if (!S.ev || S.ev.key !== key) S.ev = { key, candy: 0, total: 0, bought: {}, seen: false };
     return S.ev;
+  }
+  // лавка события: скин и дух свои, остальное общее
+  function evShop() {
+    const ev = curEvent() || EVENTS[0], sk = SKINS[ev.skin], gh = GHOSTS[ev.ghost];
+    return [
+      { id: 'skin', icon: ev.btn, name: 'Скин «' + sk.name + '»', desc: sk.text + ', только в событие', price: 300, max: 1, apply: () => { if (!S.skins.includes(ev.skin)) S.skins.push(ev.skin); S.skin = ev.skin; } },
+      { id: 'att', icon: '🧹', name: 'Насадка A', desc: 'редкая насадка пылесоса', price: 60, max: 3, apply: () => giveAttach(3) },
+      { id: 'ghost', icon: '👻', name: gh.name + ' 3★', desc: 'дух события в отряд', price: 90, max: 2, ghost: ev.ghost, apply: () => giveGhost(ev.ghost, 3) },
+      { id: 'stones', icon: '🌙', name: '3 лунных камня', desc: 'для Лунного алтаря', price: 50, max: 5, apply: () => { S.stones += 3; } },
+      { id: 'gems', icon: '💎', name: '100 кристаллов', desc: '', price: 30, max: 10, apply: () => { S.crystals += 100; } },
+      { id: 'jars', icon: '🫙', name: '10 банок', desc: '', price: 15, max: 10, apply: () => { S.jars += 10; } },
+    ];
   }
   function addCandy(n, x, y) {
     if (!eventActive() || raid || n <= 0) return;
     const e = evState(); e.candy += n; e.total += n;
-    floaters.push({ x, y: y - 26, text: '+' + n + ' 🍬', life: 1.1, color: '#ffb35a', size: 14 });
-    if (ui('candy')) { const sp = toScreen(x, y); for (let i = 0; i < Math.min(n, 5); i++) candyFx.push({ x: sp.x + (i - 2) * 8, y: sp.y - 10, t: -i * 0.06 }); }
+    const ev = curEvent();
+    floaters.push({ x, y: y - 26, text: '+' + n + ' ' + ev.cur, life: 1.1, color: '#ffb35a', size: 14 });
+    if (ui(ev.art)) { const sp = toScreen(x, y); for (let i = 0; i < Math.min(n, 5); i++) candyFx.push({ x: sp.x + (i - 2) * 8, y: sp.y - 10, t: -i * 0.06 }); }
   }
   let candyFx = [], evBtnPos = { x: 28, y: 300 }; // конфеты летят к кнопке события
-  const eventAffordable = () => eventActive() && EVENT_SHOP.some((it) => (evState().bought[it.id] || 0) < it.max && evState().candy >= it.price);
+  const eventAffordable = () => eventActive() && evShop().some((it) => (evState().bought[it.id] || 0) < it.max && evState().candy >= it.price);
   function buyEvent(it) {
     const e = evState(), n = e.bought[it.id] || 0;
     if (n >= it.max) { showToast('Уже куплено'); return; }
-    if (e.candy < it.price) { showToast('Нужно ' + it.price + ' 🍬'); SFX.play('deny'); return; }
+    if (e.candy < it.price) { showToast('Нужно ' + it.price + ' ' + curEvent().cur); SFX.play('deny'); return; }
     e.candy -= it.price; e.bought[it.id] = n + 1; it.apply(); SFX.play('reward'); showToast('Обменяно: ' + it.name); save();
   }
 
@@ -261,7 +285,19 @@
     santa: { tier: 3, name: 'Дед Мурмороз', body: '#e8e4ee', dark: '#b8b4c8', pat: 'fluffy', hat: 'santa', beard: true, tank: '#e8304f', bonus: { dmg: 1.25, income: 1.25 }, text: '+25% урон и доход', usd: '$4.99' },
     golden: { tier: 4, name: 'Золотой кот', body: '#ffd24d', dark: '#e0a91f', pat: 'none', metal: true, hat: 'crown', gem: true, pearls: true, eyes: ['#3ddc97', '#3ddc97'], ear: '#ff9f5a', aura: '255,220,90', sparkle: '#fff6c0', tank: '#ffc94d', bonus: { dmg: 1.5, income: 1.5 }, text: '+50% урон и доход', usd: '$9.99' },
     reaper: { tier: 4, name: 'Кот-Жнец', body: '#6a6286', dark: '#433c58', pat: 'none', hat: 'wizard', hatC: '#2a2638', cape: true, eyes: ['#9dff7a', '#9dff7a'], slit: true, aura: '150,255,140', sparkle: '#c8ffb8', tank: '#2a2638', liquid: '#9dff7a', bonus: { dmg: 1.5, income: 1.3 }, text: '+50% урон, +30% доход', pass: true },
-    jack: { tier: 4, name: 'Кот-Тыква', body: '#ffb35a', dark: '#e8701f', pat: 'tabby', hat: 'pumpkin', eyes: ['#ffd24d', '#ffd24d'], slit: true, aura: '255,150,60', sparkle: '#ffe0a0', tank: '#3f2a3a', liquid: '#ff9a3d', tail: 'arrow', bonus: { dmg: 1.3, income: 1.3 }, text: '+30% урон и доход', event: true },
+    jack: { tier: 4, name: 'Кот-Тыква', body: '#ffb35a', dark: '#e8701f', pat: 'tabby', hat: 'pumpkin', eyes: ['#ffd24d', '#ffd24d'], slit: true, aura: '255,150,60', sparkle: '#ffe0a0', tank: '#3f2a3a', liquid: '#ff9a3d', tail: 'arrow', bonus: { dmg: 1.3, income: 1.3 }, text: '+30% урон и доход', event: 'halloween' },
+    samurai: { tier: 2, name: 'Самурай', body: '#a8a4b4', dark: '#6e6a7c', pat: 'tabby', scarf: '#e8304f', tank: '#7a2a3a', bonus: { dmg: 1.25, rate: 1.1 }, text: '+25% урон, +10% скорость', crystals: 1800, req: 30 },
+    detective: { tier: 1, name: 'Шерлок Мяумс', body: '#c9a27a', dark: '#8a6a4a', pat: 'tabby', hat: 'beanie', hatC: '#8a6a4a', scarf: '#8a5a36', bonus: { income: 1.15, dmg: 1.05 }, text: '+15% доход, +5% урон', crystals: 850 },
+    knight: { tier: 2, name: 'Сэр Мурлот', body: '#f4f1ea', dark: '#d8d2c4', pat: 'none', helmet: true, tank: '#9aa6c0', bonus: { dmg: 1.2, income: 1.15 }, text: '+20% урон, +15% доход', crystals: 2200, req: 35 },
+    robot: { tier: 3, name: 'Киберкот', body: '#c8ccd8', dark: '#8a90a8', pat: 'none', metal: true, eyes: ['#6ee8ff', '#6ee8ff'], aura: '110,230,255', tank: '#6a7088', liquid: '#6ee8ff', bonus: { rate: 1.35 }, text: '+35% скорости', usd: '$3.99' },
+    dragon: { tier: 3, name: 'Дракоша', body: '#7fd36a', dark: '#4a9a3c', pat: 'none', hat: 'horns', tail: 'arrow', eyes: ['#ffd24d', '#ffd24d'], slit: true, aura: '140,230,110', tank: '#4a9a3c', liquid: '#ff9a3d', bonus: { dmg: 1.45 }, text: '+45% урона', usd: '$4.99' },
+    dj: { tier: 1, name: 'Диджей Мур', body: '#5d566e', dark: '#3f3a4f', pat: 'none', hat: 'headphones', hatC: '#ff5cc8', scarf: '#8a5ad6', bonus: { rate: 1.1, income: 1.1 }, text: '+10% скорость и доход', crystals: 750 },
+    cowboy: { tier: 1, name: 'Шериф', body: '#f2a65a', dark: '#d9853a', pat: 'tabby', hat: 'beanie', hatC: '#8a5a36', scarf: '#e8304f', bonus: { dmg: 1.18 }, text: '+18% урона', crystals: 900 },
+    firefighter: { tier: 2, name: 'Пожарный', body: '#f7d9a8', dark: '#e0b070', pat: 'tabby', hat: 'beanie', hatC: '#e8304f', tank: '#c0c4d0', liquid: '#7fd1ff', bonus: { income: 1.3, rate: 1.1 }, text: '+30% доход, +10% скорость', crystals: 1400, req: 15 },
+    tree: { tier: 4, name: 'Ёлочка', body: '#f2a65a', dark: '#d9853a', pat: 'tabby', hat: 'santa', scarf: '#3fae5a', aura: '255,230,140', sparkle: '#fff3a6', tank: '#3fae5a', bonus: { dmg: 1.3, income: 1.3 }, text: '+30% урон и доход', event: 'newyear' },
+    cupid: { tier: 4, name: 'Купидон', body: '#fffaf0', dark: '#e8dcc4', pat: 'fluffy', wings: true, tail: 'heart', aura: '255,150,200', sparkle: '#ffd6e8', tank: '#ff9fc4', liquid: '#ff5c9a', bonus: { dmg: 1.3, rate: 1.15 }, text: '+30% урон, +15% скорость', event: 'valentine' },
+    bunny: { tier: 4, name: 'Зайка', body: '#f7e6c8', dark: '#e0c49a', pat: 'none', hat: 'flower', aura: '200,255,170', sparkle: '#fff6c0', tank: '#8ee08a', bonus: { income: 1.4, rate: 1.1 }, text: '+40% доход, +10% скорость', event: 'spring' },
+    beach: { tier: 4, name: 'Пляжник', body: '#f2a65a', dark: '#d9853a', pat: 'tabby', hat: 'flower', aura: '255,220,120', tank: '#5fc8e0', liquid: '#7fd1ff', bonus: { dmg: 1.35, income: 1.2 }, text: '+35% урон, +20% доход', event: 'summer' },
     phantom: { tier: 4, name: 'Фантом', body: '#a8f0ff', dark: '#5fc8e0', pat: 'none', ghost: true, eyes: ['#ffffff', '#ffffff'], aura: '120,240,255', sparkle: '#d6fbff', tank: '#5fc8e0', liquid: '#ffffff', bonus: { dmg: 1.6, rate: 1.2 }, text: '+60% урон, +20% скорость', usd: '$12.99' },
   };
 
@@ -870,7 +906,7 @@
     const reward = ghostReward(rar) * (g.boss ? 1 : 0.45) * (g.elite ? 6 : 1) * (g.small ? 0.4 : 1);
     cancelFuse(g);
     if (g.beh === 'split' && !g.small) for (const sd of [-1, 1]) spawnGhost(g.type, { small: true, x: g.x + sd * 20, y: g.y + (Math.random() - 0.5) * 10 });
-    addCandy(g.type === 'jacko' ? 5 : g.boss ? 8 : g.elite ? 3 : Math.random() < 0.12 ? 1 : 0, g.x, g.y);
+    addCandy(GHOSTS[g.type].event ? 5 : g.boss ? 8 : g.elite ? 3 : Math.random() < 0.12 ? 1 : 0, g.x, g.y);
     if (g.elite) { S.crystals += 2; S.stats.elites++; floaters.push({ x: g.x, y: g.y - 40, text: 'Элита! +2 💎', life: 1.4, color: '#ffd84d', size: 15 }); }
     const n = g.boss ? 14 : 3;
     for (let i = 0; i < n; i++) {
@@ -989,7 +1025,7 @@
       SFX.play('caught');
       capture(g.type, cat.x, cat.y - 20, false);
       if (!g.boss && S.jars > 0 && Math.random() < doubleCatch()) { capture(g.type, cat.x + 18, cat.y - 34, true); floaters.push({ x: cat.x, y: cat.y - 70, text: 'Двойная поимка!', life: 1.4, color: '#9ff3ff', size: 14 }); }
-      if (g.type === 'jacko') addCandy(5, cat.x, cat.y - 30);
+      if (GHOSTS[g.type].event) addCandy(5, cat.x, cat.y - 30);
       S.ecto += ghostReward(GHOSTS[g.type].rarity);
       if (g.boss) {
         const cr = bossGems();
@@ -1811,7 +1847,7 @@
     const sk = SKINS[k];
     if (S.skins.includes(k)) { S.skin = k; showToast('Надет скин: ' + sk.name); return; }
     if (sk.req && (S.maxHouse || 1) < sk.req) { showToast('Откроется на доме ' + sk.req); SFX.play('deny'); return; }
-    if (sk.event) { if (eventActive()) panel = 'event'; else showToast('Вернётся в следующую Ночь тыкв'); return; }
+    if (sk.event) { const ev = EVENTS.find((e) => e.id === sk.event), cur = curEvent(); if (cur && cur.id === sk.event) panel = 'event'; else showToast('Только в событие «' + ev.name + '»: ' + evDate(ev.from) + ' – ' + evDate(ev.to)); return; }
     if (sk.pass) { showToast('Награда 30-го уровня Призрачного пропуска'); panel = 'quests'; questTab = 'pass'; passPage = 5; return; }
     if (sk.crystals) {
       if (S.crystals < sk.crystals) { showToast('Нужно ' + sk.crystals + ' 💎'); return; }
@@ -2075,7 +2111,7 @@
         spawnCd -= dt;
         const alive = ghosts.filter((g) => g.hp > 0).length;
         if (spawnCd <= 0 && roomSpawned < GHOSTS_PER_ROOM && alive < MAX_ALIVE) {
-          spawnGhost(eventActive() && Math.random() < 0.05 ? 'jacko' : pickType()); roomSpawned++; spawnCd = 0.5 + Math.random() * 0.5;
+          spawnGhost(eventActive() && Math.random() < 0.05 ? curEvent().ghost : pickType()); roomSpawned++; spawnCd = 0.5 + Math.random() * 0.5;
           if (Math.random() < 0.3 && roomSpawned < GHOSTS_PER_ROOM) { spawnGhost(pickType()); roomSpawned++; } // иногда парой
         }
         if (S.cleared >= GHOSTS_PER_ROOM && alive === 0) nextRoom();
@@ -2085,10 +2121,11 @@
       tutorialTick(dt);
       if (!modal && !panel && S.tut >= 9 && eventActive() && unlocked('quests') && !evState().seen) {
         evState().seen = true;
-        ask('Ночь тыкв!', ['В городе событие до 10 ноября.', 'С призраков падают конфеты, а Джек-фонарь даёт сразу 5.', 'Меняй конфеты на скин «Кот-Тыква» и награды.'], [
+        const ev = curEvent();
+        ask(ev.name + '!', ['В городе событие до ' + evDate(ev.to) + '.', ev.curName + ' падают с призраков, а ' + ev.gpS.charAt(0).toLowerCase() + ev.gpS.slice(1) + '.', 'Меняй их на скин «' + SKINS[ev.skin].name + '» и награды.'], [
           { label: 'Позже', color: '#8a7bd1', on: closeModal },
-          { label: 'Открыть', color: '#ff9a3d', on: () => { closeModal(); panel = 'event'; } },
-        ], 'happy');
+          { label: 'Открыть', color: ev.color, on: () => { closeModal(); panel = 'event'; } },
+        ], ev.id === 'valentine' ? 'love' : 'happy');
       }
       moveCat(dt);
       // смелость кота: урон от касаний и снарядов, восстановление
@@ -2669,6 +2706,7 @@
   }
   // Нарисованные иконки (эмодзи на разных устройствах выглядят по-разному или не отображаются)
   function drawIcon(kind, x, y, s) {
+    if (kind.startsWith('cur-')) { if (fitPic(kind, x, y, s * 1.12)) return; kind = { 'cur-snowflake': 'snow', 'cur-heart': 'heart', 'cur-petal': 'leaf', 'cur-shell': 'star' }[kind]; }
     if (kind === 'stone') { const M = ui('moonstone'); if (M) { const d = s * 1.15; ctx.drawImage(M.img, x - d / 2, y - d / 2, d, d * M.img.naturalHeight / M.img.naturalWidth); return; } kind = 'moon'; }
     const ic = UI_ICONS[kind], IA = ic && ui('icons-' + ic[0]);
     if (IA) { // ячейка листа 4×4, сама иконка занимает около 70% ячейки
@@ -2868,7 +2906,7 @@
     }
   }
   // Текст со встроенными нарисованными иконками вместо капризных эмодзи
-  const INLINE_ICONS = { '💎': 'gem', '🎬': 'ad', '🫙': 'jar', '🔒': 'lock', '🌙': 'stone', '✨': 'sparkle', '👻': 'ghost', '🧹': 'attach', '👑': 'crown', '📜': 'scroll', '🌕': 'fullmoon', '🎁': 'gift', '🛒': 'cart', '⚙': 'gear', '📖': 'book', '🎡': 'wheel', '🏚': 'house', '🔁': 'loop', '⚔': 'swords', '🧲': 'magnet', '💚': 'ecto', '💠': 'rank', '⭐': 'star', '❄': 'snow', '🧪': 'flask', '🌿': 'leaf', '🧠': 'brain', '🌃': 'night', '🍀': 'clover', '⏳': 'hourglass', '💀': 'skull', '🎵': 'note', '🔊': 'speaker', '🔥': 'flame', '🎃': 'pumpkin', '🧭': 'compass', '⏩': 'turbo', '📳': 'phone', '💥': 'boom', '🍬': 'candy', '🏆': 'trophy' };
+  const INLINE_ICONS = { '💎': 'gem', '🎬': 'ad', '🫙': 'jar', '🔒': 'lock', '🌙': 'stone', '✨': 'sparkle', '👻': 'ghost', '🧹': 'attach', '👑': 'crown', '📜': 'scroll', '🌕': 'fullmoon', '🎁': 'gift', '🛒': 'cart', '⚙': 'gear', '📖': 'book', '🎡': 'wheel', '🏚': 'house', '🔁': 'loop', '⚔': 'swords', '🧲': 'magnet', '💚': 'ecto', '💠': 'rank', '⭐': 'star', '❄': 'snow', '🧪': 'flask', '🌿': 'leaf', '🧠': 'brain', '🌃': 'night', '🍀': 'clover', '⏳': 'hourglass', '💀': 'skull', '🎵': 'note', '🔊': 'speaker', '🔥': 'flame', '🎃': 'pumpkin', '🧭': 'compass', '⏩': 'turbo', '📳': 'phone', '💥': 'boom', '🍬': 'candy', '❅': 'cur-snowflake', '💗': 'cur-heart', '🌸': 'cur-petal', '🐚': 'cur-shell', '🏆': 'trophy' };
   const ICON_RE = new RegExp('(' + Object.keys(INLINE_ICONS).join('|') + ')');
   function text(t, x, y, size, color, align, weight) {
     t = String(t).replace(/\uFE0F/g, '');
@@ -3162,7 +3200,7 @@
   ];
   const SOLID = { bed: 1, table: 1, box: 1, sofa: 1, shelf: 1, armor: 1, barrel: 1, rack: 1, grave: 1, tree: 1, anchor: 1, chest: 1, mannequin: 1, crystal: 1, snowman: 1, vat: 1, flasks: 1, pillar: 1, mirror: 1 };
 
-  const mapKeyNow = () => S.house + ':' + districtIndex() + ':' + (useArt() ? 'art' : 'code');
+  const mapKeyNow = () => S.house + ':' + districtIndex() + ':' + (useArt() ? 'art' : 'code') + ':' + (curEvent() ? curEvent().id : '');
   function buildMap() {
     const key = mapKeyNow();
     if (key === mapKey) return;
@@ -3251,6 +3289,21 @@
       } else {
         drawDecor(c, kind, x, y, w, h, R, F);
         if (SOLID[kind]) solids.push({ x: x + 4, y: y + 4, w: w - 8, h: h - 8 });
+      }
+    }
+    // украшения события: 3–4 нарисованных предмета, сквозь них можно ходить
+    const ev = curEvent();
+    if (ev && ev.props.length && useArt()) {
+      let n = 0;
+      for (let i = 0; i < 60 && n < 4; i++) {
+        const k = 'prop-' + ev.props[n % ev.props.length], A = ART[k]; if (!A) break;
+        const asp = ART_ASPECT[k] || 1, w = 70 + R() * 20, h = w / asp;
+        const x = WALL + 30 + R() * (MAP_W - WALL * 2 - 60 - w), y = WALL + 30 + R() * (MAP_H - WALL * 2 - 60 - h);
+        if (Math.hypot(x + w / 2 - MAP_W / 2, y + h / 2 - MAP_H / 2) < 140) continue;
+        if (placed.some((p) => x < p.x + p.w + 30 && x + w + 30 > p.x && y < p.y + p.h + 30 && y + h + 30 > p.y)) continue;
+        placed.push({ x, y, w, h }); n++;
+        c.fillStyle = 'rgba(30,15,50,0.22)'; c.beginPath(); c.ellipse(x + w / 2, y + h - 4, w * 0.44, Math.min(12, h * 0.15), 0, 0, 7); c.fill();
+        c.drawImage(A.img, x, y, w, h);
       }
     }
     if (!keepCatOnRebuild) { cat.x = MAP_W / 2; cat.y = MAP_H / 2; cam.x = cat.x; cam.y = cat.y; }
@@ -4382,7 +4435,7 @@
         { icon: '🏚', label: 'Рейд', id: 'raid', b: S.raid.tickets > 0, lock: 'raid', color: '#b48cff' },
         { icon: '🎡', label: 'Колесо', id: 'wheel', b: S.wheel.free > 0, lock: 'wheel', color: '#ff8fb1' },
         { icon: '🎁', label: 'Награды', id: 'daily', b: dailyReady(), lock: 'daily', color: '#ffb35a' },
-      ].concat(eventActive() && unlocked('quests') ? [{ icon: '🎃', label: 'Тыквы', id: 'event', b: eventAffordable(), color: '#ff8a3a' }] : [])
+      ].concat(eventActive() && unlocked('quests') ? [{ icon: curEvent().btn, label: curEvent().btnName, id: 'event', b: eventAffordable(), color: curEvent().color }] : [])
        .concat(unlocked('expedition') ? [{ icon: '🧭', label: 'Походы', id: 'expedition', b: expeditionReady(), lock: 'expedition', color: '#5fd3c8' }] : []);
       // закрытые кнопки не загромождают поле: показываем только ближайшую следующую
       const nextLocked = side.find((f) => f.lock && !unlocked(f.lock));
@@ -5088,10 +5141,11 @@
   // Панель события
   function drawEventPanel() {
     if (!eventActive()) { panel = null; return; }
-    panelFrame('Ночь тыкв');
+    const ev = curEvent();
+    panelFrame(ev.name);
     const e = evState();
-    // баннер: ночное небо, луна и тыквы
-    const EB = scenePic('event-halloween', 28, 100, 304, 92, 0.55, 14);
+    // баннер: нарисованный у каждого события; без арта — ночное небо, луна и тыквы
+    const EB = scenePic('event-' + ev.id, 28, 100, 304, 92, 0.55, 14);
     if (EB) { rr(40, 136, 150, 50, 12); ctx.fillStyle = 'rgba(26,16,46,0.66)'; ctx.fill(); }
     else {
     ctx.save(); rr(28, 100, 304, 92, 14); ctx.clip();
@@ -5104,18 +5158,19 @@
     ghostSprite('jacko', 250, 160, 13, { phase: time * 3 }); if (!(useArt() && ART['ghost-jacko'])) drawIcon('pumpkin', 250, 147, 15);
     }
     const tx = EB ? 115 : 150;
-    text('Конфеты: ' + e.candy + ' 🍬', tx, 156, EB ? 15 : 17, '#ffffff', 'center', '900');
+    text(ev.curName + ': ' + e.candy + ' ' + ev.cur, tx, 156, EB ? 15 : 17, '#ffffff', 'center', '900');
     const left = eventLeft(), days = Math.floor(left / 86400000), hrs = Math.floor((left % 86400000) / 3600000);
     text('до конца: ' + (days ? days + ' дн. ' : '') + hrs + ' ч', tx, 176, 10, '#ffd9a8', 'center', '800');
-    fitText('Конфеты падают с призраков, боссов и Джека-фонаря', 180, 206, 296, 10, '#6b5f86', 'center', '700');
-    EVENT_SHOP.forEach((it, i) => {
+    fitText(ev.curName + ' падают с призраков, боссов и духа события', 180, 206, 296, 10, '#6b5f86', 'center', '700');
+    evShop().forEach((it, i) => {
       const y = 218 + i * 57, n = e.bought[it.id] || 0, sold = n >= it.max, can = !sold && e.candy >= it.price;
-      card(28, y, 304, 51, 12, it.id === 'skin' ? '#ff9a3d' : '#d9cff0');
-      if (it.id === 'skin') { ctx.save(); rr(30, y + 2, 50, 47, 10); ctx.clip(); ctx.translate(54, y + 36); ctx.scale(0.42, 0.42); catSprite(0, 0, { skin: 'jack', aim: -0.6, blinkSeed: 4 }); ctx.restore(); }
+      card(28, y, 304, 51, 12, it.id === 'skin' ? ev.color : '#d9cff0');
+      if (it.id === 'skin') { ctx.save(); rr(30, y + 2, 50, 47, 10); ctx.clip(); ctx.translate(54, y + 36); ctx.scale(0.42, 0.42); catSprite(0, 0, { skin: ev.skin, aim: -0.6, blinkSeed: 4 }); ctx.restore(); }
+      else if (it.ghost) { orb(54, y + 25, 17, '#8a7bd1'); ghostSprite(it.ghost, 54, y + 26, 11, { phase: time * 3 }); }
       else { orb(54, y + 25, 17, '#8a7bd1'); text(it.icon, 54, y + 26, 17, '#ffffff'); }
       fitText(it.name, 84, y + 17, 150, 13, INK, 'left', '800');
       fitText((it.desc ? it.desc + ' · ' : '') + 'осталось ' + (it.max - n) + ' из ' + it.max, 84, y + 35, 150, 9, '#6b5f86', 'left', '700');
-      button(242, y + 9, 80, 33, sold ? '✓' : it.price + ' 🍬', sold ? '#9b93b3' : can ? '#ff9a3d' : '#c9b7a0', () => buyEvent(it), 13, !sold);
+      button(242, y + 9, 80, 33, sold ? '✓' : it.price + ' ' + ev.cur, sold ? '#9b93b3' : can ? ev.color : '#c9b7a0', () => buyEvent(it), 13, !sold);
     });
   }
 
@@ -5411,12 +5466,17 @@
         plate(bx, 138, 59, 30, 10, sel ? t.color : shade(t.color, -0.35), { lw: 2.5 });
         text(t.short, bx + 29.5, 148, 10, '#ffffff'); text(have + '/' + keys.length, bx + 29.5, 160, 8, '#ffffff', 'center', '700');
         ctx.restore();
-        btn(bx, 138, 59, 30, () => { skinTier = ti; });
+        btn(bx, 138, 59, 30, () => { skinTier = ti; scrollY.skins = 0; });
       });
       const tier = TIERS[skinTier];
-      Object.keys(SKINS).filter((kk) => SKINS[kk].tier === skinTier).forEach((k, i) => {
+      const tierKeys = Object.keys(SKINS).filter((kk) => SKINS[kk].tier === skinTier);
+      // скинов в уровне бывает больше четырёх: сетка листается пальцем
+      const area = scrollArea('skins', 20, 174, 322, 274, Math.ceil(tierKeys.length / 2) * 136 - 6);
+      ctx.save(); ctx.beginPath(); ctx.rect(area.x, area.y - 2, area.w, area.h + 2); ctx.clip();
+      tierKeys.forEach((k, i) => {
         const sk = SKINS[k];
-        const x = 24 + (i % 2) * 160, y = 176 + Math.floor(i / 2) * 136;
+        const x = 24 + (i % 2) * 160, y = 176 + Math.floor(i / 2) * 136 - area.off;
+        if (y > area.y + area.h || y + 128 < area.y) return;
         const owned = S.skins.includes(k), locked = !owned && sk.req && (S.maxHouse || 1) < sk.req;
         card(x, y, 152, 128, 12, tier.color);
         if (S.skin === k) { rr(x + 3, y + 3, 146, 122, 10); ctx.fillStyle = 'rgba(255,230,150,0.35)'; ctx.fill(); }
@@ -5441,10 +5501,12 @@
           lines.forEach((l, j) => text(l, x + 116, y + 50 + j * 11, Math.min(9, (9 * 56) / ctx.measureText(l).width), '#2f8f4e', 'center', '700'));
         }
         if (locked) { orb(x + 18, y + 18, 11, '#6b5f86'); text('🔒', x + 18, y + 19, 10, '#ffffff'); }
-        const label = owned ? (S.skin === k ? 'Надето' : 'Надеть') : locked ? '🔒 Дом ' + sk.req + ' · ' + sk.crystals + '💎' : sk.pass ? 'Пропуск, ур. 30' : sk.event ? 'Ночь тыкв · ' + EVENT_SHOP[0].price + ' 🍬' : sk.crystals ? sk.crystals + ' 💎' : sk.usd;
-        button(x + 16, y + 92, 120, 28, label, owned ? '#7fd1ff' : sk.pass ? '#a86bff' : sk.event ? '#ff9a3d' : sk.usd ? '#ffc94d' : '#8ee08a', () => buySkin(k), locked || sk.pass || sk.event ? 10 : 12, !(owned && S.skin === k) && !locked);
+        const label = owned ? (S.skin === k ? 'Надето' : 'Надеть') : locked ? '🔒 Дом ' + sk.req + ' · ' + sk.crystals + '💎' : sk.pass ? 'Пропуск, ур. 30' : sk.event ? (() => { const ev = EVENTS.find((q) => q.id === sk.event); return ev.btnName + ' · 300 ' + ev.cur; })() : sk.crystals ? sk.crystals + ' 💎' : sk.usd;
+        button(x + 16, y + 92, 120, 28, label, owned ? '#7fd1ff' : sk.pass ? '#a86bff' : sk.event ? '#ff9a3d' : sk.usd ? '#ffc94d' : '#8ee08a', null, locked || sk.pass || sk.event ? 10 : 12, !(owned && S.skin === k) && !locked);
+        buttons.pop(); sbtn(area, x + 16, y + 92, 120, 28, () => buySkin(k));
       });
-      const TIER_INFO = ['150–300 💎, бонус +6–8%', '600–900 💎, бонус +10–20%', '1200–2000 💎, открываются на домах 10–25', 'донат $2.99–4.99, бонус +25–40%', 'донат $9.99–12.99 или Пропуск, бонус +50–60%'];
+      ctx.restore(); scrollBar(area);
+      const TIER_INFO = ['150–300 💎, бонус +6–8%', '600–900 💎, бонус +10–20%', '1200–2200 💎, открываются на домах 10–35', 'донат $2.99–4.99, бонус +25–45%', 'донат, Пропуск или события года, бонус +30–60%'];
       text(tier.name + ': ' + TIER_INFO[skinTier], 180, 456, 9, '#6b5f86', 'center', '700');
       const pc = (kd) => Math.round((skinMult(kd) - 1) * 100);
       text('Собрано ' + S.skins.length + ' из ' + Object.keys(SKINS).length + ' · урон +' + pc('dmg') + '% · скорость +' + pc('rate') + '% · доход +' + pc('income') + '%', 180, 476, 9, '#2f8f4e', 'center', '800');
@@ -6013,7 +6075,7 @@
     ctx.restore();
     drawOffscreenArrows();
     for (const d of drops) { if (spr('ecto-drop', d.x, d.y, 11)) continue; ctx.fillStyle = '#7dff9e'; ctx.strokeStyle = INK; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(d.x, d.y, 4, 0, 7); ctx.fill(); ctx.stroke(); }
-    for (const c of candyFx) { const k = Math.min(1, c.t / 0.5); spr('candy', c.x + (evBtnPos.x - c.x) * k * k, c.y + (evBtnPos.y - c.y) * k * k, 18, 0, c.t * 6); }
+    for (const c of candyFx) { const k = Math.min(1, c.t / 0.5); spr(curEvent() ? curEvent().art : 'candy', c.x + (evBtnPos.x - c.x) * k * k, c.y + (evBtnPos.y - c.y) * k * k, 18, 0, c.t * 6); }
     drawJoystick();
     drawTopBar();
     drawBottom();
