@@ -365,7 +365,7 @@
   const gemR = (n) => ({ icon: 'gem', val: String(n), label: n + ' 💎', apply: () => { S.crystals += n; } });
   const jarR = (n) => ({ icon: 'jar', val: String(n), label: n + ' банок', apply: () => { S.jars += n; } });
   const attR = (r) => ({ icon: 'attach', val: RANKS[r], label: 'Насадка ' + RANKS[r], apply: () => giveAttach(r) });
-  const stoneR = (n) => ({ icon: 'moon', val: String(n), label: n + ' лунных камней', apply: () => { S.stones += n; } });
+  const stoneR = (n) => ({ icon: 'stone', val: String(n), label: n + ' лунных камней', apply: () => { S.stones += n; } });
   const ghostR = (st) => ({ icon: 'ghost', val: st + '★', label: 'Эпик-дух ' + st + '★', apply: () => giveGhost(district().ghosts[2], st) });
   const PASS_FREE = Array.from({ length: PASS_LEVELS }, (_, k) => {
     const l = k + 1;
@@ -2587,6 +2587,16 @@
   }
   // ---- Рисованный UI (Higgsfield): 9-slice и выбор картинки по цвету
   const ui = (k) => (useArt() && ART[k] ? ART[k] : null);
+  // картинка-сцена в скруглённой рамке: из исходника берётся полоса нужной пропорции (fy — где её центр, 0..1)
+  function scenePic(k, x, y, w, h, fy, r) {
+    const A = ui(k); if (!A) return false;
+    const iw = A.img.naturalWidth, ih = A.img.naturalHeight;
+    let sw = iw, sh = iw * h / w; if (sh > ih) { sh = ih; sw = ih * w / h; }
+    const sy = Math.max(0, Math.min(ih - sh, ih * (fy === undefined ? 0.5 : fy) - sh / 2)), sx = (iw - sw) / 2;
+    ctx.save(); rr(x, y, w, h, r || 12); ctx.clip(); ctx.drawImage(A.img, sx, sy, sw, sh, x, y, w, h); ctx.restore();
+    rr(x, y, w, h, r || 12); ctx.lineWidth = 3; ctx.strokeStyle = '#4a2f6e'; ctx.stroke();
+    return true;
+  }
   // нарисованный спрайт по центру: ширина w, высота по пропорции картинки (или h); false, если арта нет
   function spr(k, x, y, w, h, rot) {
     const A = ui(k); if (!A) return false;
@@ -2648,6 +2658,7 @@
   }
   // Нарисованные иконки (эмодзи на разных устройствах выглядят по-разному или не отображаются)
   function drawIcon(kind, x, y, s) {
+    if (kind === 'stone') { const M = ui('moonstone'); if (M) { const d = s * 1.15; ctx.drawImage(M.img, x - d / 2, y - d / 2, d, d * M.img.naturalHeight / M.img.naturalWidth); return; } kind = 'moon'; }
     const ic = UI_ICONS[kind], IA = ic && ui('icons-' + ic[0]);
     if (IA) { // ячейка листа 4×4, сама иконка занимает около 70% ячейки
       const cs = IA.img.naturalWidth / 4, d = s * 1.42;
@@ -2846,7 +2857,7 @@
     }
   }
   // Текст со встроенными нарисованными иконками вместо капризных эмодзи
-  const INLINE_ICONS = { '💎': 'gem', '🎬': 'ad', '🫙': 'jar', '🔒': 'lock', '🌙': 'moon', '✨': 'sparkle', '👻': 'ghost', '🧹': 'attach', '👑': 'crown', '📜': 'scroll', '🌕': 'fullmoon', '🎁': 'gift', '🛒': 'cart', '⚙': 'gear', '📖': 'book', '🎡': 'wheel', '🏚': 'house', '🔁': 'loop', '⚔': 'swords', '🧲': 'magnet', '💚': 'ecto', '💠': 'rank', '⭐': 'star', '❄': 'snow', '🧪': 'flask', '🌿': 'leaf', '🧠': 'brain', '🌃': 'night', '🍀': 'clover', '⏳': 'hourglass', '💀': 'skull', '🎵': 'note', '🔊': 'speaker', '🔥': 'flame', '🎃': 'pumpkin', '🧭': 'compass', '⏩': 'turbo', '📳': 'phone', '💥': 'boom', '🍬': 'candy', '🏆': 'trophy' };
+  const INLINE_ICONS = { '💎': 'gem', '🎬': 'ad', '🫙': 'jar', '🔒': 'lock', '🌙': 'stone', '✨': 'sparkle', '👻': 'ghost', '🧹': 'attach', '👑': 'crown', '📜': 'scroll', '🌕': 'fullmoon', '🎁': 'gift', '🛒': 'cart', '⚙': 'gear', '📖': 'book', '🎡': 'wheel', '🏚': 'house', '🔁': 'loop', '⚔': 'swords', '🧲': 'magnet', '💚': 'ecto', '💠': 'rank', '⭐': 'star', '❄': 'snow', '🧪': 'flask', '🌿': 'leaf', '🧠': 'brain', '🌃': 'night', '🍀': 'clover', '⏳': 'hourglass', '💀': 'skull', '🎵': 'note', '🔊': 'speaker', '🔥': 'flame', '🎃': 'pumpkin', '🧭': 'compass', '⏩': 'turbo', '📳': 'phone', '💥': 'boom', '🍬': 'candy', '🏆': 'trophy' };
   const ICON_RE = new RegExp('(' + Object.keys(INLINE_ICONS).join('|') + ')');
   function text(t, x, y, size, color, align, weight) {
     t = String(t).replace(/\uFE0F/g, '');
@@ -5067,6 +5078,9 @@
     panelFrame('Ночь тыкв');
     const e = evState();
     // баннер: ночное небо, луна и тыквы
+    const EB = scenePic('event-halloween', 28, 100, 304, 92, 0.55, 14);
+    if (EB) { rr(40, 136, 150, 50, 12); ctx.fillStyle = 'rgba(26,16,46,0.66)'; ctx.fill(); }
+    else {
     ctx.save(); rr(28, 100, 304, 92, 14); ctx.clip();
     const g = ctx.createLinearGradient(0, 100, 0, 192); g.addColorStop(0, '#2b1f4a'); g.addColorStop(1, '#6a3a6a'); ctx.fillStyle = g; ctx.fillRect(28, 100, 304, 92);
     ctx.fillStyle = '#fff3c0'; ctx.beginPath(); ctx.arc(296, 126, 16, 0, 7); ctx.fill();
@@ -5075,9 +5089,11 @@
     ctx.restore();
     drawIcon('pumpkin', 66, 168, 34); drawIcon('pumpkin', 300, 172, 26);
     ghostSprite('jacko', 250, 160, 13, { phase: time * 3 }); if (!(useArt() && ART['ghost-jacko'])) drawIcon('pumpkin', 250, 147, 15);
-    text('Конфеты: ' + e.candy + ' 🍬', 150, 156, 17, '#ffffff', 'center', '900');
+    }
+    const tx = EB ? 115 : 150;
+    text('Конфеты: ' + e.candy + ' 🍬', tx, 156, EB ? 15 : 17, '#ffffff', 'center', '900');
     const left = eventLeft(), days = Math.floor(left / 86400000), hrs = Math.floor((left % 86400000) / 3600000);
-    text('до конца: ' + (days ? days + ' дн. ' : '') + hrs + ' ч', 150, 178, 10, '#ffd9a8', 'center', '800');
+    text('до конца: ' + (days ? days + ' дн. ' : '') + hrs + ' ч', tx, 176, 10, '#ffd9a8', 'center', '800');
     fitText('Конфеты падают с призраков, боссов и Джека-фонаря', 180, 206, 296, 10, '#6b5f86', 'center', '700');
     EVENT_SHOP.forEach((it, i) => {
       const y = 218 + i * 57, n = e.bought[it.id] || 0, sold = n >= it.max, can = !sold && e.candy >= it.price;
@@ -5103,7 +5119,9 @@
       if (y > area.y + area.h || y + 64 < area.y) return;
       const t = achTier(a), max = t >= a.tiers.length, ready = achReady(a), goal = a.tiers[Math.min(t, a.tiers.length - 1)];
       card(26, y, 300, 64, 12, ready ? '#ffc94d' : max ? '#7dd99a' : '#d9cff0');
-      orb(52, y + 26, 17, max ? '#7dd99a' : '#8a7bd1'); text(a.icon, 52, y + 27, 17, '#ffffff');
+      const MD = t > 0 && ui('medal-' + (t >= 3 || max ? 'gold' : t === 2 ? 'silver' : 'bronze'));
+      if (MD) { const mh = 44, mw = mh * MD.img.naturalWidth / MD.img.naturalHeight; ctx.drawImage(MD.img, 52 - mw / 2, y + 22 - mh / 2, mw, mh); text(a.icon, 52, y + 27, 12, '#ffffff'); }
+      else { orb(52, y + 26, 17, max ? '#7dd99a' : '#8a7bd1'); text(a.icon, 52, y + 27, 17, '#ffffff'); }
       for (let k = 0; k < a.tiers.length; k++) text('★', 40 + k * 6, y + 52, 7, k < t ? '#ffc94d' : '#d9cff0');
       fitText(a.name, 78, y + 16, 140, 13, INK, 'left', '800');
       const v = Math.min(a.val(), goal);
@@ -5184,7 +5202,9 @@
     if (ready) { const gg = ctx.createRadialGradient(60, 499, 6, 60, 499, 50); gg.addColorStop(0, `rgba(255,210,100,${0.5 + 0.2 * Math.sin(time * 5)})`); gg.addColorStop(1, 'rgba(255,210,100,0)'); ctx.fillStyle = gg; ctx.fillRect(10, 450, 100, 100); }
     card(24, 464, 312, 70, 12, '#ffc94d');
     ctx.save(); if (ready) { ctx.translate(60, 499); ctx.rotate(Math.sin(time * 9) * 0.08); ctx.translate(-60, -499); }
-    drawIcon('chest', 60, 501, 44); ctx.restore();
+    const CH = ui(S.dm.chest ? 'chest-daily-open' : 'chest-daily');
+    if (CH) { const cw = 58, chh = cw * CH.img.naturalHeight / CH.img.naturalWidth; ctx.drawImage(CH.img, 60 - cw / 2, 502 - chh / 2, cw, chh); } else drawIcon('chest', 60, 501, 44);
+    ctx.restore();
     text('Сундук дня', 92, 481, 13, INK, 'left', '800');
     fitText(Math.round(50 * m1) + ' 💎 · ' + Math.round(5 * m1) + ' 🫙 · насадка ' + (S.streak.count >= 7 ? 'A' : 'B') + ' · ' + CHEST_XP + ' опыта', 92, 499, 140, 10, '#6b5f86', 'left', '700');
     if (S.dm.chest) text('Открыт ✓', 281, 499, 13, '#2f8f4e', 'center', '800');
@@ -5228,7 +5248,13 @@
     const xpIn = lvl >= PASS_LEVELS ? PASS_XP : S.pass.xp % PASS_XP;
     bar(36, 180, 168, 13, xpIn / PASS_XP, '#a86bff', '#e4ddf3');
     text(lvl >= PASS_LEVELS ? 'МАКС' : xpIn + ' / ' + PASS_XP, 120, 186.5, 8, INK, 'center', '800');
-    if (!S.pass.premium) button(212, 146, 114, 46, '👑 Премиум ' + PASS_PRICE, '#ffc94d', buyPass, 11);
+    if (ui('pass-banner')) { // Кот-Жнец из премиум-линии на плитке покупки
+      const PB = ui('pass-banner').img, sw = 300, sh = sw * 56 / 116;
+      ctx.save(); rr(212, 141, 116, 56, 10); ctx.clip(); ctx.drawImage(PB, 462, 36, sw, sh, 212, 141, 116, 56); ctx.restore();
+      rr(212, 141, 116, 56, 10); ctx.lineWidth = 2.5; ctx.strokeStyle = '#ffc94d'; ctx.stroke();
+      if (!S.pass.premium) { rr(216, 177, 108, 17, 8.5); ctx.fillStyle = '#ffc94d'; ctx.fill(); text('👑 Премиум ' + PASS_PRICE, 270, 186, 10, INK, 'center', '900'); btn(212, 141, 116, 56, buyPass); }
+      else { rr(226, 177, 88, 17, 8.5); ctx.fillStyle = '#3ddc97'; ctx.fill(); text('Премиум ✓', 270, 186, 10, '#ffffff', 'center', '900'); }
+    } else if (!S.pass.premium) button(212, 146, 114, 46, '👑 Премиум ' + PASS_PRICE, '#ffc94d', buyPass, 11);
     else { plate(212, 150, 114, 38, 12, '#3ddc97'); text('👑 Премиум ✓', 269, 169, 12, '#ffffff'); }
     text('Бесплатно', 92, 214, 10, '#6b5f86', 'center', '800');
     text('Премиум', 268, 214, 10, '#8a5ad6', 'center', '800');
@@ -5278,8 +5304,10 @@
     subTabs([['main', 'Освящение', stonesFor(S.house) > 0], ['altar', 'Лунный алтарь', altarAffordable()]], prestTab, (id) => { prestTab = id; });
     if (prestTab === 'altar') { drawAltar(); return; }
     const gain = stonesFor(S.house);
-    const mg = ctx.createRadialGradient(180, 178, 20, 180, 178, 70); mg.addColorStop(0, 'rgba(255,240,170,0.55)'); mg.addColorStop(1, 'rgba(255,240,170,0)'); ctx.fillStyle = mg; ctx.fillRect(100, 108, 160, 140);
-    drawIcon('moon', 180, 180, 76);
+    if (!scenePic('scene-prestige', 28, 138, 304, 86, 0.27)) {
+      const mg = ctx.createRadialGradient(180, 178, 20, 180, 178, 70); mg.addColorStop(0, 'rgba(255,240,170,0.55)'); mg.addColorStop(1, 'rgba(255,240,170,0)'); ctx.fillStyle = mg; ctx.fillRect(100, 108, 160, 140);
+      drawIcon('moon', 180, 180, 76);
+    }
     const lines = [
       'Освяти город: дома, эктоплазма и прокачка',
       'сбросятся, а ты получишь лунные камни.',
@@ -5303,16 +5331,20 @@
   }
 
   function drawAltar() {
-    text('Свободно камней: ' + stonesFree() + ' 🌙', 180, 147, 14, INK, 'center', '900');
+    const pic = scenePic('scene-altar', 28, 136, 304, 58, 0.55);
+    if (pic) { rr(110, 176, 140, 22, 11); ctx.fillStyle = 'rgba(30,18,52,0.72)'; ctx.fill(); text('Свободно: ' + stonesFree() + ' 🌙', 180, 187, 12, '#fff1a8', 'center', '900'); }
+    else text('Свободно камней: ' + stonesFree() + ' 🌙', 180, 147, 14, INK, 'center', '900');
     Object.keys(ALTAR).forEach((k, i) => {
-      const t = ALTAR[k], l = talent(k), y = 162 + i * 62, max = l >= t.max, c = t.cost(l), can = !max && stonesFree() >= c;
-      card(24, y, 312, 56, 12, t.color);
-      orb(50, y + 28, 18, t.color); text(t.icon, 50, y + 29, 16, '#ffffff');
-      text(t.name + ' · ур. ' + l + (t.max < 20 ? '/' + t.max : ''), 76, y + 18, 12, INK, 'left', '800');
-      fitText((max || l === 0 ? '' : 'след. ур.: ') + t.desc(max ? l : l + 1), 76, y + 37, 164, 9.5, l ? '#2f8f4e' : '#6b5f86', 'left', '700');
-      button(248, y + 12, 78, 32, max ? 'МАКС' : c + ' 🌙', can ? '#ffc94d' : '#b9afe8', () => buyTalent(k), 12, !max);
+      const t = ALTAR[k], l = talent(k), y = pic ? 202 + i * 56 : 162 + i * 62, max = l >= t.max, c = t.cost(l), can = !max && stonesFree() >= c;
+      const ch = pic ? 52 : 56, ty = pic ? -2 : 0;
+      card(24, y, 312, ch, 12, t.color);
+      const TI = ui('talent-' + k);
+      if (TI) ctx.drawImage(TI.img, 31, y + ch / 2 - 19, 38, 38); else { orb(50, y + 28, 18, t.color); text(t.icon, 50, y + 29, 16, '#ffffff'); }
+      text(t.name + ' · ур. ' + l + (t.max < 20 ? '/' + t.max : ''), 76, y + 18 + ty, 12, INK, 'left', '800');
+      fitText((max || l === 0 ? '' : 'след. ур.: ') + t.desc(max ? l : l + 1), 76, y + 37 + ty, 164, 9.5, l ? '#2f8f4e' : '#6b5f86', 'left', '700');
+      button(248, y + ch / 2 - 16, 78, 32, max ? 'МАКС' : c + ' 🌙', can ? '#ffc94d' : '#b9afe8', () => buyTalent(k), 12, !max);
     });
-    text('Таланты не сбрасываются при освящении', 180, 548, 10, '#6b5f86', 'center', '700');
+    text('Таланты не сбрасываются при освящении', 180, pic ? 548 + 4 : 548, 10, '#6b5f86', 'center', '700');
   }
 
   function drawShopPanel() {
