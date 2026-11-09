@@ -2227,9 +2227,12 @@
     if (behIntro && !panel && !modal) { behIntro.life -= dt; if (behIntro.life <= 0) behIntro = null; }
   }
 
+  // нарисованная насадка в лапе: холст 2:1, патрубок у левого края
+  const NOZ_L = 60, NOZ_H = 30;
+  const attachTip = (kind) => { const b = EXTRA_BOX['attach-' + kind]; return b ? b[2] * NOZ_L - 9 : 0.8 * 46; };
   function nozzle() {
     if (useArt() && ART['cat-' + (SKINS[S.skin] ? S.skin : 'ginger')] && ART.nozzle) { // нарисованный кот держит пылесос в лапе
-      const len = 37 - cat.recoil * 5;
+      const mk = mainKind(), len = (mk && ui('attach-' + mk) ? attachTip(mk) : 37) - cat.recoil * 5;
       return { x: cat.x + murzikFace * 33.6 + Math.cos(cat.aim) * len, y: cat.y - 4.7 + Math.sin(cat.aim) * len };
     }
     const len = 30 - cat.recoil * 4;
@@ -2421,6 +2424,114 @@
     'scene-raid': 'art/scene-raid.webp',
   };
   // SCENE-META-END
+  // EXTRA-META-BEGIN (создаётся tools/prepare-extra.py, не править руками)
+  const EXTRA_SRC = {
+    'attach-brush': 'art/x-attach-brush.webp',
+    'attach-frost': 'art/x-attach-frost.webp',
+    'attach-magnet': 'art/x-attach-magnet.webp',
+    'attach-narrow': 'art/x-attach-narrow.webp',
+    'attach-rocket': 'art/x-attach-rocket.webp',
+    'attach-storm': 'art/x-attach-storm.webp',
+    'attach-turbo': 'art/x-attach-turbo.webp',
+    'attach-wide': 'art/x-attach-wide.webp',
+    'boom': 'art/x-boom.webp',
+    'candy': 'art/x-candy.webp',
+    'capture-swirl': 'art/x-capture-swirl.webp',
+    'cat-beach': 'art/x-cat-beach.webp',
+    'cat-bunny': 'art/x-cat-bunny.webp',
+    'cat-cowboy': 'art/x-cat-cowboy.webp',
+    'cat-cupid': 'art/x-cat-cupid.webp',
+    'cat-detective': 'art/x-cat-detective.webp',
+    'cat-dj': 'art/x-cat-dj.webp',
+    'cat-dragon': 'art/x-cat-dragon.webp',
+    'cat-firefighter': 'art/x-cat-firefighter.webp',
+    'cat-knight': 'art/x-cat-knight.webp',
+    'cat-robot': 'art/x-cat-robot.webp',
+    'cat-samurai': 'art/x-cat-samurai.webp',
+    'cat-tree': 'art/x-cat-tree.webp',
+    'chest-daily': 'art/x-chest-daily.webp',
+    'chest-daily-open': 'art/x-chest-daily-open.webp',
+    'crystal-shard': 'art/x-crystal-shard.webp',
+    'cur-heart': 'art/x-cur-heart.webp',
+    'cur-petal': 'art/x-cur-petal.webp',
+    'cur-shell': 'art/x-cur-shell.webp',
+    'cur-snowflake': 'art/x-cur-snowflake.webp',
+    'ecto-drop': 'art/x-ecto-drop.webp',
+    'ecto-shot': 'art/x-ecto-shot.webp',
+    'emo-angry': 'art/x-emo-angry.webp',
+    'emo-defeat': 'art/x-emo-defeat.webp',
+    'emo-happy': 'art/x-emo-happy.webp',
+    'emo-love': 'art/x-emo-love.webp',
+    'emo-proud': 'art/x-emo-proud.webp',
+    'emo-sad': 'art/x-emo-sad.webp',
+    'emo-scared': 'art/x-emo-scared.webp',
+    'emo-sleepy': 'art/x-emo-sleepy.webp',
+    'emo-surprised': 'art/x-emo-surprised.webp',
+    'emo-thinking': 'art/x-emo-thinking.webp',
+    'emo-victory': 'art/x-emo-victory.webp',
+    'emo-wink': 'art/x-emo-wink.webp',
+    'event-halloween': 'art/x-event-halloween.webp',
+    'event-newyear': 'art/x-event-newyear.webp',
+    'event-spring': 'art/x-event-spring.webp',
+    'event-summer': 'art/x-event-summer.webp',
+    'event-valentine': 'art/x-event-valentine.webp',
+    'gems-1': 'art/x-gems-1.webp',
+    'gems-2': 'art/x-gems-2.webp',
+    'gems-3': 'art/x-gems-3.webp',
+    'gems-4': 'art/x-gems-4.webp',
+    'gems-5': 'art/x-gems-5.webp',
+    'ghost-egg': 'art/x-ghost-egg.webp',
+    'ghost-gift': 'art/x-ghost-gift.webp',
+    'ghost-heart': 'art/x-ghost-heart.webp',
+    'ghost-sandcastle': 'art/x-ghost-sandcastle.webp',
+    'jar-empty': 'art/x-jar-empty.webp',
+    'jar-ghost': 'art/x-jar-ghost.webp',
+    'medal-bronze': 'art/x-medal-bronze.webp',
+    'medal-gold': 'art/x-medal-gold.webp',
+    'medal-silver': 'art/x-medal-silver.webp',
+    'moonstone': 'art/x-moonstone.webp',
+    'offer-auto': 'art/x-offer-auto.webp',
+    'offer-moon': 'art/x-offer-moon.webp',
+    'offer-noads': 'art/x-offer-noads.webp',
+    'offer-pass': 'art/x-offer-pass.webp',
+    'offer-starter': 'art/x-offer-starter.webp',
+    'offer-vip': 'art/x-offer-vip.webp',
+    'pass-banner': 'art/x-pass-banner.webp',
+    'portal': 'art/x-portal.webp',
+    'prop-ny-gifts': 'art/x-prop-ny-gifts.webp',
+    'prop-ny-snowman': 'art/x-prop-ny-snowman.webp',
+    'prop-ny-tree': 'art/x-prop-ny-tree.webp',
+    'prop-sp-basket': 'art/x-prop-sp-basket.webp',
+    'prop-sp-sakura': 'art/x-prop-sp-sakura.webp',
+    'prop-sp-tulips': 'art/x-prop-sp-tulips.webp',
+    'prop-su-board': 'art/x-prop-su-board.webp',
+    'prop-su-castle': 'art/x-prop-su-castle.webp',
+    'prop-su-umbrella': 'art/x-prop-su-umbrella.webp',
+    'prop-val-balloons': 'art/x-prop-val-balloons.webp',
+    'prop-val-choco': 'art/x-prop-val-choco.webp',
+    'prop-val-roses': 'art/x-prop-val-roses.webp',
+    'rocket': 'art/x-rocket.webp',
+    'scene-altar': 'art/x-scene-altar.webp',
+    'scene-prestige': 'art/x-scene-prestige.webp',
+    'skin-podium': 'art/x-skin-podium.webp',
+    'squad-shelf': 'art/x-squad-shelf.webp',
+    'talent-harvest': 'art/x-talent-harvest.webp',
+    'talent-hourglass': 'art/x-talent-hourglass.webp',
+    'talent-luck': 'art/x-talent-luck.webp',
+    'talent-memory': 'art/x-talent-memory.webp',
+    'talent-might': 'art/x-talent-might.webp',
+    'talent-night': 'art/x-talent-night.webp',
+    'wheel-face': 'art/x-wheel-face.webp',
+    'wheel-hub': 'art/x-wheel-hub.webp',
+    'wheel-pointer': 'art/x-wheel-pointer.webp',
+    'wheel-rim': 'art/x-wheel-rim.webp',
+    'wheel-stand': 'art/x-wheel-stand.webp',
+    'zone-acid': 'art/x-zone-acid.webp',
+    'zone-ice': 'art/x-zone-ice.webp',
+  };
+  const EXTRA_ASPECT = {"ghost-egg": 0.73, "ghost-gift": 0.766, "ghost-heart": 0.941, "ghost-sandcastle": 0.777, "prop-ny-gifts": 1.107, "prop-ny-snowman": 0.806, "prop-ny-tree": 0.713, "prop-sp-basket": 1.003, "prop-sp-sakura": 0.841, "prop-sp-tulips": 1.029, "prop-su-board": 0.681, "prop-su-castle": 0.928, "prop-su-umbrella": 0.994, "prop-val-balloons": 1.049, "prop-val-choco": 0.863, "prop-val-roses": 0.875};
+  const EXTRA_BOX = {"attach-brush": [0.0, 0.019, 0.931, 0.981], "attach-frost": [0.0, 0.019, 0.781, 0.981], "attach-magnet": [0.0, 0.031, 1.0, 0.969], "attach-narrow": [0.0, 0.263, 1.0, 0.738], "attach-rocket": [0.0, 0.019, 0.969, 0.981], "attach-storm": [0.0, 0.106, 1.0, 0.887], "attach-turbo": [0.0, 0.131, 1.0, 0.863], "attach-wide": [0.0, 0.019, 0.672, 0.981]};
+  // EXTRA-META-END
   const ART = {};
   let artPending = 0;
   const tintCopy = (img, color) => {
@@ -2428,7 +2539,8 @@
     const x = c.getContext('2d'); x.drawImage(img, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = color; x.fillRect(0, 0, c.width, c.height); return c;
   };
   const tinted = (A, key, color) => A[key] || (A[key] = tintCopy(A.img, color)); // белая вспышка и силуэт — по запросу
-  const ALL_SRC = Object.assign({}, ART_SRC, UI_SRC, SCENE_SRC);
+  const ALL_SRC = Object.assign({}, ART_SRC, UI_SRC, SCENE_SRC, EXTRA_SRC);
+  Object.assign(ART_ASPECT, EXTRA_ASPECT);
   for (const k in ALL_SRC) {
     const img = new Image(); artPending++;
     img.onload = () => { ART[k] = { img }; if (--artPending === 0) artLoaded(); };
@@ -3754,9 +3866,17 @@
       const L = 46, H = 23 * (o.wide ? 1.3 : 1);
       ctx.save(); ctx.translate(px, py); ctx.scale(1, 1 / breath); ctx.rotate(la); ctx.translate(-rec * 5, 0);
       if (o.rocket) { ctx.fillStyle = alpha(ATTACH.rocket.color, 0.5); ctx.beginPath(); ctx.arc(-4, 0, 9, 0, 7); ctx.fill(); }
-      ctx.drawImage(N.img, -0.18 * L, -H / 2, L, H);
-      const tip = 0.8 * L, col = o.eqColor || '#ff7a9c';
-      ctx.fillStyle = alpha(col, 0.55); rr(tip - 3, -H * 0.4, 5, H * 0.8, 2); ctx.fill();
+      const AN = o.eqKind && ui('attach-' + o.eqKind);
+      let tip;
+      if (AN) { // нарисованная насадка вместо обычного пылесоса
+        ctx.drawImage(AN.img, -7, -NOZ_H / 2, NOZ_L, NOZ_H);
+        tip = attachTip(o.eqKind);
+      } else {
+        ctx.drawImage(N.img, -0.18 * L, -H / 2, L, H);
+        tip = 0.8 * L;
+        ctx.fillStyle = alpha(o.eqColor || '#ff7a9c', 0.55); rr(tip - 3, -H * 0.4, 5, H * 0.8, 2); ctx.fill();
+      }
+      const col = o.eqColor || '#ff7a9c';
       if (o.eqKind) nozzleFx(o.eqKind, tip + 2, 0);
       if (rec > 0.2) {
         ctx.globalCompositeOperation = 'lighter';
@@ -4517,6 +4637,15 @@
 
   // Свой рисунок у каждой насадки: общий патрубок + уникальная головка
   function drawAttachIcon(kind, cx, cy, s, t) {
+    const art = ui('attach-' + kind), bx = EXTRA_BOX['attach-' + kind];
+    if (art && bx) { // нарисованная насадка: вырезаем сам рисунок с холста и кладём по диагонали
+      const W = art.img.naturalWidth, H = art.img.naturalHeight, sx = bx[0] * W, sy = bx[1] * H, sw = (bx[2] - bx[0]) * W, sh = (bx[3] - bx[1]) * H;
+      const dw = s * 1.3, dh = Math.min(dw * sh / sw, s * 0.8), dw2 = dh * sw / sh;
+      ctx.save(); ctx.translate(cx, cy); ctx.rotate(-0.5);
+      ctx.drawImage(art.img, sx, sy, sw, sh, -dw2 / 2, -dh / 2, dw2, dh);
+      ctx.restore();
+      return;
+    }
     const k = ATTACH[kind], c = k.color; t = t || 0;
     ctx.save(); ctx.translate(cx, cy); ctx.scale(s / 44, s / 44); ctx.rotate(-0.55);
     ctx.lineJoin = 'round'; ctx.lineWidth = 2.4; ctx.strokeStyle = INK;
@@ -5298,6 +5427,48 @@
     return Math.floor(s / 3600) + ':' + String(Math.floor(s / 60) % 60).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
   }
 
+  // Колесо из нарисованных слоёв: подставка, вращающийся диск, обод с лампочками, кнопка и стрелка
+  function drawWheelArt(cx, cy, seg) {
+    const RIM = 131, FACE = 104;
+    const st = ui('wheel-stand');
+    if (st) ctx.drawImage(st.img, cx - 80, cy + 22, 160, 120);
+    ctx.fillStyle = 'rgba(15,8,30,0.3)'; ctx.beginPath(); ctx.arc(cx, cy + 6, RIM * 0.98, 0, 7); ctx.fill();
+    // диск: первый сектор начинается от верхней границы, как в WHEEL
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(wheelRot);
+    const fs = FACE * 2 / 0.951;
+    ctx.drawImage(ui('wheel-face').img, -fs / 2, -fs / 2, fs, fs);
+    ctx.restore();
+    WHEEL.forEach((w, i) => {
+      const a0 = wheelRot + i * seg - Math.PI / 2;
+      if (wheelWin && wheelWin.idx === i && time - wheelWin.t < 2.5) {
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, FACE, a0, a0 + seg); ctx.closePath();
+        ctx.fillStyle = `rgba(255,255,255,${0.3 + 0.25 * Math.sin(time * 12)})`; ctx.fill();
+      }
+      const am = a0 + seg / 2, ix = cx + Math.cos(am) * FACE * 0.62, iy = cy + Math.sin(am) * FACE * 0.62;
+      drawIcon(w.icon, ix, iy - 6, 21);
+      text(w.val, ix, iy + 12, 10, '#ffffff', 'center', '900');
+    });
+    ctx.drawImage(ui('wheel-rim').img, cx - RIM / 0.979, cy - RIM / 0.979, RIM * 2 / 0.979, RIM * 2 / 0.979);
+    // лампочки обода: 16 штук, первая справа, бегут быстрее во время вращения
+    const br = RIM / 0.979 * 0.883;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 16; i++) {
+      if ((Math.floor(time * (wheelSpin ? 10 : 3)) + i) % 2) continue;
+      const a = (i / 16) * Math.PI * 2, bx = cx + Math.cos(a) * br, by = cy + Math.sin(a) * br;
+      const g = ctx.createRadialGradient(bx, by, 1, bx, by, 11); g.addColorStop(0, 'rgba(255,250,210,0.95)'); g.addColorStop(0.4, 'rgba(255,220,120,0.55)'); g.addColorStop(1, 'rgba(255,200,90,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bx, by, 11, 0, 7); ctx.fill();
+    }
+    ctx.restore();
+    const hub = ui('wheel-hub');
+    if (hub) ctx.drawImage(hub.img, cx - 25, cy - 25, 50, 50); else orb(cx, cy, 20, '#ffc94d');
+    // стрелка с покачиванием на каждом секторе
+    const frac = ((wheelRot / seg) % 1 + 1) % 1, wob = wheelSpin ? Math.max(0, 0.35 - frac) * 0.9 : 0;
+    const pt = ui('wheel-pointer');
+    ctx.save(); ctx.translate(cx, cy - RIM + 9); ctx.rotate(-wob);
+    if (pt) ctx.drawImage(pt.img, -19, -26, 38, 47.5);
+    ctx.restore();
+  }
+
   function drawWheelPanel() {
     panelFrame('Колесо удачи');
     const cx = 180, cy = 270, R = 112, seg = (Math.PI * 2) / WHEEL.length;
@@ -5305,44 +5476,47 @@
     ctx.save(); ctx.translate(cx, cy); ctx.rotate(time * 0.3);
     for (let i = 0; i < 12; i++) { ctx.rotate(Math.PI / 6); ctx.fillStyle = 'rgba(255,210,100,0.16)'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-18, -170); ctx.lineTo(18, -170); ctx.closePath(); ctx.fill(); }
     ctx.restore();
-    // подставка
-    ctx.fillStyle = '#6b4fb0'; ctx.strokeStyle = INK; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.moveTo(cx - 26, cy + 40); ctx.lineTo(cx + 26, cy + 40); ctx.lineTo(cx + 54, cy + R + 44); ctx.lineTo(cx - 54, cy + R + 44); ctx.closePath(); ctx.fill(); ctx.stroke();
-    plate(cx - 74, cy + R + 36, 148, 18, 9, '#8a7bd1');
-    // обод с лампочками
-    ctx.fillStyle = 'rgba(15,8,30,0.35)'; ctx.beginPath(); ctx.arc(cx, cy + 5, R + 16, 0, 7); ctx.fill();
-    const rim = ctx.createLinearGradient(0, cy - R, 0, cy + R); rim.addColorStop(0, '#b49cff'); rim.addColorStop(1, '#5a3fb0');
-    ctx.fillStyle = rim; ctx.beginPath(); ctx.arc(cx, cy, R + 16, 0, 7); ctx.fill(); ctx.lineWidth = 3; ctx.stroke();
-    for (let i = 0; i < 16; i++) {
-      const a = (i / 16) * Math.PI * 2, bx = cx + Math.cos(a) * (R + 8), by = cy + Math.sin(a) * (R + 8);
-      const on = (Math.floor(time * (wheelSpin ? 10 : 3)) + i) % 2 === 0;
-      if (on) { const g = ctx.createRadialGradient(bx, by, 1, bx, by, 9); g.addColorStop(0, 'rgba(255,240,150,0.9)'); g.addColorStop(1, 'rgba(255,240,150,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bx, by, 9, 0, 7); ctx.fill(); }
-      ctx.fillStyle = on ? '#fff6c0' : '#c9a24d'; ctx.beginPath(); ctx.arc(bx, by, 4, 0, 7); ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = INK; ctx.stroke();
+    if (ui('wheel-face') && ui('wheel-rim')) drawWheelArt(cx, cy, seg);
+    else {
+      // подставка
+      ctx.fillStyle = '#6b4fb0'; ctx.strokeStyle = INK; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(cx - 26, cy + 40); ctx.lineTo(cx + 26, cy + 40); ctx.lineTo(cx + 54, cy + R + 44); ctx.lineTo(cx - 54, cy + R + 44); ctx.closePath(); ctx.fill(); ctx.stroke();
+      plate(cx - 74, cy + R + 36, 148, 18, 9, '#8a7bd1');
+      // обод с лампочками
+      ctx.fillStyle = 'rgba(15,8,30,0.35)'; ctx.beginPath(); ctx.arc(cx, cy + 5, R + 16, 0, 7); ctx.fill();
+      const rim = ctx.createLinearGradient(0, cy - R, 0, cy + R); rim.addColorStop(0, '#b49cff'); rim.addColorStop(1, '#5a3fb0');
+      ctx.fillStyle = rim; ctx.beginPath(); ctx.arc(cx, cy, R + 16, 0, 7); ctx.fill(); ctx.lineWidth = 3; ctx.stroke();
+      for (let i = 0; i < 16; i++) {
+        const a = (i / 16) * Math.PI * 2, bx = cx + Math.cos(a) * (R + 8), by = cy + Math.sin(a) * (R + 8);
+        const on = (Math.floor(time * (wheelSpin ? 10 : 3)) + i) % 2 === 0;
+        if (on) { const g = ctx.createRadialGradient(bx, by, 1, bx, by, 9); g.addColorStop(0, 'rgba(255,240,150,0.9)'); g.addColorStop(1, 'rgba(255,240,150,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bx, by, 9, 0, 7); ctx.fill(); }
+        ctx.fillStyle = on ? '#fff6c0' : '#c9a24d'; ctx.beginPath(); ctx.arc(bx, by, 4, 0, 7); ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = INK; ctx.stroke();
+      }
+      // сектора
+      WHEEL.forEach((w, i) => {
+        const a0 = wheelRot + i * seg - Math.PI / 2;
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, a0, a0 + seg); ctx.closePath();
+        const g = ctx.createRadialGradient(cx, cy, 10, cx, cy, R); g.addColorStop(0, shade(w.color, 0.55)); g.addColorStop(1, w.color);
+        ctx.fillStyle = g; ctx.fill();
+        if (wheelWin && wheelWin.idx === i && time - wheelWin.t < 2.5) { ctx.fillStyle = `rgba(255,255,255,${0.35 + 0.3 * Math.sin(time * 12)})`; ctx.fill(); }
+        ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke();
+        const am = a0 + seg / 2, ix = cx + Math.cos(am) * R * 0.64, iy = cy + Math.sin(am) * R * 0.64;
+        drawIcon(w.icon, ix, iy - 6, 22);
+        text(w.val, ix, iy + 13, 10, '#ffffff', 'center', '900');
+      });
+      ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, R - 3, Math.PI * 1.1, Math.PI * 1.6); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke();
+      orb(cx, cy, 20, '#ffc94d');
+      ctx.save(); ctx.translate(cx, cy); ctx.fillStyle = '#ffffff'; ctx.beginPath(); for (let i = 0; i < 10; i++) { const r = i % 2 ? 4 : 9, a = -Math.PI / 2 + (i * Math.PI) / 5; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); } ctx.closePath(); ctx.fill(); ctx.restore();
+      // стрелка с покачиванием на каждом секторе
+      const frac = ((wheelRot / seg) % 1 + 1) % 1, wob = wheelSpin ? Math.max(0, 0.35 - frac) * 0.9 : 0;
+      ctx.save(); ctx.translate(cx, cy - R - 14); ctx.rotate(-wob);
+      ctx.fillStyle = 'rgba(15,8,30,0.35)'; ctx.beginPath(); ctx.moveTo(-13, 3); ctx.lineTo(13, 3); ctx.lineTo(0, 33); ctx.closePath(); ctx.fill();
+      const pg = ctx.createLinearGradient(-13, 0, 13, 0); pg.addColorStop(0, '#ff8fa8'); pg.addColorStop(1, '#e8304f');
+      ctx.fillStyle = pg; ctx.beginPath(); ctx.moveTo(-13, -4); ctx.quadraticCurveTo(0, -12, 13, -4); ctx.lineTo(0, 28); ctx.closePath(); ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
+      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(0, 2, 3.5, 0, 7); ctx.fill();
+      ctx.restore();
     }
-    // сектора
-    WHEEL.forEach((w, i) => {
-      const a0 = wheelRot + i * seg - Math.PI / 2;
-      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, a0, a0 + seg); ctx.closePath();
-      const g = ctx.createRadialGradient(cx, cy, 10, cx, cy, R); g.addColorStop(0, shade(w.color, 0.55)); g.addColorStop(1, w.color);
-      ctx.fillStyle = g; ctx.fill();
-      if (wheelWin && wheelWin.idx === i && time - wheelWin.t < 2.5) { ctx.fillStyle = `rgba(255,255,255,${0.35 + 0.3 * Math.sin(time * 12)})`; ctx.fill(); }
-      ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke();
-      const am = a0 + seg / 2, ix = cx + Math.cos(am) * R * 0.64, iy = cy + Math.sin(am) * R * 0.64;
-      drawIcon(w.icon, ix, iy - 6, 22);
-      text(w.val, ix, iy + 13, 10, '#ffffff', 'center', '900');
-    });
-    ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, R - 3, Math.PI * 1.1, Math.PI * 1.6); ctx.stroke();
-    ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke();
-    orb(cx, cy, 20, '#ffc94d');
-    ctx.save(); ctx.translate(cx, cy); ctx.fillStyle = '#ffffff'; ctx.beginPath(); for (let i = 0; i < 10; i++) { const r = i % 2 ? 4 : 9, a = -Math.PI / 2 + (i * Math.PI) / 5; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); } ctx.closePath(); ctx.fill(); ctx.restore();
-    // стрелка с покачиванием на каждом секторе
-    const frac = ((wheelRot / seg) % 1 + 1) % 1, wob = wheelSpin ? Math.max(0, 0.35 - frac) * 0.9 : 0;
-    ctx.save(); ctx.translate(cx, cy - R - 14); ctx.rotate(-wob);
-    ctx.fillStyle = 'rgba(15,8,30,0.35)'; ctx.beginPath(); ctx.moveTo(-13, 3); ctx.lineTo(13, 3); ctx.lineTo(0, 33); ctx.closePath(); ctx.fill();
-    const pg = ctx.createLinearGradient(-13, 0, 13, 0); pg.addColorStop(0, '#ff8fa8'); pg.addColorStop(1, '#e8304f');
-    ctx.fillStyle = pg; ctx.beginPath(); ctx.moveTo(-13, -4); ctx.quadraticCurveTo(0, -12, 13, -4); ctx.lineTo(0, 28); ctx.closePath(); ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
-    ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(0, 2, 3.5, 0, 7); ctx.fill();
-    ctx.restore();
     // кнопки
     if (wheelSpin) text('Крутится...', 180, 446, 14, INK, 'center', '800');
     else if (S.wheel.free > 0) button(80, 424, 200, 46, 'Крутить бесплатно', '#8ee08a', () => spinWheel(false), 14);
