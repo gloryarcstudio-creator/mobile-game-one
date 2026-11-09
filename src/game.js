@@ -2597,6 +2597,13 @@
     rr(x, y, w, h, r || 12); ctx.lineWidth = 3; ctx.strokeStyle = '#4a2f6e'; ctx.stroke();
     return true;
   }
+  // картинка, вписанная в квадрат s по центру (x, y); false, если арта нет
+  function fitPic(k, x, y, s) {
+    const A = ui(k); if (!A) return false;
+    const iw = A.img.naturalWidth, ih = A.img.naturalHeight, f = s / Math.max(iw, ih);
+    ctx.drawImage(A.img, x - iw * f / 2, y - ih * f / 2, iw * f, ih * f);
+    return true;
+  }
   // нарисованный спрайт по центру: ширина w, высота по пропорции картинки (или h); false, если арта нет
   function spr(k, x, y, w, h, rot) {
     const A = ui(k); if (!A) return false;
@@ -5355,19 +5362,21 @@
     const now = Date.now();
     if (shopTab === 'offers') {
       const offers = [];
-      if (!S.starter) offers.push({ t: 'Стартовый набор', d: 'Эпик-дух ★★, 300 💎, насадка A, 5-й слот отряда', p: '$1.99', c: '#ff9fbf', on: buyStarter, hot: 'x10 выгода' });
-      offers.push({ t: vipActive() ? 'VIP активен: ' + Math.ceil((S.vipUntil - now) / 864e5) + ' дн.' : 'VIP на 7 дней', d: 'x2 всегда, авто, +1 слот насадок, без рекламы, +100 💎/день, +50% опыта пропуска, +4 ч офлайна', p: '$6.99', c: '#ffc94d', on: buyVip });
-      if (!S.pass.premium) offers.push({ t: 'Призрачный пропуск', d: 'Премиум-награды сезона: камни, насадки S, скин «Кот-Жнец»', p: PASS_PRICE, c: '#a86bff', on: buyPass, hot: 'Сезон' });
-      if (unlocked('prestige')) offers.push({ t: 'Лунный ускоритель', d: S.boostPrest > 0 ? 'Активен ещё на ' + S.boostPrest + ' освящ. Продлить на 3' : 'x2 лунных камней на 3 освящения', p: '$2.99', c: '#d68cff', on: buyBoost });
-      if (!S.noAds) offers.push({ t: 'Без рекламы', d: 'Все награды за рекламу выдаются сразу', p: '$4.99', c: '#7fd1ff', on: buyNoAds });
-      if (!(S.autoUpForever && S.autoMergeForever)) offers.push({ t: 'Автоматизация', d: 'Автопрокачка и автослияние навсегда', p: '$4.99', c: '#8ee08a', on: buyAutoBundle, hot: 'Удобно' });
-      if (!S.weekly && offers.length < 6) offers.push({ t: 'Набор недели', d: 'Насадка S, 500 💎, 20 банок', p: '$14.99', c: '#d68cff', on: buyWeekly, hot: 'Ограничено' });
-      offers.push({ t: '20 банок', d: 'Больше места для пойманных духов', p: '50 💎', c: '#8ee08a', on: () => { if (S.crystals >= 50) { S.crystals -= 50; S.jars += 20; showToast('+20 🫙'); } else showToast('Нужно 50 💎'); } });
+      if (!S.starter) offers.push({ t: 'Стартовый набор', d: 'Эпик-дух ★★, 300 💎, насадка A, 5-й слот отряда', p: '$1.99', c: '#ff9fbf', on: buyStarter, hot: 'x10 выгода', img: 'offer-starter' });
+      offers.push({ t: vipActive() ? 'VIP активен: ' + Math.ceil((S.vipUntil - now) / 864e5) + ' дн.' : 'VIP на 7 дней', d: 'x2 всегда, авто, +1 слот насадок, без рекламы, +100 💎/день, +50% опыта пропуска, +4 ч офлайна', p: '$6.99', c: '#ffc94d', on: buyVip, img: 'offer-vip' });
+      if (!S.pass.premium) offers.push({ t: 'Призрачный пропуск', d: 'Премиум-награды сезона: камни, насадки S, скин «Кот-Жнец»', p: PASS_PRICE, c: '#a86bff', on: buyPass, hot: 'Сезон', img: 'offer-pass' });
+      if (unlocked('prestige')) offers.push({ t: 'Лунный ускоритель', d: S.boostPrest > 0 ? 'Активен ещё на ' + S.boostPrest + ' освящ. Продлить на 3' : 'x2 лунных камней на 3 освящения', p: '$2.99', c: '#d68cff', on: buyBoost, img: 'offer-moon' });
+      if (!S.noAds) offers.push({ t: 'Без рекламы', d: 'Все награды за рекламу выдаются сразу', p: '$4.99', c: '#7fd1ff', on: buyNoAds, img: 'offer-noads' });
+      if (!(S.autoUpForever && S.autoMergeForever)) offers.push({ t: 'Автоматизация', d: 'Автопрокачка и автослияние навсегда', p: '$4.99', c: '#8ee08a', on: buyAutoBundle, hot: 'Удобно', img: 'offer-auto' });
+      if (!S.weekly && offers.length < 6) offers.push({ t: 'Набор недели', d: 'Насадка S, 500 💎, 20 банок', p: '$14.99', c: '#d68cff', on: buyWeekly, hot: 'Ограничено', img: 'gems-4' });
+      offers.push({ t: '20 банок', d: 'Больше места для пойманных духов', p: '50 💎', c: '#8ee08a', img: 'jar-empty', on: () => { if (S.crystals >= 50) { S.crystals -= 50; S.jars += 20; showToast('+20 🫙'); } else showToast('Нужно 50 💎'); } });
       offers.slice(0, 6).forEach((o, i) => {
         const y = 140 + i * 71;
         card(24, y, 312, 65, 12, o.c);
-        text(o.t, 38, y + 17, 13, INK, 'left', '800');
-        wrapText(o.d, 38, y + 35, 196, 9, '#6b5f86', 12);
+        const pic = o.img && ui(o.img), tx = pic ? 84 : 38;
+        if (pic) { const gg = ctx.createRadialGradient(55, y + 33, 4, 55, y + 33, 30); gg.addColorStop(0, alpha(o.c, 0.5)); gg.addColorStop(1, alpha(o.c, 0)); ctx.fillStyle = gg; ctx.fillRect(25, y + 3, 60, 60); fitPic(o.img, 55, y + 33, 50); }
+        fitText(o.t, tx, y + 17, pic ? 160 : 200, 13, INK, 'left', '800');
+        wrapText(o.d, tx, y + 35, pic ? 154 : 196, 9, '#6b5f86', 12);
         if (o.hot) { rr(250, y + 7, 72, 18, 9); ctx.fillStyle = '#ff4d6d'; ctx.fill(); text(o.hot, 286, y + 16, 9, '#ffffff'); }
         button(246, y + 31, 80, 26, o.p, o.c, o.on, 13);
       });
@@ -5377,7 +5386,8 @@
       cards.forEach((c, i) => {
         const x = 24 + (i % 2) * 160, y = 142 + Math.floor(i / 2) * 136;
         card(x, y, 152, 128, 12, '#7fd1ff');
-        text('💎'.repeat(Math.min(3, 1 + Math.floor(i / 2))), x + 76, y + 30, 22, '#ffffff');
+        if (!fitPic('gems-' + Math.max(1, i), x + 76, y + 32, 52)) text('💎'.repeat(Math.min(3, 1 + Math.floor(i / 2))), x + 76, y + 30, 22, '#ffffff');
+        if (c.free && ui('gems-1')) { orb(x + 104, y + 46, 11, '#ffc94d'); drawIcon('ad', x + 104, y + 46, 13); }
         text(String(c.amount), x + 76, y + 62, 18, INK, 'center', '800');
         if (c.extra) { rr(x + 98, y + 6, 48, 18, 9); ctx.fillStyle = '#ff4d6d'; ctx.fill(); text(c.extra, x + 122, y + 15, 10, '#ffffff'); }
         const on = c.free
@@ -5406,8 +5416,10 @@
         if (S.skin === k) { rr(x + 3, y + 3, 146, 122, 10); ctx.fillStyle = 'rgba(255,230,150,0.35)'; ctx.fill(); }
         // кот целиком в этом скине
         if (S.skin === k || skinTier >= 3) { const gg = ctx.createRadialGradient(x + 42, y + 50, 6, x + 42, y + 50, 48); gg.addColorStop(0, alpha(tier.color, 0.45)); gg.addColorStop(1, alpha(tier.color, 0)); ctx.fillStyle = gg; ctx.fillRect(x + 2, y + 4, 84, 84); }
-        ctx.save(); ctx.beginPath(); ctx.rect(x + 3, y + 3, 84, 82); ctx.clip();
-        ctx.translate(x + 40, y + 60); ctx.scale(0.66, 0.66);
+        const POD = ui('skin-podium');
+        if (POD) ctx.drawImage(POD.img, x + 12, y + 53, 60, 60 * 165 / 256);
+        ctx.save(); ctx.beginPath(); ctx.rect(x + 3, y + 3, 84, POD ? 72 : 82); ctx.clip();
+        ctx.translate(x + 42, y + (POD ? 66 : 60)); ctx.scale(POD ? 0.6 : 0.66, POD ? 0.6 : 0.66);
         if (locked) ctx.globalAlpha = 0.45;
         catSprite(0, 0, { skin: k, aim: 0.35, bobY: Math.sin(time * 2 + i) * 1.5, blinkSeed: i * 1.7, eqColor: '#ff7a9c' });
         ctx.restore();
