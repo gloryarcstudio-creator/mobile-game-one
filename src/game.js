@@ -145,7 +145,9 @@
     if (!eventActive() || raid || n <= 0) return;
     const e = evState(); e.candy += n; e.total += n;
     floaters.push({ x, y: y - 26, text: '+' + n + ' 🍬', life: 1.1, color: '#ffb35a', size: 14 });
+    if (ui('candy')) { const sp = toScreen(x, y); for (let i = 0; i < Math.min(n, 5); i++) candyFx.push({ x: sp.x + (i - 2) * 8, y: sp.y - 10, t: -i * 0.06 }); }
   }
+  let candyFx = [], evBtnPos = { x: 28, y: 300 }; // конфеты летят к кнопке события
   const eventAffordable = () => eventActive() && EVENT_SHOP.some((it) => (evState().bought[it.id] || 0) < it.max && evState().candy >= it.price);
   function buyEvent(it) {
     const e = evState(), n = e.bought[it.id] || 0;
@@ -1053,7 +1055,7 @@
       if (z.tele > 0) {
         z.tele -= dt;
         if (z.tele <= 0) {
-          if (z.kind === 'blast') { if (inside) hurtCat(z.dmg); burst(z.x, z.y, 16, z.color); shake = Math.max(shake, 0.15); SFX.play('pop'); }
+          if (z.kind === 'blast') { if (inside) hurtCat(z.dmg); burst(z.x, z.y, 16, z.color); addBoom(z.x, z.y, z.r); shake = Math.max(shake, 0.15); SFX.play('pop'); }
           else if (z.kind === 'ice' && inside) hurtCat(z.dmg);
         }
       } else {
@@ -1094,6 +1096,10 @@
       } else {
         const a = Math.min(1, z.life);
         ctx.globalAlpha = a;
+        if (ui('zone-' + z.kind)) { // нарисованная лужа, чуть дышит
+          const br = 1 + Math.sin(time * 3 + z.x) * 0.03;
+          spr('zone-' + z.kind, z.x, z.y, z.r * 2.25 * br, z.r * 1.75 * br); ctx.globalAlpha = 1; continue;
+        }
         const gg = ctx.createRadialGradient(z.x, z.y, 4, z.x, z.y, z.r); gg.addColorStop(0, alpha(z.color, z.kind === 'ice' ? 0.7 : 0.6)); gg.addColorStop(1, alpha(z.color, 0.15));
         ctx.fillStyle = gg; ctx.beginPath(); ctx.ellipse(z.x, z.y, z.r, z.r * 0.8, 0, 0, 7); ctx.fill();
         ctx.strokeStyle = shade(z.color, -0.3); ctx.lineWidth = 2; ctx.stroke();
@@ -1235,8 +1241,15 @@
     const side = Math.random() < 0.5 ? -1 : 1;
     rockets.push({ x: cat.x - 22, y: cat.y - 10, vx: side * 120, vy: -160, target: t, life: 3, p, trail: 0 });
   }
+  let booms = [];
+  const addBoom = (x, y, R) => { if (ui('boom')) booms.push({ x, y, R, t: 0 }); };
+  function drawBooms() {
+    for (const b of booms) { const k = b.t / 0.4; ctx.globalAlpha = Math.max(0, 1 - k * k); spr('boom', b.x, b.y, b.R * 2 * (0.5 + 0.7 * Math.sqrt(k))); }
+    ctx.globalAlpha = 1;
+  }
   function rocketBoom(r) {
     const R = AFX.rocketR(r.p), dmg = catDamage() * AFX.rocketDmg(r.p);
+    addBoom(r.x, r.y, R * 0.8);
     rings.push({ x: r.x, y: r.y, r: 8, max: R, life: 0.3, color: '#ffb26b', w: 6 });
     burst(r.x, r.y, 16, '#ffcf8a'); burst(r.x, r.y, 8, ATTACH.rocket.color);
     shake = Math.max(shake, 0.12);
@@ -1322,6 +1335,7 @@
       fl.addColorStop(0, 'rgba(255,240,180,0.95)'); fl.addColorStop(0.5, 'rgba(255,140,60,0.6)'); fl.addColorStop(1, 'rgba(255,80,40,0)');
       ctx.fillStyle = fl; ctx.beginPath(); ctx.ellipse(-12, 0, 12 + Math.random() * 3, 6, 0, 0, 7); ctx.fill();
       ctx.globalCompositeOperation = 'source-over';
+      if (ui('rocket')) { spr('rocket', 4, 0, 28); ctx.restore(); continue; }
       ctx.lineWidth = 2; ctx.strokeStyle = INK;
       ctx.fillStyle = ATTACH.rocket.color;
       ctx.beginPath(); ctx.moveTo(-6, -4); ctx.lineTo(-11, -8); ctx.lineTo(-9, 0); ctx.lineTo(-11, 8); ctx.lineTo(-6, 4); ctx.closePath(); ctx.fill(); ctx.stroke();
@@ -2205,10 +2219,14 @@
     ghosts = ghosts.filter((g) => g.hp > 0 || (g.dying && g.dying > 0) || g.capturing > 0);
 
     for (const b of beams) b.life -= dt;
+    for (const b of booms) b.t += dt;
+    booms = booms.filter((b) => b.t < 0.4);
     beams = beams.filter((b) => b.life > 0);
     for (const rg of rings) { rg.life -= dt; rg.r += (rg.max - rg.r) * Math.min(1, dt * 14); }
     rings = rings.filter((rg) => rg.life > 0);
     for (const f of floaters) { f.life -= dt; f.y -= 34 * dt; }
+    for (const c of candyFx) c.t += dt;
+    candyFx = candyFx.filter((c) => c.t < 0.5);
     floaters = floaters.filter((f) => f.life > 0);
     for (const p of particles) { p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.93; p.vy *= 0.93; }
     particles = particles.filter((p) => p.life > 0);
@@ -2569,6 +2587,14 @@
   }
   // ---- Рисованный UI (Higgsfield): 9-slice и выбор картинки по цвету
   const ui = (k) => (useArt() && ART[k] ? ART[k] : null);
+  // нарисованный спрайт по центру: ширина w, высота по пропорции картинки (или h); false, если арта нет
+  function spr(k, x, y, w, h, rot) {
+    const A = ui(k); if (!A) return false;
+    const H = h || w * A.img.naturalHeight / A.img.naturalWidth;
+    if (rot) { ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.drawImage(A.img, -w / 2, -H / 2, w, H); ctx.restore(); }
+    else ctx.drawImage(A.img, x - w / 2, y - H / 2, w, H);
+    return true;
+  }
   // 9-slice: углы не тянутся, края тянутся по одной оси, середина по двум; sc — масштаб краёв
   function nine(k, x, y, w, h, sc) {
     const A = ART[k], [l, t, r, b, iw, ih] = UI_SLICE[k];
@@ -3711,7 +3737,10 @@
       ctx.fillStyle = `rgba(30,15,50,${0.22 * Math.min(1, g.alpha)})`; ctx.beginPath(); ctx.ellipse(g.x, g.y + g.r * 1.35 + 6, g.r * 0.8 * sk, g.r * 0.25 * sk, 0, 0, 7); ctx.fill();
     }
     // портал при появлении
-    if (g.alpha < 1 && !g.dying) {
+    if (g.alpha < 1 && !g.dying && ui('portal')) {
+      const k = 1 - g.alpha;
+      ctx.globalAlpha = Math.min(1, k * 1.6); spr('portal', g.x, g.y + g.r * 1.35 + 6, g.r * (3.6 - k * 0.8), g.r * (1.3 - k * 0.3)); ctx.globalAlpha = 1;
+    } else if (g.alpha < 1 && !g.dying) {
       const k = 1 - g.alpha;
       ctx.strokeStyle = `rgba(190,150,255,${k})`; ctx.lineWidth = 4;
       ctx.beginPath(); ctx.ellipse(g.x, g.y + g.r * 1.35 + 6, g.r * (1.7 - k * 0.5), g.r * (0.55 - k * 0.15), 0, 0, 7); ctx.stroke();
@@ -3735,6 +3764,7 @@
     let r = g.r;
     if (g.capturing) {
       const k = g.capturing / 0.6;
+      if (ui('capture-swirl')) { ctx.globalAlpha = a * Math.min(1, (1 - k) * 3) * 0.85; spr('capture-swirl', x, y, g.r * 3.2 * (0.6 + 0.4 * k), 0, -time * 9); ctx.globalAlpha = a; }
       if (g.captureOk) r *= 0.3 + 0.7 * k;
       ctx.translate(x, y); ctx.rotate((1 - k) * 8); ctx.translate(-x, -y);
     }
@@ -4214,12 +4244,20 @@
       const a = sh.life < 2 ? 0.5 + 0.5 * Math.sin(time * 20) : 1;
       ctx.globalAlpha = a;
       const y = sh.y + Math.sin(time * 4 + sh.x) * 3;
-      ctx.fillStyle = '#9ff3ff'; ctx.strokeStyle = INK; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(sh.x, y - 10); ctx.lineTo(sh.x + 8, y); ctx.lineTo(sh.x, y + 10); ctx.lineTo(sh.x - 8, y); ctx.closePath(); ctx.fill(); ctx.stroke();
+      if (ui('crystal-shard')) {
+        const gg = ctx.createRadialGradient(sh.x, y, 2, sh.x, y, 20); gg.addColorStop(0, 'rgba(160,240,255,0.55)'); gg.addColorStop(1, 'rgba(160,240,255,0)');
+        ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(sh.x, y, 20, 0, 7); ctx.fill();
+        spr('crystal-shard', sh.x, y, 20);
+      } else {
+        ctx.fillStyle = '#9ff3ff'; ctx.strokeStyle = INK; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(sh.x, y - 10); ctx.lineTo(sh.x + 8, y); ctx.lineTo(sh.x, y + 10); ctx.lineTo(sh.x - 8, y); ctx.closePath(); ctx.fill(); ctx.stroke();
+      }
       ctx.globalAlpha = 1;
     }
     for (const p of shots) {
       ctx.fillStyle = 'rgba(180,140,255,0.35)'; ctx.beginPath(); ctx.arc(p.x, p.y, 11, 0, 7); ctx.fill();
+      // сгусток на картинке летит влево (брызги справа), поворачиваем по скорости
+      if (spr('ecto-shot', p.x, p.y, 26, 0, Math.atan2(p.vy, p.vx) + Math.PI)) continue;
       ctx.fillStyle = '#b48cff'; ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 7); ctx.fill(); ctx.stroke();
     }
     // полоска смелости под котом
@@ -4331,6 +4369,7 @@
       shown.forEach((f, i) => {
         const x = 6, y = 100 + i * 58;
         const lockU = f.lock && !unlocked(f.lock) && UNLOCK[f.lock];
+        if (f.id === 'event') evBtnPos = { x: x + 22, y: y + 22 };
         sideButton(x, y, { icon: f.icon, label: f.label, color: f.color, badge: f.b, lock: lockU ? 'Дом ' + lockU.house : null, glow: f.b && !lockU ? f.color : null,
           onTap: () => { if (lockU) lockedToast(f.lock); else { S.fresh = S.fresh.filter((q) => q !== f.lock); panel = f.id; } } });
         if (S.fresh.includes(f.lock)) newTag(x + 23, y + 2);
@@ -4583,6 +4622,21 @@
   }
 
   function drawJar(x, y, it, selected) {
+    const J = ui('jar-empty');
+    if (J) { // нарисованная банка: подсветка выбора, ореол редкости, дух внутри
+      if (selected) { rr(x - 2, y - 4, 62, 72, 12); ctx.fillStyle = 'rgba(255,236,150,0.75)'; ctx.fill(); }
+      if (it) {
+        const c = RARITY[GHOSTS[it.type].rarity].color, gg = ctx.createRadialGradient(x + 29, y + 38, 4, x + 29, y + 38, 34);
+        gg.addColorStop(0, alpha(c, 0.55)); gg.addColorStop(1, alpha(c, 0));
+        ctx.fillStyle = gg; ctx.fillRect(x - 6, y, 70, 70);
+      }
+      ctx.drawImage(J.img, x + 1.5, y - 2, 55, 66);
+      if (!it) return;
+      ghostSprite(it.type, x + 29, y + 34, 12, { phase: 1 });
+      ctx.fillStyle = 'rgba(255,255,255,0.28)'; rr(x + 10, y + 12, 5, 34, 3); ctx.fill(); // блик стекла поверх духа
+      text('★'.repeat(it.stars), x + 29, y + 60, 9, '#ffc94d');
+      return;
+    }
     rr(x, y, 58, 66, 10); ctx.fillStyle = selected ? '#fff3c4' : 'rgba(220,240,255,0.9)'; ctx.fill();
     ctx.lineWidth = 3; ctx.strokeStyle = it ? RARITY[GHOSTS[it.type].rarity].color : '#6b5f86'; ctx.stroke();
     ctx.fillStyle = '#8a6a55'; rr(x + 12, y - 4, 34, 9, 3); ctx.fill();
@@ -4593,6 +4647,8 @@
 
   function drawSquadPanel() {
     panelFrame('Отряд призраков');
+    const SH = ui('squad-shelf');
+    if (SH) { const w = 330, h = w * 120 / 506; ctx.drawImage(SH.img, 0, 0, 506, 76, 180 - w / 2, 152, w, h * 76 / 120); }
     S.squad.forEach((id, i) => {
       const n = S.squad.length, k = n > 5 ? 0.86 : 1, step = n > 5 ? 54 : n > 4 ? 64 : 76;
       const x = 180 - ((n - 1) * step + 58 * k) / 2 + i * step, y = 106;
@@ -4606,7 +4662,7 @@
     text('Урон отряда: ' + fmt(power) + ' / выстрел', 180, 186, 12, INK, 'center', '700');
     const counts = squadDistrictCounts();
     const syn = Object.keys(counts).filter((d) => counts[d] >= 2).map((d) => DISTRICTS[d].name + (counts[d] >= 4 ? ' (сет!)' : ''));
-    text(syn.length ? 'Синергия: ' + syn.join(', ') : 'Синергия: 2 духа из одного района +20%, 4 = сет', 180, 204, 10, syn.length ? '#2f8f4e' : '#6b5f86', 'center', '700');
+    text(syn.length ? 'Синергия: ' + syn.join(', ') : 'Синергия: 2 духа из одного района +20%, 4 = сет', 180, 208, 10, syn.length ? '#2f8f4e' : '#6b5f86', 'center', '700');
 
     const cols = 5, sx = 22;
     const list = [...S.inventory].sort((a, b) => itemPower(b) - itemPower(a));
@@ -4616,11 +4672,15 @@
       const x = sx + (i % cols) * 63, y = area.y + 8 + Math.floor(i / cols) * 72 - area.off;
       if (y > area.y + area.h || y + 66 < area.y) return;
       drawJar(x, y, it, selectedJar === it.id);
-      if (S.squad.includes(it.id)) text('в отряде', x + 29, y + 46, 8, '#2f8f4e');
+      if (S.squad.includes(it.id)) {
+        if (ui('jar-empty')) { rr(x + 7, y - 7, 44, 13, 6); ctx.fillStyle = '#4fbf6a'; ctx.fill(); text('в отряде', x + 29, y - 0.5, 8, '#ffffff', 'center', '800'); }
+        else text('в отряде', x + 29, y + 46, 8, '#2f8f4e');
+      }
       sbtn(area, x, y, 58, 66, () => { selectedJar = selectedJar === it.id ? null : it.id; });
     });
     ctx.restore(); scrollBar(area);
     if (!list.length) {
+      spr('jar-ghost', 180, 250, 52);
       text('Пусто. Ослабь призрака и тапни по нему,', 180, 300, 13, INK, 'center', '600');
       text('чтобы засосать его в банку.', 180, 318, 13, INK, 'center', '600');
     }
@@ -5860,6 +5920,7 @@
     }
     for (const b of beams) drawBeam(b);
     drawRockets();
+    drawBooms();
     ctx.globalCompositeOperation = 'lighter';
     for (const p of particles) {
       const a = Math.min(1, p.life * 2);
@@ -5896,7 +5957,8 @@
     ctx.globalAlpha = 1;
     ctx.restore();
     drawOffscreenArrows();
-    for (const d of drops) { ctx.fillStyle = '#7dff9e'; ctx.strokeStyle = INK; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(d.x, d.y, 4, 0, 7); ctx.fill(); ctx.stroke(); }
+    for (const d of drops) { if (spr('ecto-drop', d.x, d.y, 11)) continue; ctx.fillStyle = '#7dff9e'; ctx.strokeStyle = INK; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(d.x, d.y, 4, 0, 7); ctx.fill(); ctx.stroke(); }
+    for (const c of candyFx) { const k = Math.min(1, c.t / 0.5); spr('candy', c.x + (evBtnPos.x - c.x) * k * k, c.y + (evBtnPos.y - c.y) * k * k, 18, 0, c.t * 6); }
     drawJoystick();
     drawTopBar();
     drawBottom();
@@ -6000,6 +6062,7 @@
     splash: () => { splash = { t: 0, out: 0 }; },
     tut: (n) => { S.tut = n; },
     zones: () => zones,
+    fx: () => ({ shots, shards, rockets, drops, addBoom, addCandy, booms }),
     reset: () => { localStorage.removeItem(SAVE_KEY); S = defaultState(); ensureQuests(); dailyReset(); syncSlots(); resetRoom(); },
     close: () => { modal = null; },
     tab: (q, pr, pp) => { if (q) questTab = q; if (pr) prestTab = pr; if (pp !== undefined) passPage = pp; },
