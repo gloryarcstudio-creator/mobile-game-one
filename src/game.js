@@ -131,8 +131,8 @@
     { id: 'spring', name: 'Весенний сад', from: 220, to: 320, cur: '🌸', art: 'cur-petal', curName: 'Лепестки', btn: '🌸', btnName: 'Весна', color: '#6fd36a', skin: 'bunny', ghost: 'egg', props: ['sp-tulips', 'sp-basket', 'sp-sakura'], gpS: 'Пасхальный дух даёт сразу 5' },
     { id: 'summer', name: 'Летние каникулы', from: 600, to: 630, cur: '🐚', art: 'cur-shell', curName: 'Ракушки', btn: '🐚', btnName: 'Лето', color: '#ffb84d', skin: 'beach', ghost: 'sandcastle', props: ['su-umbrella', 'su-castle', 'su-board'], gpS: 'Песочный замок даёт сразу 5' },
   ];
-  const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
-  const evDate = (v) => (v % 100) + ' ' + MONTHS[Math.floor(v / 100)];
+  // дата «10 января» на языке игры
+  const evDate = (v) => { try { return new Date(2000, Math.floor(v / 100), v % 100).toLocaleDateString(window.LANG || 'ru', { day: 'numeric', month: 'long' }); } catch (e) { return (v % 100) + '.' + (Math.floor(v / 100) + 1); } };
   const evIn = (ev, v) => (ev.from <= ev.to ? v >= ev.from && v <= ev.to : v >= ev.from || v <= ev.to);
   function curEvent() {
     if (S.evForce) return EVENTS.find((e) => e.id === S.evForce) || EVENTS[0];
@@ -156,7 +156,7 @@
   function evShop() {
     const ev = curEvent() || EVENTS[0], sk = SKINS[ev.skin], gh = GHOSTS[ev.ghost];
     return [
-      { id: 'skin', icon: ev.btn, name: 'Скин «' + sk.name + '»', desc: sk.text + ', только в событие', price: 300, max: 1, apply: () => { if (!S.skins.includes(ev.skin)) S.skins.push(ev.skin); S.skin = ev.skin; } },
+      { id: 'skin', icon: ev.btn, name: 'Скин «%»'.replace('%', sk.name), desc: sk.text, price: 300, max: 1, apply: () => { if (!S.skins.includes(ev.skin)) S.skins.push(ev.skin); S.skin = ev.skin; } },
       { id: 'att', icon: '🧹', name: 'Насадка A', desc: 'редкая насадка пылесоса', price: 60, max: 3, apply: () => giveAttach(3) },
       { id: 'ghost', icon: '👻', name: gh.name + ' 3★', desc: 'дух события в отряд', price: 90, max: 2, ghost: ev.ghost, apply: () => giveGhost(ev.ghost, 3) },
       { id: 'stones', icon: '🌙', name: '3 лунных камня', desc: 'для Лунного алтаря', price: 50, max: 5, apply: () => { S.stones += 3; } },
@@ -1704,7 +1704,7 @@
     });
   }
 
-  function lockedToast(id) { const u = UNLOCK[id]; showToast(u.name + ': ' + unlockWhere(u).toLowerCase()); SFX.play('deny'); }
+  function lockedToast(id) { const u = UNLOCK[id]; showToast(u.name + ': ' + unlockWhere(u)); SFX.play('deny'); }
   // Открыть вкладку и снять с неё метку NEW
   function openPanel(id) { panel = id; S.fresh = S.fresh.filter((f) => f !== id); }
   function showToast(text, emo) { toast = { text, life: 2.2, emo }; }
@@ -1847,12 +1847,12 @@
     const sk = SKINS[k];
     if (S.skins.includes(k)) { S.skin = k; showToast('Надет скин: ' + sk.name); return; }
     if (sk.req && (S.maxHouse || 1) < sk.req) { showToast('Откроется на доме ' + sk.req); SFX.play('deny'); return; }
-    if (sk.event) { const ev = EVENTS.find((e) => e.id === sk.event), cur = curEvent(); if (cur && cur.id === sk.event) panel = 'event'; else showToast('Только в событие «' + ev.name + '»: ' + evDate(ev.from) + ' – ' + evDate(ev.to)); return; }
+    if (sk.event) { const ev = EVENTS.find((e) => e.id === sk.event), cur = curEvent(); if (cur && cur.id === sk.event) panel = 'event'; else showToast('Только в событие «%»: '.replace('%', ev.name) + evDate(ev.from) + ' – ' + evDate(ev.to)); return; }
     if (sk.pass) { showToast('Награда 30-го уровня Призрачного пропуска'); panel = 'quests'; questTab = 'pass'; passPage = 5; return; }
     if (sk.crystals) {
       if (S.crystals < sk.crystals) { showToast('Нужно ' + sk.crystals + ' 💎'); return; }
       S.crystals -= sk.crystals; S.skins.push(k); S.skin = k; showToast('Новый скин: ' + sk.name); SFX.play('reward');
-    } else purchase('Скин «' + sk.name + '»', sk.usd, () => { S.skins.push(k); S.skin = k; });
+    } else purchase('Скин «%»'.replace('%', sk.name), sk.usd, () => { S.skins.push(k); S.skin = k; });
   }
   function syncSlots() {
     const a = S.equipped.length, q = S.squad.length;
@@ -2122,7 +2122,7 @@
       if (!modal && !panel && S.tut >= 9 && eventActive() && unlocked('quests') && !evState().seen) {
         evState().seen = true;
         const ev = curEvent();
-        ask(ev.name + '!', ['В городе событие до ' + evDate(ev.to) + '.', ev.curName + ' падают с призраков, а ' + ev.gpS.charAt(0).toLowerCase() + ev.gpS.slice(1) + '.', 'Меняй их на скин «' + SKINS[ev.skin].name + '» и награды.'], [
+        ask(ev.name + '!', ['В городе событие до ' + evDate(ev.to) + '.', ev.curName + ' падают с призраков.', ev.gpS + '.', 'Меняй их на скин «' + SKINS[ev.skin].name + '» и награды.'], [
           { label: 'Позже', color: '#8a7bd1', on: closeModal },
           { label: 'Открыть', color: ev.color, on: () => { closeModal(); panel = 'event'; } },
         ], ev.id === 'valentine' ? 'love' : 'happy');
@@ -2935,15 +2935,17 @@
     }
     ctx.fillStyle = color; ctx.fillText(t, x, y);
   }
-  function wrapText(t, x, y, maxW, size, color, lh) {
+  function wrapText(t, x, y, maxW, size, color, lh, align) {
     ctx.font = '700 ' + size + 'px ' + FONT;
     let line = '', yy = y;
-    for (const word of t.split(' ')) {
-      const test = line ? line + ' ' + word : word;
-      if (ctx.measureText(test).width > maxW && line) { text(line, x, yy, size, color, 'left', '700'); line = word; yy += lh; }
+    const cjk = /[\u3040-\u30ff\u3400-\u9fff]/.test(t), sep = cjk ? '' : ' '; // японский и китайский переносим по знакам
+    const out = (l) => text(l, align === 'center' ? x + maxW / 2 : x, yy, size, color, align || 'left', '700');
+    for (const word of cjk ? Array.from(t) : t.split(' ')) {
+      const test = line ? line + sep + word : word;
+      if (ctx.measureText(test).width > maxW && line) { out(line); line = word; yy += lh; }
       else line = test;
     }
-    if (line) text(line, x, yy, size, color, 'left', '700');
+    if (line) out(line);
   }
   // ---- UI: объёмные «конфетные» плашки, нажатие, карточки, полоски
   const pressOff = (x, y, w, h) => (press && time - press.t < 0.25 && press.x >= x && press.x <= x + w && press.y >= y && press.y <= y + h ? 2 : 0);
@@ -4956,10 +4958,10 @@
     panelFrame('Настройки');
     const rows = [['music', '🎵', 'Музыка'], ['sfx', '🔊', 'Звуки'], ['vibro', '📳', 'Вибрация'], ['numbers', '✨', 'Цифры урона'], ['shake', '💥', 'Тряска экрана'], ['art', '👻', 'Нарисованный арт']];
     rows.forEach(([k, icon, name], i) => {
-      const y = 104 + i * 46, on = opt(k);
+      const y = 100 + i * 44, on = opt(k);
       card(28, y, 304, 40, 12, '#d9cff0');
       orb(52, y + 20, 13, '#8a7bd1'); text(icon, 52, y + 21, 13, '#ffffff');
-      text(name, 76, y + 20, 13, INK, 'left', '800');
+      fitText(name, 76, y + 20, 170, 13, INK, 'left', '800');
       // переключатель
       if (ui('ui-toggle-on')) ctx.drawImage(ART[on ? 'ui-toggle-on' : 'ui-toggle-off'].img, 254, y + 4, 64, 32);
       else {
@@ -4968,14 +4970,40 @@
       }
       btn(28, y, 304, 40, () => { S.settings[k] = !on; if (k === 'music' || k === 'sfx') SFX.apply(); if (k === 'vibro' && !on) vibrate(40); save(); });
     });
-    text('Прогресс сохраняется на этом устройстве', 180, 386, 10, '#6b5f86', 'center', '700');
-    button(40, 400, 280, 40, 'Политика конфиденциальности', '#8a7bd1', () => showToast('Ссылка появится в релизе'), 12);
-    button(40, 446, 280, 40, 'Сбросить прогресс', '#ff6b8a', () => ask('Сбросить прогресс?', ['Пропадут дома, духи, насадки, камни и скины.', 'Покупки восстановятся через магазин.'], [
+    // язык: самоназвание выбранного, по нажатию — список
+    { const y = 364; card(28, y, 304, 40, 12, '#ffc94d');
+      orb(52, y + 20, 13, '#8a7bd1'); text('🌐', 52, y + 21, 13, '#ffffff');
+      fitText('Язык', 76, y + 20, 100, 13, INK, 'left', '800');
+      fitText(langName(curLang()) + '  ›', 318, y + 20, 140, 12, '#6b5f86', 'right', '800');
+      btn(28, y, 304, 40, () => { panel = 'lang'; }); }
+    text('Прогресс сохраняется на этом устройстве', 180, 416, 10, '#6b5f86', 'center', '700');
+    button(40, 428, 280, 38, 'Политика конфиденциальности', '#8a7bd1', () => showToast('Ссылка появится в релизе'), 12);
+    button(40, 472, 280, 38, 'Сбросить прогресс', '#ff6b8a', () => ask('Сбросить прогресс?', ['Пропадут дома, духи, насадки, камни и скины.', 'Покупки восстановятся через магазин.'], [
       { label: 'Отмена', color: '#8a7bd1', on: closeModal },
       { label: 'Сбросить', color: '#ff6b8a', on: () => { closeModal(); panel = null; localStorage.removeItem(SAVE_KEY); S = defaultState(); ensureQuests(); dailyReset(); syncSlots(); resetRoom(); splash = { t: 0, out: 0 }; } },
     ], 'scared'), 12);
-    text('Кот-экзорцист · версия ' + VERSION, 180, 504, 10, '#6b5f86', 'center', '700');
-    text('Арт: Higgsfield, музыка и звуки созданы кодом', 180, 520, 9, '#9a8fb5', 'center', '700');
+    text('Кот-экзорцист · версия ' + VERSION, 180, 526, 10, '#6b5f86', 'center', '700');
+    fitText('Арт: Higgsfield, музыка и звуки созданы кодом', 180, 542, 290, 9, '#9a8fb5', 'center', '700');
+  }
+
+  // Выбор языка. Словари встраивает сборка (tools/build-web.js); смена языка сохраняется и перезапускает игру
+  const LANG_LIST = () => window.LANGS || [['ru', 'Русский']];
+  const curLang = () => window.LANG || 'ru';
+  const langName = (c) => (LANG_LIST().find((l) => l[0] === c) || [c, c])[1];
+  function setLang(c) {
+    if (c === curLang()) { panel = 'settings'; return; }
+    try { localStorage.setItem('cat-exorcist-lang', c); } catch (e) {}
+    save(); location.reload();
+  }
+  function drawLangPanel() {
+    panelFrame('Язык');
+    const list = LANG_LIST();
+    list.forEach(([c, name], i) => {
+      const x = 28 + (i % 2) * 156, y = 104 + Math.floor(i / 2) * 50, sel = c === curLang();
+      button(x, y, 148, 42, name, sel ? '#ffc94d' : '#8a7bd1', () => setLang(c), 13);
+      if (sel) text('✓', x + 136, y + 20, 13, INK, 'center', '900');
+    });
+    button(90, 104 + Math.ceil(list.length / 2) * 50 + 8, 180, 38, 'Назад', '#7fd1ff', () => { panel = 'settings'; }, 13);
   }
 
 
@@ -5094,7 +5122,7 @@
   function drawExpeditionPanel() {
     panelFrame('Походы духов');
     const team = expTeam(), now = Date.now();
-    fitText('Идут духи не из отряда: самые редкие и звёздные. Они вернутся сами, даже если игра закрыта.', 180, 106, 296, 10, '#6b5f86', 'center', '700');
+    wrapText('Идут духи не из отряда: самые редкие и звёздные. Они вернутся сами, даже если игра закрыта.', 32, 98, 296, 9, '#6b5f86', 11, 'center');
     EXPEDITIONS.forEach((m, i) => {
       const y = 120 + i * 140, e = S.exp[i];
       card(26, y, 308, 130, 14, ['#7dd99a', '#7fd1ff', '#d68cff'][i]);
@@ -5350,7 +5378,7 @@
     const pages = Math.ceil(UNLOCKS.length / ROAD_PER_PAGE);
     if (roadPage < 0) roadPage = Math.min(pages - 1, Math.floor(Math.max(0, UNLOCKS.indexOf(next)) / ROAD_PER_PAGE));
     const done = UNLOCKS.filter((u) => S.maxStage >= u.stage).length;
-    text('Открыто ' + done + ' из ' + UNLOCKS.length + (next ? ' · дальше: ' + unlockWhere(next).toLowerCase() : ' · всё открыто!'), 180, 146, 11, INK, 'center', '800');
+    text('Открыто ' + done + ' из ' + UNLOCKS.length + (next ? ' · дальше: ' + unlockWhere(next) : ' · всё открыто!'), 180, 146, 11, INK, 'center', '800');
     UNLOCKS.slice(roadPage * ROAD_PER_PAGE, (roadPage + 1) * ROAD_PER_PAGE).forEach((u, i) => {
       const y = 158 + i * 31, open = S.maxStage >= u.stage, isNext = u === next;
       rr(24, y, 312, 27, 9); ctx.fillStyle = open ? '#eafbe9' : isNext ? '#fff3c4' : 'rgba(255,255,255,0.6)'; ctx.fill();
@@ -5713,7 +5741,7 @@
       rr(x, y, w, h, 14); const g = ctx.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, shade(col, 0.55)); g.addColorStop(1, shade(col, 0.15)); ctx.fillStyle = g; ctx.fill();
       ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
       rr(x, y, w, 22, 14); ctx.save(); ctx.clip(); ctx.fillStyle = col; ctx.fillRect(x, y, w, 22); ctx.restore();
-      text('День ' + (i + 1), x + w / 2, y + 12, 10, '#ffffff', 'center', '900');
+      text('День %'.replace('%', i + 1), x + w / 2, y + 12, 10, '#ffffff', 'center', '900');
       if (big) { ctx.save(); ctx.translate(x + w / 2, y + 52); ctx.rotate(time * 0.8); for (let r = 0; r < 8; r++) { ctx.rotate(Math.PI / 4); ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-5, -32); ctx.lineTo(5, -32); ctx.closePath(); ctx.fill(); } ctx.restore(); }
       ctx.globalAlpha = claimed ? 0.45 : 1;
       drawIcon(d.icon, x + w / 2, y + 50, big ? 40 : 32);
@@ -6101,6 +6129,7 @@
     else if (panel === 'quests') drawQuestsPanel();
     else if (panel === 'prestige') drawPrestigePanel();
     else if (panel === 'shop') drawShopPanel();
+    else if (panel === 'lang') drawLangPanel();
     else if (panel === 'raid') drawRaidPanel();
     else if (panel === 'wheel') drawWheelPanel();
     else if (panel === 'daily') drawDailyPanel();
