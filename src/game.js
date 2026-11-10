@@ -1439,6 +1439,45 @@
     return n;
   }
 
+  // Ручное слияние перетаскиванием: бросили дух или насадку на такой же.
+  // Нужен ещё третий такой же: он и перетащенный исчезают, цель растёт на ступень.
+  function mergeOnto(listName, slotsName, a, b, same, maxed, levelUp) {
+    if (!a || !b || a.id === b.id || !same(a, b)) return false;
+    if (maxed(b)) { showToast('Уже максимум'); SFX.play('deny'); return true; }
+    const others = S[listName].filter((q) => q.id !== a.id && q.id !== b.id && same(q, b));
+    const c = others.find((q) => !S[slotsName].includes(q.id)) || others[0];
+    if (!c) { showToast('Нужен ещё один такой же'); SFX.play('deny'); return true; }
+    S[listName] = S[listName].filter((q) => q !== a && q !== c);
+    levelUp(b);
+    const gone = new Set([a.id, c.id]), freed = [];
+    let placed = S[slotsName].includes(b.id);
+    S[slotsName] = S[slotsName].map((id, i) => (gone.has(id) ? (placed ? (freed.push(i), null) : ((placed = true), b.id)) : id));
+    S.stats.merges++; SFX.play('merge'); vibrate(20);
+    showToast('Слито: 1 ✨');
+    return freed;
+  }
+  // слоты, освободившиеся при слиянии, занимает самый сильный свободный
+  function fillSlots(listName, slotsName, power, freed) {
+    const free = S[listName].filter((q) => !S[slotsName].includes(q.id)).sort((p, q) => power(q) - power(p));
+    for (const i of freed) if (free.length) S[slotsName][i] = free.shift().id;
+  }
+  function dropJarOnJar(a, b) {
+    const freed = mergeOnto('inventory', 'squad', a, b, (p, q) => p.type === q.type && p.stars === q.stars, (q) => q.stars >= maxStars(), (q) => q.stars++);
+    if (Array.isArray(freed)) { S.jars += 2; fillSlots('inventory', 'squad', itemPower, freed); selectedJar = b.id; }
+  }
+  function dropAttachOnAttach(a, b) {
+    const freed = mergeOnto('attach', 'equipped', a, b, (p, q) => p.kind === q.kind && p.rank === q.rank, (q) => q.rank >= maxRank(), (q) => q.rank++);
+    if (Array.isArray(freed)) { fillSlots('attach', 'equipped', (q) => q.rank, freed); selectedAttach = b.id; }
+  }
+  // поставить в слот: если уже стоит в другом слоте, слоты меняются местами
+  function putInSlot(slotsName, id, i) {
+    const j = S[slotsName].indexOf(id);
+    if (j === i) return;
+    if (j >= 0) S[slotsName][j] = S[slotsName][i];
+    S[slotsName][i] = id;
+    SFX.play('click');
+  }
+
   function releaseJar(id) {
     S.inventory = S.inventory.filter((i) => i.id !== id);
     S.squad = S.squad.map((x) => (x === id ? null : x));
@@ -1905,6 +1944,35 @@
     if (a.off < a.max - 1) fade(a.y + a.h - 14, a.y + a.h, false);
   }
   function btn(x, y, w, h, on) { buttons.push({ x, y, w, h, on }); }
+  // Перетаскивание банок и насадок: источники и цели пересобираются каждый кадр
+  const dragSrcs = [], dropZones = [];
+  let held = null; // {src, x, y, sx, sy, t0, active, id}
+  const hitR = (q, x, y) => x >= q.x && x <= q.x + q.w && y >= q.y && y <= q.y + q.h;
+  // источник: {x, y, w, h, type, id, tap, draw, scroll}; в списке обрезается по краям области, как sbtn
+  function dsrc(o, a) {
+    if (a) { const y1 = Math.max(o.y, a.y), y2 = Math.min(o.y + o.h, a.y + a.h); if (y2 <= y1) return; o.y = y1; o.h = y2 - y1; o.scroll = a.id; }
+    dragSrcs.push(o);
+  }
+  // цель: {x, y, w, h, ok(src), on(src)}
+  function dzone(o, a) {
+    if (a) { const y1 = Math.max(o.y, a.y), y2 = Math.min(o.y + o.h, a.y + a.h); if (y2 <= y1) return; o.y = y1; o.h = y2 - y1; }
+    dropZones.push(o);
+  }
+  const dragging = (id) => held && held.active && held.src.id === id;
+  function pickUp() { held.active = true; drag = null; press = null; SFX.play('click'); vibrate(12); }
+  function drawHeld() {
+    if (!held) return;
+    if (!held.active && held.src.scroll && time - held.t0 > 0.3 && Math.hypot(held.x - held.sx, held.y - held.sy) < 8) pickUp(); // долгое нажатие в списке
+    if (!held.active) return;
+    for (const z of dropZones) {
+      if (!z.ok(held.src)) continue;
+      const on = hitR(z, held.x, held.y);
+      rr(z.x - 2, z.y - 2, z.w + 4, z.h + 4, 12);
+      ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.stroke();
+      ctx.lineWidth = on ? 4 : 3; ctx.strokeStyle = on ? '#ff8a00' : alpha('#ffb02e', 0.75 + 0.25 * Math.sin(time * 7)); ctx.stroke();
+    }
+    ctx.save(); ctx.globalAlpha = 0.95; ctx.translate(held.x, held.y - 22); ctx.scale(1.12, 1.12); held.src.draw(); ctx.restore();
+  }
 
   function toGame(e) {
     const r = canvas.getBoundingClientRect();
@@ -1918,6 +1986,11 @@
     if (splash) { if (!splash.out && splash.t > 0.4) { splash.out = 0.6; SFX.play('reward'); } return; }
     press = { x, y, t: time };
     if (!modal) {
+      const s = dragSrcs.slice().reverse().find((q) => hitR(q, x, y));
+      if (s) {
+        held = { src: s, x, y, sx: x, sy: y, t0: time, active: false, id: e.pointerId };
+        if (!s.scroll) { try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* старые браузеры */ } return; }
+      }
       const a = scrollAreas.find((q) => x >= q.x && x <= q.x + q.w && y >= q.y && y <= q.y + q.h);
       if (a) {
         const b = buttons.slice().reverse().find((q) => q.scroll === a.id && x >= q.x && x <= q.x + q.w && y >= q.y && y <= q.y + q.h);
@@ -1937,6 +2010,16 @@
   });
 
   canvas.addEventListener('pointermove', (e) => {
+    if (held && e.pointerId === held.id) {
+      const p = toGame(e); held.x = p.x; held.y = p.y;
+      if (held.active) return;
+      const dx = p.x - held.sx, dy = p.y - held.sy;
+      if (Math.hypot(dx, dy) > 8) {
+        const a = held.src.scroll && scrollAreas.find((q) => q.id === held.src.scroll);
+        if (a && a.max > 0 && time - held.t0 < 0.3 && Math.abs(dy) > Math.abs(dx)) held = null; // это прокрутка списка
+        else { pickUp(); return; }
+      }
+    }
     if (drag && e.pointerId === drag.id) {
       const { y } = toGame(e);
       if (Math.abs(y - drag.sy) > 6) drag.moved = true;
@@ -1957,9 +2040,14 @@
   }
   window.addEventListener('pointerup', (e) => {
     press = null;
+    if (held && e.pointerId === held.id) {
+      const h = held; held = null;
+      if (h.active) { drag = null; const z = dropZones.slice().reverse().find((q) => hitR(q, h.x, h.y) && q.ok(h.src)); if (z) z.on(h.src); return; }
+      if (!h.src.scroll) { SFX.play('click'); h.src.tap(); return; }
+    }
     if (drag && e.pointerId === drag.id) { const d = drag; drag = null; if (!d.moved && d.btn) { SFX.play('click'); d.btn.on(); } }
   });
-  window.addEventListener('pointercancel', () => { press = null; drag = null; });
+  window.addEventListener('pointercancel', () => { press = null; drag = null; held = null; });
   // колесо мыши на компьютере
   canvas.addEventListener('wheel', (e) => {
     const { x, y } = toGame(e);
@@ -4731,11 +4819,17 @@
     S.squad.forEach((id, i) => {
       const n = S.squad.length, k = n > 5 ? 0.86 : 1, step = n > 5 ? 54 : n > 4 ? 64 : 76;
       const x = 180 - ((n - 1) * step + 58 * k) / 2 + i * step, y = 106;
+      if (dragging(id)) ctx.globalAlpha = 0.3;
       ctx.save(); ctx.translate(x, y); ctx.scale(k, k); drawJar(0, 0, findItem(id), false); ctx.restore();
-      btn(x, y, 58 * k, 66 * k, () => {
+      ctx.globalAlpha = 1;
+      const tap = () => {
         if (selectedJar) { S.squad = S.squad.map((s) => (s === selectedJar ? null : s)); S.squad[i] = selectedJar; selectedJar = null; }
         else if (id) S.squad[i] = null;
-      });
+      };
+      btn(x, y, 58 * k, 66 * k, tap);
+      const it = findItem(id);
+      if (it) dsrc({ x, y, w: 58 * k, h: 66 * k, type: 'jar', id, tap, draw: () => drawJar(-29, -33, it, true) });
+      dzone({ x, y, w: 58 * k, h: 66 * k, ok: (src) => src.type === 'jar' && src.id !== id, on: (src) => { putInSlot('squad', src.id, i); selectedJar = null; } });
     });
     const power = S.squad.reduce((s, id) => { const it = findItem(id); return s + (it ? squadDamage(it) : 0); }, 0);
     text('Урон отряда: ' + fmt(power) + ' / выстрел', 180, 186, 12, INK, 'center', '700');
@@ -4746,11 +4840,17 @@
     const cols = 5, sx = 22;
     const list = [...S.inventory].sort((a, b) => itemPower(b) - itemPower(a));
     const area = scrollArea('squad', 18, 214, 324, 288, Math.ceil(list.length / cols) * 72 + 6);
+    // бросить банку из отряда обратно в список: убрать её из отряда
+    dzone({ x: area.x, y: area.y, w: area.w, h: area.h, ok: (src) => src.type === 'jar' && S.squad.includes(src.id), on: (src) => { S.squad = S.squad.map((s) => (s === src.id ? null : s)); } });
     ctx.save(); ctx.beginPath(); ctx.rect(area.x, area.y, area.w, area.h); ctx.clip();
     list.forEach((it, i) => {
       const x = sx + (i % cols) * 63, y = area.y + 8 + Math.floor(i / cols) * 72 - area.off;
       if (y > area.y + area.h || y + 66 < area.y) return;
+      if (dragging(it.id)) ctx.globalAlpha = 0.3;
       drawJar(x, y, it, selectedJar === it.id);
+      ctx.globalAlpha = 1;
+      dsrc({ x, y, w: 58, h: 66, type: 'jar', id: it.id, tap: () => {}, draw: () => drawJar(-29, -33, it, true) }, area);
+      dzone({ x, y, w: 58, h: 66, ok: (src) => { const a = src.type === 'jar' && findItem(src.id); return !!a && a.id !== it.id && a.type === it.type && a.stars === it.stars; }, on: (src) => dropJarOnJar(findItem(src.id), it) }, area);
       if (S.squad.includes(it.id)) {
         if (ui('jar-empty')) { rr(x + 7, y - 7, 44, 13, 6); ctx.fillStyle = '#4fbf6a'; ctx.fill(); text('в отряде', x + 29, y - 0.5, 8, '#ffffff', 'center', '800'); }
         else text('в отряде', x + 29, y + 46, 8, '#2f8f4e');
@@ -4767,8 +4867,11 @@
     if (sel) {
       const def = GHOSTS[sel.type];
       text(def.name + ' · ' + RARITY[def.rarity].name + ' · ' + sel.stars + '★ · ' + fmt(squadDamage(sel)), 180, 507, 11, INK, 'center', '700');
-      text('Тапни слот отряда, чтобы поставить', 180, 520, 10, '#6b5f86', 'center', '700');
-    } else if (list.length) text('Духов в банках: ' + list.length + (area.max > 0 ? ' · листай список пальцем' : ''), 180, 513, 10, '#6b5f86', 'center', '700');
+      fitText('Перетащи в слот отряда или тапни его', 180, 520, 316, 10, '#6b5f86', 'center', '700');
+    } else if (list.length) {
+      text('Духов в банках: ' + list.length + (area.max > 0 ? ' · листай список пальцем' : ''), 180, 507, 10, '#6b5f86', 'center', '700');
+      fitText('Перетащи банку в отряд или на такую же, чтобы слить', 180, 520, 316, 10, '#6b5f86', 'center', '700');
+    }
     button(26, 528, 98, 30, 'Слить всё', '#8ee08a', mergeSquad);
     button(131, 528, 98, 30, 'Лучший отряд', '#7fd1ff', () => { bestSquad(); showToast('Отряд собран'); });
     button(236, 528, 98, 30, 'Отпустить', '#ff9aa9', () => { if (sel) releaseJar(sel.id); else showToast('Выбери банку'); });
@@ -4884,20 +4987,31 @@
     eqItems.forEach((a, i) => {
       const n = eqItems.length, cw = n > 4 ? 58 : n > 3 ? 70 : 92, step = cw + (n > 4 ? 6 : 8);
       const x = 180 - ((n - 1) * step + cw) / 2 + i * step, y = 104;
+      if (a && dragging(a.id)) ctx.globalAlpha = 0.3;
       drawAttachCard(x, y, cw, 80, a, false);
-      btn(x, y, cw, 80, () => {
+      ctx.globalAlpha = 1;
+      const tap = () => {
         if (selectedAttach) { S.equipped = S.equipped.map((s) => (s === selectedAttach ? null : s)); S.equipped[i] = selectedAttach; selectedAttach = null; }
-      });
+        else if (a) selectedAttach = a.id;
+      };
+      btn(x, y, cw, 80, tap);
+      if (a) dsrc({ x, y, w: cw, h: 80, type: 'attach', id: a.id, tap, draw: () => drawAttachCard(-29, -30, 58, 60, a, true) });
+      dzone({ x, y, w: cw, h: 80, ok: (src) => src.type === 'attach' && (!a || src.id !== a.id), on: (src) => { putInSlot('equipped', src.id, i); selectedAttach = null; } });
     });
     fitText('Урон x' + fmt(attachMult(), 2) + ' · крит ' + Math.round(critChance() * 100) + '% x' + fmt(critMult(), 1) + ' · дальн. ' + Math.round(catRange()) + ' · ' + fmt(fireRate(), 1) + '/с', 180, 196, 316, 11, INK, 'center', '700');
 
     const list = [...S.attach].sort((a, b) => b.rank - a.rank || a.kind.localeCompare(b.kind));
     const area = scrollArea('attach', 18, 206, 324, 200, Math.ceil(list.length / 5) * 66 + 8);
+    dzone({ x: area.x, y: area.y, w: area.w, h: area.h, ok: (src) => src.type === 'attach' && S.equipped.includes(src.id), on: (src) => { S.equipped = S.equipped.map((s) => (s === src.id ? null : s)); } });
     ctx.save(); ctx.beginPath(); ctx.rect(area.x, area.y, area.w, area.h); ctx.clip();
     list.forEach((a, i) => {
       const x = 22 + (i % 5) * 63, y = area.y + 6 + Math.floor(i / 5) * 66 - area.off;
       if (y > area.y + area.h || y + 60 < area.y) return;
+      if (dragging(a.id)) ctx.globalAlpha = 0.3;
       drawAttachCard(x, y, 58, 60, a, selectedAttach === a.id);
+      ctx.globalAlpha = 1;
+      dsrc({ x, y, w: 58, h: 60, type: 'attach', id: a.id, tap: () => {}, draw: () => drawAttachCard(-29, -30, 58, 60, a, true) }, area);
+      dzone({ x, y, w: 58, h: 60, ok: (src) => { const b = src.type === 'attach' && S.attach.find((q) => q.id === src.id); return !!b && b.id !== a.id && b.kind === a.kind && b.rank === a.rank; }, on: (src) => dropAttachOnAttach(S.attach.find((q) => q.id === src.id), a) }, area);
       if (S.equipped.includes(a.id)) { ctx.fillStyle = '#2f8f4e'; ctx.beginPath(); ctx.arc(x + 50, y + 9, 5, 0, 7); ctx.fill(); }
       sbtn(area, x, y, 58, 60, () => { selectedAttach = selectedAttach === a.id ? null : a.id; });
     });
@@ -4909,7 +5023,7 @@
     const sel = selectedAttach && S.attach.find((a) => a.id === selectedAttach);
     if (sel) {
       fitText(ATTACH[sel.kind].name + ' [' + RANKS[sel.rank] + ']: ' + attachInfo(sel.kind, rankPower(sel.rank)), 180, 418, 320, 11, INK, 'center', '700');
-      text(S.equipped.includes(sel.id) ? 'Уже надета · все насадки дают +' + pct(0.2 * rankPower(sel.rank)) + ' урона' : 'Тапни верхний слот, чтобы надеть', 180, 433, 10, '#6b5f86', 'center', '700');
+      fitText(S.equipped.includes(sel.id) ? 'Уже надета · все насадки дают +' + pct(0.2 * rankPower(sel.rank)) + ' урона' : 'Перетащи наверх, чтобы надеть, или на такую же, чтобы слить', 180, 433, 316, 10, '#6b5f86', 'center', '700');
     } else {
       fitText('Шансы: ' + (unlocked('ranks') ? RANK_WEIGHTS_HIGH : RANK_WEIGHTS).map((w, i) => RANKS[i] + ' ' + Math.round(w * 1000) / 10 + '%').join(' · '), 180, 425, 300, 10, '#6b5f86', 'center', '700');
     }
@@ -6035,7 +6149,7 @@
   }
 
   function draw() {
-    buttons.length = 0; scrollAreas.length = 0;
+    buttons.length = 0; scrollAreas.length = 0; dragSrcs.length = 0; dropZones.length = 0;
     ctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
     if (splash && !splash.out) { drawSplash(1); return; }
     ctx.clearRect(0, 0, W, H);
@@ -6134,6 +6248,7 @@
     else if (panel === 'wheel') drawWheelPanel();
     else if (panel === 'daily') drawDailyPanel();
     else if (panel === 'offline') drawOfflinePanel();
+    if (panel) drawHeld(); else held = null;
     if (modal) drawModal();
     if (splash && splash.out) { buttons.length = 0; drawSplash(splash.out / 0.6); }
     if (emoPop && !panel && !modal) { // выезжает справа, подпрыгивает и уезжает
