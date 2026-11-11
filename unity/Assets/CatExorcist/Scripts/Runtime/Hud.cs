@@ -62,6 +62,7 @@ namespace CatExorcist
             scaler = cgo.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize; scaler.referenceResolution = new Vector2(360, 640);
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = (float)Screen.width / Screen.height > 360f / 640f ? 1 : 0;
             cgo.AddComponent<GraphicRaycaster>();
             canvasRt = (RectTransform)cgo.transform;
             if (GameRoot.Find<EventSystem>() == null)

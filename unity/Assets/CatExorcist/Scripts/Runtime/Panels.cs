@@ -1070,7 +1070,7 @@ namespace CatExorcist
         public bool SplashOn => splashOn;
         public bool SplashReady; // реклама/согласие инициализированы — можно уходить с заставки
 
-        string SplashSig() => splashOn ? "on" + SplashReady + Loc.Lang : "-";
+        string SplashSig() => splashOn ? "on" + SplashReady + Loc.Lang + "|" + Mathf.RoundToInt(canvasRt.rect.width) + "x" + Mathf.RoundToInt(canvasRt.rect.height) + "|" + safe.anchorMin.x.ToString("0.000") : "-";
 
         void BuildSplash(RectTransform r)
         {
@@ -1079,18 +1079,22 @@ namespace CatExorcist
             root.gameObject.AddComponent<Image>().color = Art.Hex("#120c2e");
             var cg = root.gameObject.AddComponent<CanvasGroup>();
             var SA = Art.Get("splash") ?? Art.Get("splash-bg");
-            float H = canvasRt.rect.height, W = canvasRt.rect.width;
+            // заставка вертикальная: на широком экране она в той же колонке 9:16, что и игра, по бокам фон
+            float H = canvasRt.rect.height, CW = canvasRt.rect.width;
+            float x0 = CW * safe.anchorMin.x, W = CW * (safe.anchorMax.x - safe.anchorMin.x);
+            var col = Ui.Box(root, x0, 0, W, H, "column");
+            col.gameObject.AddComponent<RectMask2D>();
             if (SA != null)
             {
                 float asp = Art.Aspect(SA), w = Mathf.Max(W, H * asp), h = w / asp;
-                var im = Ui.Img(root, SA, (W - w) / 2, (H - h) / 2, w, h);
+                var im = Ui.Img(col, SA, (W - w) / 2, (H - h) / 2, w, h);
                 OnTick(() => { float z = 1.04f + Mathf.Sin(time * 0.6f) * 0.02f; im.rectTransform.localScale = new Vector3(z, z, 1); });
             }
-            Ui.Img(root, Art.GradV, 0, 0, W, 260, new Color(18 / 255f, 12 / 255f, 46 / 255f, 0.55f));
-            var bottom = Ui.Img(root, Art.GradV, 0, H - 200, W, 200, new Color(18 / 255f, 12 / 255f, 46 / 255f, 0.7f)); bottom.rectTransform.localScale = new Vector3(1, -1, 1); bottom.rectTransform.anchoredPosition = new Vector2(0, -H);
-            var tap = Ui.Text(root, SplashReady ? T("Нажми, чтобы начать") : "…", W / 2, H - 90, 300, 16, "#ffffff");
+            Ui.Img(col, Art.GradV, 0, 0, W, 260, new Color(18 / 255f, 12 / 255f, 46 / 255f, 0.55f));
+            var bottom = Ui.Img(col, Art.GradV, 0, H - 200, W, 200, new Color(18 / 255f, 12 / 255f, 46 / 255f, 0.7f)); bottom.rectTransform.localScale = new Vector3(1, -1, 1); bottom.rectTransform.anchoredPosition = new Vector2(0, -H);
+            var tap = Ui.Text(col, SplashReady ? T("Нажми, чтобы начать") : "…", W / 2, H - 90, 300, 16, "#ffffff");
             OnTick(() => tap.Alpha = 0.55f + 0.45f * Mathf.Abs(Mathf.Sin(time * 2.5f)));
-            if (S.MaxHouse > 1) Ui.Text(root, T("Рекорд: дом ") + S.MaxHouse + (S.Prestiges > 0 ? T(" · освящений: ") + S.Prestiges : ""), W / 2, H - 60, 300, 11, "#e8deff");
+            if (S.MaxHouse > 1) Ui.Text(col, T("Рекорд: дом ") + S.MaxHouse + (S.Prestiges > 0 ? T(" · освящений: ") + S.Prestiges : ""), W / 2, H - 60, 300, 11, "#e8deff");
             var hit = root.gameObject.AddComponent<Tap>();
             hit.Sound = false;
             hit.On = () => { if (SplashReady && splashOut <= 0) { splashOut = 0.6f; Root.Sfx("reward"); } };
