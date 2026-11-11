@@ -6432,7 +6432,7 @@
     state: () => S, sfx: SFX, mapImage: () => mapCanvas.toDataURL(), ghosts: () => ghosts, cat: () => cat, cam: () => cam, resetRoom: () => resetRoom(), open: (p) => { panel = p; }, gold: () => { goldCd = 0; }, goldObj: () => gold, toScreen,
     splash: () => { splash = { t: 0, out: 0 }; },
     tut: (n) => { S.tut = n; },
-    best: (n) => { bestPage = n; }, ghostKeys: () => Object.keys(GHOSTS),
+    best: (n) => { bestPage = n; }, ghostKeys: () => Object.keys(GHOSTS), ghostDef: (k) => GHOSTS[k],
     zones: () => zones,
     fx: () => ({ shots, shards, rockets, drops, addBoom, addCandy, booms }),
     emo: (k) => popEmo(k), toast: (t, e) => showToast(t, e), ask: (t, l, e) => ask(t, l, [{ label: 'OK', color: '#8ee08a', on: closeModal }], e),
