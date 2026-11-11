@@ -1,6 +1,6 @@
 # protekgames.com
 
-Static site of the studio Protek Games: home, games catalogue, one page per game, privacy policy, app-ads.txt. English and Russian on every page (button in the header, first choice follows the browser language). No frameworks, cookies, analytics or third-party requests.
+Static site of the studio Protek Games: home, games catalogue, one page per game, privacy policy, app-ads.txt. English only. No frameworks, cookies, analytics or third-party requests.
 
 ## Build
 
@@ -30,5 +30,5 @@ Python 3 only, no packages.
 1. Media into `public/games/<slug>/media/` (key art 1024×500 as `key.webp`, `icon.webp`, `og.jpg` 1200×630, screenshots, trailer).
 2. Copy `src/pages/games/cat-exorcist/index.html` to `src/pages/games/<slug>/index.html` and change the front matter (`path: /games/<slug>/`) and the text.
 3. Add an entry to `games.json` (`status`: `dev` or `live`). The card shows up on the home page and on /games/.
-4. Add a section for the game to `src/pages/privacy/index.html` (both languages) if its data use differs.
+4. Add a section for the game to `src/pages/privacy/index.html` if its data use differs.
 5. When the game is in stores, replace the "coming soon" badges with real store links.

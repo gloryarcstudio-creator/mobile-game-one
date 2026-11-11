@@ -35,22 +35,21 @@ def front_matter(src):
 def game_cards(games):
     out = ['<div class="shelf">']
     for g in games:
-        chips = [f'<span class="chip {g["status"]}"><span data-l="en">{g["status_label"]["en"]}</span><span data-l="ru">{g["status_label"]["ru"]}</span></span>']
-        chips += [f'<span class="chip"><span data-l="en">{c["en"]}</span><span data-l="ru">{c["ru"]}</span></span>' for c in g["chips"]]
+        chips = [f'<span class="chip {g["status"]}">{g["status_label"]}</span>']
+        chips += [f'<span class="chip">{c}</span>' for c in g["chips"]]
         out.append(f'''<a class="game" href="/games/{g["slug"]}/">
-  <div class="art"><img src="{g["art"]}" alt="{html.escape(g["name"]["en"])}" width="1024" height="500" loading="lazy"></div>
+  <div class="art"><img src="{g["art"]}" alt="{html.escape(g["name"])}" width="1024" height="500" loading="lazy"></div>
   <div class="body">
-    <h3><span data-l="en">{g["name"]["en"]}</span><span data-l="ru">{g["name"]["ru"]}</span></h3>
-    <p data-l="en">{g["tagline"]["en"]}</p><p data-l="ru">{g["tagline"]["ru"]}</p>
+    <h3>{g["name"]}</h3>
+    <p>{g["tagline"]}</p>
     <div class="chips">{"".join(chips)}</div>
   </div>
 </a>''')
     out.append('''<div class="game next" aria-label="Next game">
   <div class="art"><span>?</span></div>
   <div class="body">
-    <h3><span data-l="en">Next game</span><span data-l="ru">Следующая игра</span></h3>
-    <p data-l="en">Already in the sketchbook. Write to info@protekgames.com to hear about it first.</p>
-    <p data-l="ru">Уже в блокноте. Напишите на info@protekgames.com, чтобы узнать о ней первыми.</p>
+    <h3>Next game</h3>
+    <p>Already in the sketchbook. Write to info@protekgames.com to hear about it first.</p>
   </div>
 </div>''')
     out.append("</div>")
@@ -90,8 +89,7 @@ def main():
             for nav in ("games", "privacy"):
                 page = page.replace("{{NAV_%s}}" % nav, ' aria-current="page"' if meta.get("nav") == nav else "")
             page = (page.replace("{{CONTENT}}", body)
-                    .replace("{{TITLE_EN}}", html.escape(meta["title_en"]))
-                    .replace("{{TITLE_RU}}", html.escape(meta["title_ru"]))
+                    .replace("{{TITLE}}", html.escape(meta["title"]))
                     .replace("{{DESC}}", html.escape(meta["description"]))
                     .replace("{{CANONICAL}}", SITE + path)
                     .replace("{{OG_IMAGE}}", SITE + meta["og_image"])
