@@ -1,0 +1,8 @@
+# app-ads.txt for protekgames.com (Protek Games)
+# Lists the ad networks allowed to sell ads in our apps.
+#
+# When the AdMob account exists: AdMob > Apps > View all apps > app-ads.txt
+# copies the exact line. Replace pub-0000000000000000 with your publisher ID,
+# remove the "# " in front of the line below and upload the file again.
+#
+# google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0

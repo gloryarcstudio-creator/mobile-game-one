@@ -1,0 +1,18 @@
+[
+  {
+    "slug": "cat-exorcist",
+    "name": { "en": "Cat Exorcist", "ru": "Кот-экзорцист" },
+    "tagline": {
+      "en": "A ginger cat with a ghost vacuum cleans haunted houses, one room at a time.",
+      "ru": "Рыжий кот с пылесосом для призраков очищает дома с привидениями, комнату за комнатой."
+    },
+    "art": "/games/cat-exorcist/media/key.webp",
+    "status": "dev",
+    "status_label": { "en": "In development", "ru": "В разработке" },
+    "chips": [
+      { "en": "Android · iOS", "ru": "Android · iOS" },
+      { "en": "Idle action", "ru": "Айдл-экшен" },
+      { "en": "14 languages", "ru": "14 языков" }
+    ]
+  }
+]
