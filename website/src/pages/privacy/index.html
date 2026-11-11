@@ -2,7 +2,7 @@
 path: /privacy/
 title_en: Privacy Policy — Protek Games
 title_ru: Политика конфиденциальности — Protek Games
-description: How Protek Games and its mobile games, including Cat Exorcist, handle your data: local saves, advertising, in-app purchases and your rights.
+description: How Protek Games and its mobile games, including Cat Exorcist, handle your data: local saves, advertising, analytics, in-app purchases and your rights.
 nav: privacy
 og_image: /games/cat-exorcist/media/og.jpg
 -->
@@ -17,6 +17,7 @@ og_image: /games/cat-exorcist/media/og.jpg
       <li><a href="#who">Who we are</a></li>
       <li><a href="#summary">Short version</a></li>
       <li><a href="#games-data">Data in our games</a></li>
+      <li><a href="#partners">Service providers</a></li>
       <li><a href="#cat-exorcist">Cat Exorcist</a></li>
       <li><a href="#site">This website</a></li>
       <li><a href="#rights">Your choices and rights</a></li>
@@ -26,51 +27,82 @@ og_image: /games/cat-exorcist/media/og.jpg
   </nav>
 
   <h2 id="who">Who we are</h2>
-  <p>Protek Games ("we", "us") is an independent developer of mobile games. This policy explains what information our games and this website collect, why, and what you can do about it. If you have any question, write to <a href="mailto:info@protekgames.com">info@protekgames.com</a>.</p>
+  <p>Protek Games ("we", "us") is an independent developer of mobile games. This policy explains what information our games and this website collect, why, who receives it, and what you can do about it. If you have any question, write to <a href="mailto:info@protekgames.com">info@protekgames.com</a>.</p>
 
   <h2 id="summary">Short version</h2>
   <ul>
-    <li>Our games do not ask you to create an account and do not ask for your name, email or phone number.</li>
-    <li>Your game progress is saved on your own device.</li>
-    <li>Free games show ads through AppLovin MAX, which works with several ad networks, including Google AdMob. They may use your device's advertising ID to show and measure ads. You can limit or switch this off.</li>
+    <li>Our games have no accounts. We never ask for your name, email or phone number, and your progress is saved on your own device.</li>
+    <li>Free games show ads. Ad companies may use your device's advertising ID to choose and measure ads. In Europe and the UK we ask for consent first, and on iPhone we ask for tracking permission.</li>
+    <li>We use analytics and crash reports to see how the game is played and to fix bugs. These use technical identifiers, not your name.</li>
     <li>Purchases are handled by Google Play or the Apple App Store. We never see your card details.</li>
     <li>We do not sell your personal information.</li>
   </ul>
 
   <h2 id="games-data">Data in our games</h2>
-  <p><strong>Game progress.</strong> Levels, currencies, purchased items and settings are stored locally on your device. We do not upload them to our servers. Deleting the game deletes this data.</p>
-  <p><strong>Advertising.</strong> Our free games show rewarded video ads and, in some cases, other ad formats. Ads are served through AppLovin MAX (AppLovin Corp.), a mediation platform that picks an ad from several ad networks, including Google AdMob (Google LLC). To show, limit and measure ads, these companies may collect your device's advertising identifier (Android Advertising ID or Apple IDFA), IP address, device model, operating system, language, and how you interact with ads. Each company processes this data under its own privacy policy: <a href="https://www.applovin.com/privacy/" target="_blank" rel="noopener">AppLovin</a>, <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google</a> (see also <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">how Google uses information from apps that use its services</a>). The ad networks used in each game are listed in its section below.</p>
-  <p>If you are in the European Economic Area, the United Kingdom or Switzerland, the game asks for your consent before personalised ads are shown, using a consent form certified under the IAB Transparency and Consent Framework. On iOS, the game asks for your permission before it can access the advertising identifier (App Tracking Transparency). If you decline, you may still see ads, but they will not be personalised.</p>
-  <p><strong>Purchases.</strong> In-app purchases are processed by Google Play or the Apple App Store under their terms. We receive only a confirmation that a purchase was made and which item was bought, so that we can deliver it to you. We do not receive your payment card or billing address.</p>
-  <p><strong>Crash reports and analytics.</strong> Our current games do not include third-party analytics or crash-reporting tools. If we add one, we will update this policy and the store listing before the update is released.</p>
+  <p><strong>Game progress.</strong> Levels, currencies, purchased items and settings are stored locally on your device. We have no game servers, so this data is not uploaded to us. Deleting the game deletes it.</p>
+  <p><strong>Advertising.</strong> Our free games show rewarded video ads, which you choose to watch for a bonus, and interstitial ads between play sessions. Players who have made a purchase do not see interstitial ads. Ads are served through the AppLovin MAX mediation platform, which runs a real-time auction between several ad networks (listed below). To show, limit and measure ads and to prevent fraud, these companies may collect your device's advertising identifier (Android Advertising ID or Apple IDFA, only where allowed), IP address and approximate location derived from it, device model, operating system, language, app version, and how you interact with ads.</p>
+  <p><strong>Analytics and crash reports.</strong> To understand how players progress, balance the game and fix errors, we use Firebase Analytics, Firebase Crashlytics, Firebase Remote Config with A/B Testing, and GameAnalytics. They receive an installation identifier, the advertising identifier where you allowed it, device model, operating system, language, country (derived from IP address), game events such as levels reached and items used, purchase events without payment details, ad revenue per impression, and crash logs. Remote Config may give different players slightly different settings, for example ad frequency or offer prices, so we can compare them.</p>
+  <p><strong>Install attribution.</strong> We use Tenjin to learn which advertising campaign, if any, led to an install, and whether our own marketing pays off. Tenjin receives the advertising identifier where you allowed it, IP address, device information, install and purchase events, and ad revenue data.</p>
+  <p><strong>Purchases.</strong> In-app purchases are processed by Google Play or the Apple App Store under their terms. The game receives only a confirmation of which item was bought, so it can deliver it to you and restore it later. We do not receive your payment card or billing address.</p>
+  <p><strong>Notifications.</strong> Reminders such as "your daily chest is ready" are scheduled on your device. We do not run a push server and do not collect a push token. You can turn them off in the game or in your phone's settings.</p>
   <p><strong>Support emails.</strong> If you write to us, we receive your email address and whatever you choose to include. We use it only to answer you and keep the conversation for up to two years.</p>
+  <p><strong>Legal bases (EEA and UK).</strong> We rely on your consent for personalised advertising and for any access to your device's advertising identifier, and on our legitimate interest in running, securing and improving the game for non-personalised ads, analytics, crash reports and attribution. You can withdraw consent at any time (see below).</p>
+
+  <h2 id="partners">Service providers</h2>
+  <p>These companies receive data from our games as described above. Each processes it under its own privacy policy:</p>
+  <div class="table">
+    <table>
+      <thead><tr><th>Company</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><a href="https://legal.applovin.com/privacy/" target="_blank" rel="noopener">AppLovin</a> (MAX)</td><td>Ad mediation and ads</td></tr>
+        <tr><td><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google</a> (AdMob, consent form)</td><td>Ads, consent management</td></tr>
+        <tr><td><a href="https://www.facebook.com/privacy/policy/" target="_blank" rel="noopener">Meta</a> (Audience Network)</td><td>Ads</td></tr>
+        <tr><td><a href="https://unity.com/legal/game-player-and-app-user-privacy-policy" target="_blank" rel="noopener">Unity</a> (Unity Ads)</td><td>Ads</td></tr>
+        <tr><td><a href="https://liftoff.ai/privacy-policy/" target="_blank" rel="noopener">Liftoff</a> (Liftoff Monetize, formerly Vungle)</td><td>Ads</td></tr>
+        <tr><td><a href="https://www.mintegral.com/en/privacy/" target="_blank" rel="noopener">Mintegral</a></td><td>Ads</td></tr>
+        <tr><td><a href="https://www.pangleglobal.com/privacy" target="_blank" rel="noopener">Pangle</a></td><td>Ads</td></tr>
+        <tr><td><a href="https://www.digitalturbine.com/legal/privacy-policy" target="_blank" rel="noopener">Digital Turbine</a> (DT Exchange)</td><td>Ads</td></tr>
+        <tr><td><a href="https://www.moloco.com/terms-and-policies/advertising-privacy-notice" target="_blank" rel="noopener">Moloco</a></td><td>Ads</td></tr>
+        <tr><td><a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Google Firebase</a></td><td>Analytics, crash reports, remote settings and A/B tests</td></tr>
+        <tr><td><a href="https://gameanalytics.com/privacy/" target="_blank" rel="noopener">GameAnalytics</a></td><td>Gameplay analytics</td></tr>
+        <tr><td><a href="https://tenjin.com/privacy/" target="_blank" rel="noopener">Tenjin</a></td><td>Install attribution and marketing measurement</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Some of these companies are based outside your country, including in the United States, Singapore and China. Where data leaves the EEA or UK, the transfer relies on the providers' safeguards such as the EU Standard Contractual Clauses or the EU–US Data Privacy Framework.</p>
 
   <h2 id="cat-exorcist">Cat Exorcist</h2>
+  <p>Cat Exorcist (Android package <code>com.gloryarc.catexorcist</code>) uses everything described above. In short:</p>
   <div class="table">
     <table>
       <thead><tr><th>Data</th><th>Where it goes</th><th>Why</th></tr></thead>
       <tbody>
-        <tr><td>Game progress and settings, including chosen language</td><td>Stays on your device</td><td>To save and restore your game</td></tr>
-        <tr><td>Advertising ID, IP address, device and ad interaction data</td><td>AppLovin MAX and the ad networks it works with, including Google AdMob</td><td>To show rewarded and other ads, prevent fraud and measure ads</td></tr>
-        <tr><td>Purchase confirmation (item and time)</td><td>Google Play or Apple App Store, then the game</td><td>To deliver the item you bought and restore purchases</td></tr>
+        <tr><td>Game progress, settings, chosen language</td><td>Stays on your device</td><td>Save and restore your game</td></tr>
+        <tr><td>Advertising ID (with permission), IP address, device data, ad interactions</td><td>AppLovin MAX and the ad networks above</td><td>Show rewarded and interstitial ads, prevent fraud, measure ads</td></tr>
+        <tr><td>Installation ID, device data, country, game events, ad revenue, crash logs</td><td>Firebase, GameAnalytics</td><td>Analytics, balancing, A/B tests, bug fixing</td></tr>
+        <tr><td>Advertising ID (with permission), IP address, install and purchase events</td><td>Tenjin</td><td>Install attribution</td></tr>
+        <tr><td>Purchase confirmation (item and time)</td><td>Google Play or Apple App Store, then the game</td><td>Deliver and restore purchases</td></tr>
       </tbody>
     </table>
   </div>
-  <p>Cat Exorcist works offline. It has no chat, no user-generated content and no account system.</p>
+  <p>Cat Exorcist has no accounts, no chat and no user-generated content. It can be played offline, in which case no ads, analytics or attribution data are sent until you are online again.</p>
 
   <h2 id="site">This website</h2>
   <p>This website does not use cookies, analytics or advertising, and it loads no third-party fonts or scripts. It remembers your language choice in your browser's local storage. Like any web server, our hosting keeps short technical logs (IP address, browser type, page requested and time) to keep the site running and secure. These logs are deleted automatically after a limited period.</p>
 
   <h2 id="rights">Your choices and rights</h2>
   <ul>
-    <li><strong>Ads personalisation:</strong> on Android, go to Settings › Google › Ads (or Settings › Privacy › Ads) to reset or delete your advertising ID. On iOS, go to Settings › Privacy &amp; Security › Tracking. In the EEA and UK you can also change your consent choice from the game's settings.</li>
+    <li><strong>Consent (EEA, UK, Switzerland):</strong> the game shows a consent form on first launch. You can change your choice at any time from the game's Settings (Privacy settings).</li>
+    <li><strong>Tracking on iPhone:</strong> if you tap "Ask App Not to Track", the game cannot access your IDFA. You can change this in Settings › Privacy &amp; Security › Tracking.</li>
+    <li><strong>Advertising ID on Android:</strong> go to Settings › Google › Ads (or Settings › Privacy › Ads) to reset or delete it. Ads will then not be personalised.</li>
     <li><strong>Game data:</strong> uninstalling the game removes all progress stored on your device.</li>
-    <li><strong>Access, correction, deletion:</strong> depending on where you live (for example under the GDPR or CCPA), you may ask us what personal data we hold about you, and ask us to correct or delete it. Because our games keep progress on your device, we usually hold no personal data about you apart from support emails. Write to <a href="mailto:info@protekgames.com">info@protekgames.com</a> and we will reply within 30 days.</li>
+    <li><strong>Access, correction, deletion, objection:</strong> depending on where you live (for example under the GDPR, UK GDPR or US state laws such as the CCPA), you may ask what personal data we or our providers hold about you, and ask to correct, delete or stop processing it. Write to <a href="mailto:info@protekgames.com">info@protekgames.com</a>. Because we have no accounts, include the game name and, if you can, your device's advertising ID so we can find related data. We reply within 30 days.</li>
+    <li>We do not sell personal information for money. Some laws treat sharing data with ad networks as a "sale" or "sharing"; you can opt out by declining consent or limiting ad tracking as described above.</li>
     <li>You can also complain to your local data protection authority.</li>
   </ul>
 
   <h2 id="children">Children</h2>
-  <p>Our games are not directed at children under 13 (or the minimum age in your country). We do not knowingly collect personal information from children. If you believe a child has sent us personal information, contact us and we will delete it.</p>
+  <p>Our games are intended for players aged 13 and over and are not directed at children. We do not knowingly collect personal information from children under 13 (or the minimum age in your country). If you believe a child has used our game and data about them was collected, contact us and we will help delete it.</p>
 
   <h2 id="changes">Changes and contact</h2>
   <p>If we change this policy, we will post the new version on this page and update the effective date. Important changes will also be mentioned in the game's update notes.</p>
@@ -86,6 +118,7 @@ og_image: /games/cat-exorcist/media/og.jpg
       <li><a href="#ru-who">Кто мы</a></li>
       <li><a href="#ru-summary">Коротко</a></li>
       <li><a href="#ru-games-data">Данные в наших играх</a></li>
+      <li><a href="#ru-partners">Сервисы-партнёры</a></li>
       <li><a href="#ru-cat-exorcist">Кот-экзорцист</a></li>
       <li><a href="#ru-site">Этот сайт</a></li>
       <li><a href="#ru-rights">Ваш выбор и ваши права</a></li>
@@ -95,51 +128,82 @@ og_image: /games/cat-exorcist/media/og.jpg
   </nav>
 
   <h2 id="ru-who">Кто мы</h2>
-  <p>Protek Games («мы») — независимый разработчик мобильных игр. Здесь описано, какие данные собирают наши игры и этот сайт, зачем, и что вы можете с этим сделать. Если остались вопросы, пишите на <a href="mailto:info@protekgames.com">info@protekgames.com</a>.</p>
+  <p>Protek Games («мы») — независимый разработчик мобильных игр. Здесь описано, какие данные собирают наши игры и этот сайт, зачем, кто их получает и что вы можете с этим сделать. Если остались вопросы, пишите на <a href="mailto:info@protekgames.com">info@protekgames.com</a>.</p>
 
   <h2 id="ru-summary">Коротко</h2>
   <ul>
-    <li>Наши игры не требуют регистрации и не спрашивают имя, почту или телефон.</li>
-    <li>Прогресс игры сохраняется на вашем устройстве.</li>
-    <li>Бесплатные игры показывают рекламу через AppLovin MAX, который работает с несколькими рекламными сетями, включая Google AdMob. Они могут использовать рекламный идентификатор устройства, чтобы показывать и учитывать рекламу. Это можно ограничить или отключить.</li>
+    <li>В наших играх нет аккаунтов. Мы не спрашиваем имя, почту или телефон, а прогресс сохраняется на вашем устройстве.</li>
+    <li>Бесплатные игры показывают рекламу. Рекламные компании могут использовать рекламный идентификатор устройства, чтобы подбирать и учитывать рекламу. В Европе и Великобритании мы сначала спрашиваем согласие, на iPhone — разрешение на отслеживание.</li>
+    <li>Мы используем аналитику и отчёты о сбоях, чтобы понимать, как играют в игру, и исправлять ошибки. Для этого нужны технические идентификаторы, а не ваше имя.</li>
     <li>Покупки проводят Google Play или Apple App Store. Данные вашей карты мы не видим.</li>
     <li>Мы не продаём ваши персональные данные.</li>
   </ul>
 
   <h2 id="ru-games-data">Данные в наших играх</h2>
-  <p><strong>Прогресс.</strong> Уровни, валюта, купленные предметы и настройки хранятся на вашем устройстве. Мы не загружаем их на свои серверы. При удалении игры эти данные удаляются.</p>
-  <p><strong>Реклама.</strong> Бесплатные игры показывают видеорекламу за награду и, в некоторых случаях, другие форматы. Рекламу подбирает AppLovin MAX (AppLovin Corp.) — платформа медиации, которая выбирает объявление из нескольких рекламных сетей, включая Google AdMob (Google LLC). Чтобы показывать, ограничивать и учитывать рекламу, эти компании могут получать рекламный идентификатор устройства (Android Advertising ID или Apple IDFA), IP-адрес, модель устройства, операционную систему, язык и сведения о взаимодействии с рекламой. Каждая компания обрабатывает эти данные по своей политике конфиденциальности: <a href="https://www.applovin.com/privacy/" target="_blank" rel="noopener">AppLovin</a>, <a href="https://policies.google.com/privacy?hl=ru" target="_blank" rel="noopener">Google</a> (см. также <a href="https://policies.google.com/technologies/partner-sites?hl=ru" target="_blank" rel="noopener">как Google использует данные приложений-партнёров</a>). Какие сети работают в каждой игре, указано в её разделе ниже.</p>
-  <p>Если вы находитесь в Европейской экономической зоне, Великобритании или Швейцарии, игра спрашивает согласие на персонализированную рекламу через форму согласия, сертифицированную по стандарту IAB TCF. На iOS игра спрашивает разрешение на доступ к рекламному идентификатору (App Tracking Transparency). Если вы откажетесь, реклама может показываться, но без персонализации.</p>
-  <p><strong>Покупки.</strong> Встроенные покупки проводят Google Play или Apple App Store по своим правилам. Мы получаем только подтверждение покупки и какой предмет куплен, чтобы выдать его вам. Данные карты и платёжный адрес к нам не попадают.</p>
-  <p><strong>Отчёты о сбоях и аналитика.</strong> В наших текущих играх нет сторонней аналитики и сервисов отчётов о сбоях. Если мы их добавим, то обновим эту политику и описание в магазине до выхода обновления.</p>
+  <p><strong>Прогресс.</strong> Уровни, валюта, купленные предметы и настройки хранятся на вашем устройстве. У нас нет игровых серверов, поэтому эти данные к нам не попадают. При удалении игры они удаляются.</p>
+  <p><strong>Реклама.</strong> Бесплатные игры показывают видеорекламу за награду, которую вы смотрите по желанию ради бонуса, и межстраничную рекламу между игровыми сессиями. Игрокам, совершившим покупку, межстраничная реклама не показывается. Рекламу подбирает платформа медиации AppLovin MAX: она проводит аукцион между несколькими рекламными сетями (список ниже). Чтобы показывать, ограничивать и учитывать рекламу и бороться с мошенничеством, эти компании могут получать рекламный идентификатор устройства (Android Advertising ID или Apple IDFA, только если это разрешено), IP-адрес и примерное местоположение по нему, модель устройства, операционную систему, язык, версию приложения и сведения о взаимодействии с рекламой.</p>
+  <p><strong>Аналитика и отчёты о сбоях.</strong> Чтобы понимать, как игроки проходят игру, настраивать баланс и исправлять ошибки, мы используем Firebase Analytics, Firebase Crashlytics, Firebase Remote Config с A/B-тестами и GameAnalytics. Они получают идентификатор установки, рекламный идентификатор (если вы разрешили), модель устройства, операционную систему, язык, страну (по IP-адресу), игровые события вроде пройденных уровней и использованных предметов, события покупок без платёжных данных, доход с показа рекламы и журналы сбоев. Через Remote Config разные игроки могут получать немного разные настройки, например частоту рекламы или цены предложений, чтобы мы могли их сравнить.</p>
+  <p><strong>Атрибуция установок.</strong> Мы используем Tenjin, чтобы узнать, какая рекламная кампания привела к установке (если привела) и окупается ли наш маркетинг. Tenjin получает рекламный идентификатор (если вы разрешили), IP-адрес, данные устройства, события установки и покупок и данные о доходе с рекламы.</p>
+  <p><strong>Покупки.</strong> Встроенные покупки проводят Google Play или Apple App Store по своим правилам. Игра получает только подтверждение, какой предмет куплен, чтобы выдать его и восстановить позже. Данные карты и платёжный адрес к нам не попадают.</p>
+  <p><strong>Уведомления.</strong> Напоминания вроде «ежедневный сундук готов» планируются на самом устройстве. У нас нет пуш-сервера, и мы не собираем пуш-токен. Уведомления можно отключить в игре или в настройках телефона.</p>
   <p><strong>Письма в поддержку.</strong> Если вы нам пишете, мы получаем ваш адрес почты и то, что вы сами сообщили. Мы используем это только для ответа и храним переписку не дольше двух лет.</p>
+  <p><strong>Правовые основания (ЕЭЗ и Великобритания).</strong> Для персонализированной рекламы и доступа к рекламному идентификатору мы опираемся на ваше согласие, а для неперсонализированной рекламы, аналитики, отчётов о сбоях и атрибуции — на законный интерес в работе, защите и улучшении игры. Согласие можно отозвать в любой момент (см. ниже).</p>
+
+  <h2 id="ru-partners">Сервисы-партнёры</h2>
+  <p>Эти компании получают данные из наших игр, как описано выше. Каждая обрабатывает их по своей политике конфиденциальности:</p>
+  <div class="table">
+    <table>
+      <thead><tr><th>Компания</th><th>Зачем</th></tr></thead>
+      <tbody>
+        <tr><td><a href="https://legal.applovin.com/privacy/" target="_blank" rel="noopener">AppLovin</a> (MAX)</td><td>Медиация и показ рекламы</td></tr>
+        <tr><td><a href="https://policies.google.com/privacy?hl=ru" target="_blank" rel="noopener">Google</a> (AdMob, форма согласия)</td><td>Реклама, управление согласием</td></tr>
+        <tr><td><a href="https://www.facebook.com/privacy/policy/" target="_blank" rel="noopener">Meta</a> (Audience Network)</td><td>Реклама</td></tr>
+        <tr><td><a href="https://unity.com/legal/game-player-and-app-user-privacy-policy" target="_blank" rel="noopener">Unity</a> (Unity Ads)</td><td>Реклама</td></tr>
+        <tr><td><a href="https://liftoff.ai/privacy-policy/" target="_blank" rel="noopener">Liftoff</a> (Liftoff Monetize, бывший Vungle)</td><td>Реклама</td></tr>
+        <tr><td><a href="https://www.mintegral.com/en/privacy/" target="_blank" rel="noopener">Mintegral</a></td><td>Реклама</td></tr>
+        <tr><td><a href="https://www.pangleglobal.com/privacy" target="_blank" rel="noopener">Pangle</a></td><td>Реклама</td></tr>
+        <tr><td><a href="https://www.digitalturbine.com/legal/privacy-policy" target="_blank" rel="noopener">Digital Turbine</a> (DT Exchange)</td><td>Реклама</td></tr>
+        <tr><td><a href="https://www.moloco.com/terms-and-policies/advertising-privacy-notice" target="_blank" rel="noopener">Moloco</a></td><td>Реклама</td></tr>
+        <tr><td><a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Google Firebase</a></td><td>Аналитика, отчёты о сбоях, удалённые настройки и A/B-тесты</td></tr>
+        <tr><td><a href="https://gameanalytics.com/privacy/" target="_blank" rel="noopener">GameAnalytics</a></td><td>Игровая аналитика</td></tr>
+        <tr><td><a href="https://tenjin.com/privacy/" target="_blank" rel="noopener">Tenjin</a></td><td>Атрибуция установок и оценка маркетинга</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Часть этих компаний находится за пределами вашей страны, в том числе в США, Сингапуре и Китае. Если данные передаются за пределы ЕЭЗ или Великобритании, передача опирается на гарантии поставщиков, например стандартные договорные условия ЕС или EU–US Data Privacy Framework.</p>
 
   <h2 id="ru-cat-exorcist">Кот-экзорцист</h2>
+  <p>Кот-экзорцист (пакет Android <code>com.gloryarc.catexorcist</code>) использует всё, что описано выше. Коротко:</p>
   <div class="table">
     <table>
       <thead><tr><th>Данные</th><th>Куда попадают</th><th>Зачем</th></tr></thead>
       <tbody>
-        <tr><td>Прогресс и настройки игры, включая выбранный язык</td><td>Остаются на вашем устройстве</td><td>Чтобы сохранить и восстановить игру</td></tr>
-        <tr><td>Рекламный идентификатор, IP-адрес, данные устройства и взаимодействия с рекламой</td><td>AppLovin MAX и подключённые к нему рекламные сети, включая Google AdMob</td><td>Чтобы показывать рекламу за награду и другую рекламу, бороться с мошенничеством и учитывать показы</td></tr>
-        <tr><td>Подтверждение покупки (предмет и время)</td><td>Google Play или Apple App Store, затем игра</td><td>Чтобы выдать купленное и восстановить покупки</td></tr>
+        <tr><td>Прогресс, настройки, выбранный язык</td><td>Остаются на устройстве</td><td>Сохранить и восстановить игру</td></tr>
+        <tr><td>Рекламный ID (с разрешения), IP-адрес, данные устройства, взаимодействие с рекламой</td><td>AppLovin MAX и рекламные сети из списка выше</td><td>Показ рекламы за награду и межстраничной рекламы, борьба с мошенничеством, учёт показов</td></tr>
+        <tr><td>ID установки, данные устройства, страна, игровые события, доход с рекламы, журналы сбоев</td><td>Firebase, GameAnalytics</td><td>Аналитика, баланс, A/B-тесты, исправление ошибок</td></tr>
+        <tr><td>Рекламный ID (с разрешения), IP-адрес, события установки и покупок</td><td>Tenjin</td><td>Атрибуция установок</td></tr>
+        <tr><td>Подтверждение покупки (предмет и время)</td><td>Google Play или Apple App Store, затем игра</td><td>Выдать и восстановить покупки</td></tr>
       </tbody>
     </table>
   </div>
-  <p>Кот-экзорцист работает без интернета. В игре нет чата, пользовательского контента и аккаунтов.</p>
+  <p>В Коте-экзорцисте нет аккаунтов, чата и пользовательского контента. В него можно играть без интернета; тогда реклама, аналитика и атрибуция ничего не отправляют, пока устройство не выйдет в сеть.</p>
 
   <h2 id="ru-site">Этот сайт</h2>
   <p>Сайт не использует cookie, аналитику и рекламу и не загружает сторонние шрифты или скрипты. Он запоминает выбранный язык в локальном хранилище вашего браузера. Как и любой веб-сервер, наш хостинг ведёт короткие технические журналы (IP-адрес, тип браузера, запрошенная страница и время), чтобы сайт работал и был защищён. Журналы автоматически удаляются через ограниченный срок.</p>
 
   <h2 id="ru-rights">Ваш выбор и ваши права</h2>
   <ul>
-    <li><strong>Персонализация рекламы:</strong> на Android откройте Настройки › Google › Реклама (или Настройки › Конфиденциальность › Реклама), чтобы сбросить или удалить рекламный идентификатор. На iOS: Настройки › Конфиденциальность и безопасность › Отслеживание. В ЕЭЗ и Великобритании выбор согласия можно изменить в настройках игры.</li>
+    <li><strong>Согласие (ЕЭЗ, Великобритания, Швейцария):</strong> при первом запуске игра показывает форму согласия. Изменить выбор можно в любой момент в настройках игры (пункт о конфиденциальности).</li>
+    <li><strong>Отслеживание на iPhone:</strong> если нажать «Попросить приложение не отслеживать», игра не получит IDFA. Изменить это можно в Настройки › Конфиденциальность и безопасность › Отслеживание.</li>
+    <li><strong>Рекламный ID на Android:</strong> Настройки › Google › Реклама (или Настройки › Конфиденциальность › Реклама), там его можно сбросить или удалить. После этого реклама не будет персонализированной.</li>
     <li><strong>Данные игры:</strong> удаление игры стирает весь прогресс на устройстве.</li>
-    <li><strong>Доступ, исправление, удаление:</strong> в зависимости от страны проживания (например, по GDPR или CCPA) вы можете узнать, какие ваши данные у нас есть, и попросить исправить или удалить их. Так как игры хранят прогресс на устройстве, обычно у нас нет ваших данных, кроме писем в поддержку. Напишите на <a href="mailto:info@protekgames.com">info@protekgames.com</a>, мы ответим в течение 30 дней.</li>
+    <li><strong>Доступ, исправление, удаление, возражение:</strong> в зависимости от страны проживания (например, по GDPR, UK GDPR или законам штатов США вроде CCPA) вы можете узнать, какие ваши данные есть у нас или наших партнёров, и попросить исправить, удалить их или прекратить обработку. Напишите на <a href="mailto:info@protekgames.com">info@protekgames.com</a>. Так как аккаунтов нет, укажите название игры и, если можете, рекламный ID устройства, чтобы мы нашли связанные данные. Мы ответим в течение 30 дней.</li>
+    <li>Мы не продаём персональные данные за деньги. Некоторые законы считают передачу данных рекламным сетям «продажей» или «обменом»; от неё можно отказаться, не давая согласие или ограничив рекламное отслеживание, как описано выше.</li>
     <li>Вы также можете подать жалобу в местный орган по защите данных.</li>
   </ul>
 
   <h2 id="ru-children">Дети</h2>
-  <p>Наши игры не предназначены для детей младше 13 лет (или минимального возраста в вашей стране). Мы сознательно не собираем данные детей. Если вы считаете, что ребёнок прислал нам персональные данные, напишите нам, и мы их удалим.</p>
+  <p>Наши игры предназначены для игроков от 13 лет и не ориентированы на детей. Мы сознательно не собираем данные детей младше 13 лет (или минимального возраста в вашей стране). Если вы считаете, что игрой пользовался ребёнок и его данные были собраны, напишите нам, и мы поможем их удалить.</p>
 
   <h2 id="ru-changes">Изменения и контакты</h2>
   <p>Если мы изменим политику, новая версия появится на этой странице с новой датой. О важных изменениях мы также напишем в описании обновления игры.</p>
