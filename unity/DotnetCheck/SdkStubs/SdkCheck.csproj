@@ -1,0 +1,22 @@
+<!-- Синтаксическая проверка Scripts/Integrations с заглушками SDK (Stubs.cs) и всеми символами CE_*. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <NoWarn>CS0649;CS0169;CS0414;CS0162;CS8632;CS0067</NoWarn>
+    <Platform Condition="'$(Platform)' == ''">android</Platform>
+    <DefineConstants Condition="'$(Platform)' == 'android'">UNITY_ANDROID;CE_MAX;CE_IAP;CE_FIREBASE;CE_FIREBASE_RC;CE_CRASHLYTICS;CE_GA;CE_TENJIN;CE_NOTIF;TENJIN_APPLOVIN_ENABLED</DefineConstants>
+    <DefineConstants Condition="'$(Platform)' == 'ios'">UNITY_IOS;CE_MAX;CE_IAP;CE_FIREBASE;CE_FIREBASE_RC;CE_CRASHLYTICS;CE_GA;CE_TENJIN;CE_NOTIF;TENJIN_APPLOVIN_ENABLED</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Stubs.cs" />
+    <Compile Include="../../Assets/CatExorcist/Scripts/Core/**/*.cs" />
+    <Compile Include="../../Assets/CatExorcist/Scripts/Runtime/**/*.cs" />
+    <Compile Include="../../Assets/CatExorcist/Scripts/Integrations/**/*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="$(UnityRefs)/*.dll" Exclude="$(UnityRefs)/UnityEngine.UI.dll" />
+    <Reference Include="$(UnityUi)" />
+  </ItemGroup>
+</Project>
