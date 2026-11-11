@@ -41,11 +41,25 @@
     { name: 'Старый город', hue: 260, ghosts: ['armor', 'portrait', 'candle'], boss: 'headless', set: 'x1.25 урона кота' },
     { name: 'Порт', hue: 195, ghosts: ['drowned', 'jelly', 'lantern'], boss: 'ship', set: 'x1.25 урона кота' },
     { name: 'Универмаг', hue: 330, ghosts: ['mannequin', 'toy', 'tv'], boss: 'carousel', set: 'x1.25 урона кота' },
-    { name: 'Кладбище котов', hue: 150, ghosts: ['skelecat', 'pumpkin', 'wisp'], boss: 'ninelives', set: 'x1.25 урона кота', feature: 'густая тьма' },
-    { name: 'Ледяной замок', hue: 200, ghosts: ['snowman', 'icicle', 'aurora'], boss: 'frostqueen', set: 'x1.25 урона кота', feature: 'скользкий лёд' },
-    { name: 'Безумная лаборатория', hue: 100, ghosts: ['slime', 'flask', 'spark'], boss: 'franken', set: 'x1.25 урона кота', feature: 'лужи кислоты' },
-    { name: 'Лунный дворец', hue: 280, ghosts: ['moth', 'mirror', 'starling'], boss: 'moonking', set: 'x1.25 урона кота', feature: 'звездопад' },
+    { name: 'Кладбище котов', hue: 150, ghosts: ['skelecat', 'pumpkin', 'wisp'], boss: 'ninelives', set: 'x1.25 урона кота', feature: 'густая тьма', feat: 'dark' },
+    { name: 'Ледяной замок', hue: 200, ghosts: ['snowman', 'icicle', 'aurora'], boss: 'frostqueen', set: 'x1.25 урона кота', feature: 'скользкий лёд', feat: 'ice' },
+    { name: 'Безумная лаборатория', hue: 100, ghosts: ['slime', 'flask', 'spark'], boss: 'franken', set: 'x1.25 урона кота', feature: 'лужи кислоты', feat: 'acid' },
+    { name: 'Лунный дворец', hue: 280, ghosts: ['moth', 'mirror', 'starling'], boss: 'moonking', set: 'x1.25 урона кота', feature: 'звездопад', feat: 'stars' },
+    // Районы 9–20 (дома 81–200). Пока своего арта нет: base — чей арт берём, tone — перекраска (оттенок h, насыщенность s, яркость l)
+    { name: 'Цирк-шапито', base: 3, tone: { h: 20, s: 2, mul: '#ffd88a' }, ghosts: ['clown', 'balloon', 'juggler'], boss: 'ringmaster', set: 'x1.25 урона кота' },
+    { name: 'Заброшенная школа', base: 1, tone: { h: -40, s: 0.85 }, ghosts: ['chalk', 'textbook', 'bell'], boss: 'headmistress', set: 'x1.25 урона кота' },
+    { name: 'Подземка', base: 6, tone: { h: 160, l: 0.8 }, ghosts: ['rat', 'conductor', 'tunnellight'], boss: 'ghosttrain', set: 'x1.25 урона кота', feature: 'темнота туннелей', feat: 'dark' },
+    { name: 'Пиратская бухта', base: 2, tone: { h: -20, s: 1.4 }, ghosts: ['cabinboy', 'parrot', 'mimic'], boss: 'catbeard', set: 'x1.25 урона кота' },
+    { name: 'Ботанический сад', base: 6, tone: { h: -85, s: 2.4 }, ghosts: ['flytrap', 'cactus', 'firefly'], boss: 'rosequeen', set: 'x1.25 урона кота', feature: 'ядовитые лужи', feat: 'acid' },
+    { name: 'Пустынная пирамида', base: 4, tone: { h: -55, s: 0.75, l: 1.12 }, ghosts: ['mummy', 'scarab', 'sarcophagus'], boss: 'pharaoh', set: 'x1.25 урона кота', feature: 'камнепад', feat: 'stars' },
+    { name: 'Часовая башня', base: 1, tone: { h: 165 }, ghosts: ['gear', 'cuckoo', 'pendulum'], boss: 'timekeeper', set: 'x1.25 урона кота' },
+    { name: 'Кукольный театр', base: 3, tone: { h: 10, s: 2.5, l: 0.85, mul: '#ff9a9a' }, ghosts: ['puppet', 'glovepuppet', 'mask'], boss: 'puppeteer', set: 'x1.25 урона кота' },
+    { name: 'Затонувший город', base: 2, tone: { h: -35, l: 0.85 }, ghosts: ['mermaid', 'angler', 'pearl'], boss: 'kraken', set: 'x1.25 урона кота', feature: 'тёмная глубина', feat: 'dark' },
+    { name: 'Вулкан', base: 5, tone: { h: 170, s: 2, l: 0.65 }, ghosts: ['lavagolem', 'salamander', 'ash'], boss: 'firedragon', set: 'x1.25 урона кота', feature: 'лужи лавы', feat: 'acid' },
+    { name: 'Облачное королевство', base: 7, tone: { h: -70, l: 1.1 }, ghosts: ['grumpcloud', 'rainbow', 'thundercloud'], boss: 'stormlord', set: 'x1.25 урона кота', feature: 'скользкие облака', feat: 'ice' },
+    { name: 'Тёмная цитадель', base: 7, tone: { h: 90, s: 1.2, l: 0.55 }, ghosts: ['shade', 'darkknight', 'abyss'], boss: 'ghostking', set: 'x1.25 урона кота', feature: 'огненный дождь', feat: 'stars' },
   ];
+  DISTRICTS.forEach((d, i) => { if (d.base === undefined) d.base = i; });
   const HOUSES_PER_DISTRICT = 10;
 
   // shape: sheet | sock | fire | washer | king
@@ -87,6 +101,55 @@
     heart: { name: 'Дух-валентинка', rarity: 1, body: '#ff9fc4', shape: 'sheet', d: 4, event: true }, // День влюблённых
     egg: { name: 'Пасхальный дух', rarity: 1, body: '#fff1b8', shape: 'sheet', d: 4, event: true }, // Весна
     sandcastle: { name: 'Песочный замок', rarity: 1, body: '#f2d29a', shape: 'king', d: 4, event: true }, // Лето
+    // районы 9–20: art — чей рисунок берём, пока нет своего (перекрашивается под район)
+    clown: { name: 'Клоун-хохотун', rarity: 0, body: '#ffd1dc', shape: 'sock', d: 8, beh: 'charge', art: 'mannequin' },
+    balloon: { name: 'Шарик-призрак', rarity: 1, body: '#ff9ab0', shape: 'sheet', d: 8, beh: 'split', art: 'jelly' },
+    juggler: { name: 'Огненный жонглёр', rarity: 2, body: '#ffc06b', shape: 'fire', d: 8, beh: 'kite', art: 'fire' },
+    ringmaster: { name: 'Директор цирка', rarity: 3, body: '#ffb3c8', shape: 'king', d: 8, art: 'carousel', skill: 'spiral', shout: 'Алле-оп!' },
+    chalk: { name: 'Меловой призрак', rarity: 0, body: '#f4f4f4', shape: 'sheet', d: 9, art: 'sheet' },
+    textbook: { name: 'Летающий учебник', rarity: 1, body: '#cfe3ff', shape: 'sock', d: 9, beh: 'blink', art: 'portrait' },
+    bell: { name: 'Дух звонка', rarity: 2, body: '#ffe28a', shape: 'fire', d: 9, beh: 'heal', art: 'candle' },
+    headmistress: { name: 'Строгая завуч', rarity: 3, body: '#d6c8ff', shape: 'king', d: 9, art: 'headless', skill: 'dash', shout: 'К доске!' },
+    rat: { name: 'Крысиный дух', rarity: 0, body: '#cfc6bd', shape: 'sheet', d: 10, beh: 'charge', art: 'skelecat' },
+    conductor: { name: 'Призрак-контролёр', rarity: 1, body: '#b8d0ff', shape: 'sock', d: 10, beh: 'blink', art: 'armor' },
+    tunnellight: { name: 'Огни туннеля', rarity: 2, body: '#fff07a', shape: 'fire', d: 10, beh: 'kite', art: 'lantern' },
+    ghosttrain: { name: 'Поезд-призрак', rarity: 3, body: '#c4d6ee', shape: 'king', d: 10, art: 'ship', skill: 'cannon', shout: 'Ту-ту!' },
+    cabinboy: { name: 'Скелет-юнга', rarity: 0, body: '#efe6d6', shape: 'sheet', d: 11, art: 'drowned' },
+    parrot: { name: 'Призрачный попугай', rarity: 1, body: '#9ff0a8', shape: 'sock', d: 11, beh: 'bomber', art: 'jelly' },
+    mimic: { name: 'Сундук-мимик', rarity: 2, body: '#ffd27a', shape: 'fire', d: 11, beh: 'blink', art: 'wisp' },
+    catbeard: { name: 'Капитан Кошачья Борода', rarity: 3, body: '#b9d7f0', shape: 'king', d: 11, art: 'ship', skill: 'cannon', shout: 'На абордаж!' },
+    flytrap: { name: 'Хищный цветок', rarity: 0, body: '#b6f5a0', shape: 'sheet', d: 12, beh: 'split', art: 'slime' },
+    cactus: { name: 'Колючий кактус', rarity: 1, body: '#9fe08a', shape: 'sock', d: 12, beh: 'bomber', art: 'flask' },
+    firefly: { name: 'Светлячок', rarity: 2, body: '#fff27a', shape: 'fire', d: 12, beh: 'kite', art: 'spark' },
+    rosequeen: { name: 'Королева роз', rarity: 3, body: '#ffb3c8', shape: 'king', d: 12, art: 'franken', skill: 'lightning', shout: 'Шипы!' },
+    mummy: { name: 'Мумия-котик', rarity: 0, body: '#f1e3c0', shape: 'sheet', d: 13, beh: 'charge', art: 'skelecat' },
+    scarab: { name: 'Скарабей', rarity: 1, body: '#7fd1ff', shape: 'sock', d: 13, beh: 'bomber', art: 'pumpkin' },
+    sarcophagus: { name: 'Дух саркофага', rarity: 2, body: '#ffd86b', shape: 'fire', d: 13, beh: 'blink', art: 'wisp' },
+    pharaoh: { name: 'Кот-фараон', rarity: 3, body: '#ffe08a', shape: 'king', d: 13, art: 'ninelives', skill: 'summon', shout: 'Проклятие!' },
+    gear: { name: 'Шестерёнка', rarity: 0, body: '#e0d4b0', shape: 'sock', d: 14, beh: 'charge', art: 'armor' },
+    cuckoo: { name: 'Кукушка из часов', rarity: 1, body: '#ffd6a0', shape: 'sheet', d: 14, beh: 'blink', art: 'portrait' },
+    pendulum: { name: 'Дух маятника', rarity: 2, body: '#fff0a8', shape: 'fire', d: 14, beh: 'heal', art: 'candle' },
+    timekeeper: { name: 'Хранитель времени', rarity: 3, body: '#cfc6ff', shape: 'king', d: 14, art: 'headless', skill: 'dash', shout: 'Тик-так!' },
+    puppet: { name: 'Марионетка', rarity: 0, body: '#f1d9cc', shape: 'sock', d: 15, beh: 'charge', art: 'mannequin' },
+    glovepuppet: { name: 'Кукла-перчатка', rarity: 1, body: '#e8c49a', shape: 'sheet', d: 15, beh: 'heal', art: 'toy' },
+    mask: { name: 'Театральная маска', rarity: 2, body: '#c8f0ff', shape: 'fire', d: 15, beh: 'blink', art: 'tv' },
+    puppeteer: { name: 'Кукловод', rarity: 3, body: '#ffd1e8', shape: 'king', d: 15, art: 'carousel', skill: 'spiral', shout: 'Занавес!' },
+    mermaid: { name: 'Дух русалки', rarity: 0, body: '#bfe9e4', shape: 'sheet', d: 16, art: 'drowned' },
+    angler: { name: 'Рыба-удильщик', rarity: 1, body: '#ffc6f0', shape: 'sock', d: 16, beh: 'split', art: 'jelly' },
+    pearl: { name: 'Жемчужный огонёк', rarity: 2, body: '#ffe08a', shape: 'fire', d: 16, beh: 'kite', art: 'lantern' },
+    kraken: { name: 'Кракен', rarity: 3, body: '#b9d7f0', shape: 'king', d: 16, art: 'ship', skill: 'cannon', shout: 'Щупальца!' },
+    lavagolem: { name: 'Лавовый голем', rarity: 0, body: '#ffb07a', shape: 'sheet', d: 17, art: 'snowman' },
+    salamander: { name: 'Огненная саламандра', rarity: 1, body: '#ff9a6b', shape: 'sock', d: 17, beh: 'charge', art: 'icicle' },
+    ash: { name: 'Дух пепла', rarity: 2, body: '#ffd0a0', shape: 'fire', d: 17, beh: 'heal', art: 'aurora' },
+    firedragon: { name: 'Огненный дракон', rarity: 3, body: '#ffb3a0', shape: 'king', d: 17, art: 'frostqueen', skill: 'frost', shout: 'Извержение!' },
+    grumpcloud: { name: 'Облачко-ворчун', rarity: 0, body: '#e6eeff', shape: 'sheet', d: 18, art: 'moth' },
+    rainbow: { name: 'Дух радуги', rarity: 1, body: '#ffd8f0', shape: 'sock', d: 18, beh: 'blink', art: 'mirror' },
+    thundercloud: { name: 'Грозовая тучка', rarity: 2, body: '#c8d8ff', shape: 'fire', d: 18, beh: 'bomber', art: 'starling' },
+    stormlord: { name: 'Повелитель бурь', rarity: 3, body: '#d0c8ff', shape: 'king', d: 18, art: 'moonking', skill: 'stars', shout: 'Гроза!' },
+    shade: { name: 'Тень', rarity: 0, body: '#b0a0d0', shape: 'sheet', d: 19, art: 'moth' },
+    darkknight: { name: 'Рыцарь тьмы', rarity: 1, body: '#a8a0c0', shape: 'sock', d: 19, beh: 'charge', art: 'armor' },
+    abyss: { name: 'Око бездны', rarity: 2, body: '#d0a8ff', shape: 'fire', d: 19, beh: 'bomber', art: 'starling' },
+    ghostking: { name: 'Король призраков', rarity: 3, body: '#e0c8ff', shape: 'king', d: 19, art: 'moonking', skill: 'stars', shout: 'Конец света!' },
   };
 
   // Походы духов: духи не из отряда уходят на время и приносят награды
@@ -185,14 +248,14 @@
     { id: 'kills', icon: '👻', name: 'Гроза призраков', unit: 'побед', val: () => S.stats.kills, tiers: [100, 1000, 10000, 100000, 1000000] },
     { id: 'captures', icon: '🫙', name: 'Коллекционер', unit: 'поимок', val: () => S.stats.captures, tiers: [10, 100, 500, 2500, 10000] },
     { id: 'bosses', icon: '👑', name: 'Охотник на боссов', unit: 'боссов', val: () => S.stats.bosses, tiers: [5, 25, 100, 300, 1000] },
-    { id: 'house', icon: '🏚', name: 'Экзорцист города', unit: 'дом', val: () => S.maxHouse, tiers: [5, 15, 30, 50, 80] },
+    { id: 'house', icon: '🏚', name: 'Экзорцист города', unit: 'дом', val: () => S.maxHouse, tiers: [5, 15, 30, 50, 80, 120, 160, 200] },
     { id: 'prestige', icon: '✨', name: 'Свет луны', unit: 'освящений', val: () => S.prestiges, tiers: [1, 5, 15, 40, 100] },
     { id: 'elites', icon: '⭐', name: 'Золотая лихорадка', unit: 'элит', val: () => S.stats.elites, tiers: [5, 50, 250, 1000] },
     { id: 'merges', icon: '🔁', name: 'Алхимик', unit: 'слияний', val: () => S.stats.merges, tiers: [5, 50, 250, 1000] },
     { id: 'summons', icon: '🧹', name: 'Мастер насадок', unit: 'призывов', val: () => S.stats.summons, tiers: [10, 100, 500, 2000] },
     { id: 'raid', icon: '⚔', name: 'Покоритель особняка', unit: 'этаж', val: () => S.stats.raidBest || 0, tiers: [5, 10, 20, 35, 50] },
     { id: 'upgrades', icon: '⚙', name: 'Инженер', unit: 'улучшений', val: () => S.stats.upgrades, tiers: [50, 500, 2500, 10000] },
-    { id: 'bestiary', icon: '📖', name: 'Знаток нечисти', unit: 'видов', val: () => Object.keys(S.bestiary).length, tiers: [4, 12, 20, 32] },
+    { id: 'bestiary', icon: '📖', name: 'Знаток нечисти', unit: 'видов', val: () => Object.keys(S.bestiary).length, tiers: [4, 12, 20, 32, 50, 80] },
     { id: 'skins', icon: '🎁', name: 'Модник', unit: 'скинов', val: () => S.skins.length, tiers: [2, 5, 10, 18] },
     { id: 'streak', icon: '🔥', name: 'Верный кот', unit: 'дней подряд', val: () => S.stats.bestStreak || S.streak.count, tiers: [3, 7, 14, 30, 60] },
     { id: 'exps', icon: '🧭', name: 'Путешественник', unit: 'походов', val: () => S.stats.exps || 0, tiers: [3, 15, 50, 150] },
@@ -334,7 +397,7 @@
   const PRESTIGE_HOUSE = 10;
   const SAVE_KEY = 'cat_exorcist_v1';
   const VERSION = '0.9.0';
-  const CIRCLE = HOUSES_PER_DISTRICT * DISTRICTS.length; // 80 домов, дальше «Круг 2»
+  const CIRCLE = HOUSES_PER_DISTRICT * DISTRICTS.length; // 200 домов, дальше «Круг 2»
 
   // Путь открытий: что даёт рекорд по домам
   // room — комната внутри дома (по умолчанию 1); открытие засчитывается по рекорду комнат
@@ -362,6 +425,7 @@
     { house: 51, id: 'ice', icon: '❄', name: 'Ледяной замок', text: 'Новый район и 4 новых призрака' },
     { house: 61, id: 'lab', icon: '🧪', name: 'Безумная лаборатория', text: 'Новый район и 4 новых призрака' },
     { house: 71, id: 'palace', icon: '🌙', name: 'Лунный дворец', text: 'Новый район и 4 новых призрака' },
+    ...['🎪', '🏫', '🚇', '🦜', '🌺', '🏺', '🕰', '🎭', '🐙', '🌋', '☁', '🏰'].map((icon, i) => ({ house: 81 + i * 10, id: 'd' + (i + 8), icon, name: DISTRICTS[i + 8].name, text: 'Новый район и 4 новых призрака' })),
     { house: CIRCLE + 1, id: 'circle2', icon: '🔁', name: 'Круг 2', text: 'Город заново: сильнее призраки, x2 💎 с боссов' },
   ];
   UNLOCKS.forEach((u) => { u.stage = (u.house - 1) * 5 + ((u.room || 1) - 1); });
@@ -575,7 +639,9 @@
   const critMult = () => 3 + 0.25 * kindPower('brush');
   const incomeMult = () => Math.pow(1.08, S.lvCollect - 1) * moonMult() * stoneInc() * skinMult('income') * (1 + 0.1 * kindPower('magnet'));
   // Баланс (см. docs/BALANCE.md): здоровье растёт быстрее награды, поэтому без освящения рост упирается в стену около дома 15
-  const hpAt = (stage, rarity) => 22 * Math.pow(1.26, stage) * RARITY[rarity].hp;
+  // Здоровье: x1.26 за стадию до дома 80, дальше мягче (x1.185), чтобы районы до дома 200 были проходимы
+  const HP_KNEE = 80 * ROOMS_PER_HOUSE - 5;
+  const hpAt = (stage, rarity) => 22 * Math.pow(1.26, Math.min(stage, HP_KNEE)) * Math.pow(1.185, Math.max(0, stage - HP_KNEE)) * RARITY[rarity].hp;
   const ghostHp = (rarity) => hpAt(stageIndex(), rarity);
   const ghostReward = (rarity) => 4 * Math.pow(1.15, stageIndex()) * RARITY[rarity].reward * incomeMult();
   const upgradeCost = (lv, base) => Math.floor(base * Math.pow(1.22, lv - 1));
@@ -821,7 +887,7 @@
       return song;
     }
     const mus = { next: 0, step: 0, song: null, key: '' };
-    function musicKey() { return splash ? 'title' : raid ? 'raid' : (isBossRoom() && bossSpawned) ? 'boss' : 'd' + districtIndex(); }
+    function musicKey() { return splash ? 'title' : raid ? 'raid' : (isBossRoom() && bossSpawned) ? 'boss' : 'd' + district().base; }
     function step(song, i, t) {
       const st = i % 16, bar = Math.floor(i / 16) % 8, c = song.prog[bar % 4];
       const s16 = 60 / song.bpm / 4;
@@ -1049,6 +1115,7 @@
   // Атаки боссов: у каждого района своя, с предупреждением на полу
   // =====================================================================
   const BOSS_SKILLS = { washer: 'spin', headless: 'dash', ship: 'cannon', carousel: 'spiral', ninelives: 'summon', frostqueen: 'frost', franken: 'lightning', moonking: 'stars' };
+  for (const k in GHOSTS) if (GHOSTS[k].skill) BOSS_SKILLS[k] = GHOSTS[k].skill;
   const SKILL_NAMES = { spin: 'Отжим!', dash: 'Рывок!', cannon: 'Залп!', spiral: 'Карусель!', summon: 'Девять жизней!', frost: 'Метель!', lightning: 'Молния!', stars: 'Звездопад!' };
   const near = (r) => ({ x: Math.max(FIELD.x1, Math.min(FIELD.x2, cat.x + (Math.random() - 0.5) * 2 * r)), y: Math.max(FIELD.y1, Math.min(FIELD.y2, cat.y + (Math.random() - 0.5) * 2 * r)) });
   function addZone(z) { zones.push(Object.assign({ r: 40, tele: 1, life: 0.35, kind: 'blast', dmg: 25, color: '#ff6b8a' }, z, { max: z.tele || 1 })); }
@@ -1065,7 +1132,7 @@
     if (g.dash || g.spiral) return;
     g.skillCd -= dt; if (g.skillCd > 0) return;
     g.skillCd = 4.5 + Math.random() * 1.5;
-    floaters.push({ x: g.x, y: g.y - g.r - 26, text: SKILL_NAMES[sk], life: 1.3, color: '#ffd84d', size: 17 });
+    floaters.push({ x: g.x, y: g.y - g.r - 26, text: GHOSTS[g.type].shout || SKILL_NAMES[sk], life: 1.3, color: '#ffd84d', size: 17 });
     SFX.play('spawn');
     if (sk === 'spin') g.windup = { t: 0.7, fire: () => { radial(g, 14, 120, 14, Math.random()); radial(g, 14, 80, 14, Math.random()); } };
     else if (sk === 'dash') {
@@ -1103,11 +1170,11 @@
     zones = zones.filter((z) => z.tele > 0 || z.life > 0);
     // особенности районов
     if (raid) return;
-    const d = districtIndex();
+    const f = district().feat;
     featureCd -= dt;
     if (featureCd <= 0) {
-      if (d === 6) { addZone(Object.assign(near(90), { kind: 'acid', r: 42, tele: 0.8, life: 6, dmg: 0, color: '#7dff5a' })); featureCd = 6 + Math.random() * 3; }
-      else if (d === 7) { for (let i = 0; i < 2; i++) addZone(Object.assign(near(120), { r: 34, tele: 1.3, dmg: 16, color: '#ffd84d' })); featureCd = 5 + Math.random() * 3; }
+      if (f === 'acid') { addZone(Object.assign(near(90), { kind: 'acid', r: 42, tele: 0.8, life: 6, dmg: 0, color: '#7dff5a' })); featureCd = 6 + Math.random() * 3; }
+      else if (f === 'stars') { for (let i = 0; i < 2; i++) addZone(Object.assign(near(120), { r: 34, tele: 1.3, dmg: 16, color: '#ffd84d' })); featureCd = 5 + Math.random() * 3; }
       else featureCd = 5;
     }
   }
@@ -2118,7 +2185,7 @@
     }
     speed *= cat.slow || 1;
     // на льду кот скользит: скорость меняется плавно
-    const tvx = dx * speed, tvy = dy * speed, slip = districtIndex() === 5 && !raid ? Math.min(1, dt * 2.2) : 1;
+    const tvx = dx * speed, tvy = dy * speed, slip = district().feat === 'ice' && !raid ? Math.min(1, dt * 2.2) : 1;
     cat.vx = (cat.vx || 0) + (tvx - (cat.vx || 0)) * slip; cat.vy = (cat.vy || 0) + (tvy - (cat.vy || 0)) * slip;
     cat.x = Math.max(FIELD.x1, Math.min(FIELD.x2, cat.x + cat.vx * dt));
     cat.y = Math.max(FIELD.y1, Math.min(FIELD.y2, cat.y + cat.vy * dt));
@@ -2682,10 +2749,36 @@
   const ART = {};
   let artPending = 0;
   const tintCopy = (img, color) => {
-    const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
+    const c = document.createElement('canvas'); c.width = img.naturalWidth || img.width; c.height = img.naturalHeight || img.height;
     const x = c.getContext('2d'); x.drawImage(img, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = color; x.fillRect(0, 0, c.width, c.height); return c;
   };
   const tinted = (A, key, color) => A[key] || (A[key] = tintCopy(A.img, color)); // белая вспышка и силуэт — по запросу
+  // Перекраска чужого арта для новых районов, пока у них нет своего: поворот оттенка (как CSS hue-rotate), насыщенность, яркость
+  function toneCopy(img, t) {
+    const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d'); x.drawImage(img, 0, 0);
+    try {
+      const data = x.getImageData(0, 0, w, h), p = data.data;
+      const a = ((t.h || 0) * Math.PI) / 180, cs = Math.cos(a), sn = Math.sin(a), sat = t.s === undefined ? 1 : t.s, lit = t.l === undefined ? 1 : t.l;
+      const mul = t.mul ? [1, 3, 5].map((i) => (lit * parseInt(t.mul.substr(i, 2), 16)) / 255) : [lit, lit, lit]; // mul — умножить на цвет (свой оттенок призрака)
+      const m = [0.213 + cs * 0.787 - sn * 0.213, 0.715 - cs * 0.715 - sn * 0.715, 0.072 - cs * 0.072 + sn * 0.928,
+        0.213 - cs * 0.213 + sn * 0.143, 0.715 + cs * 0.285 + sn * 0.14, 0.072 - cs * 0.072 - sn * 0.283,
+        0.213 - cs * 0.213 - sn * 0.787, 0.715 - cs * 0.715 + sn * 0.715, 0.072 + cs * 0.928 + sn * 0.072];
+      for (let i = 0; i < p.length; i += 4) {
+        if (!p[i + 3]) continue;
+        const r = p[i], g = p[i + 1], b = p[i + 2];
+        const R = m[0] * r + m[1] * g + m[2] * b, G = m[3] * r + m[4] * g + m[5] * b, B = m[6] * r + m[7] * g + m[8] * b, L = 0.299 * R + 0.587 * G + 0.114 * B;
+        p[i] = (L + (R - L) * sat) * mul[0]; p[i + 1] = (L + (G - L) * sat) * mul[1]; p[i + 2] = (L + (B - L) * sat) * mul[2];
+      }
+      x.putImageData(data, 0, 0);
+    } catch (e) { /* холст не читается: оставляем без перекраски */ }
+    return c;
+  }
+  const toned = (A, t) => { if (!A || !t) return A; const k = 'tone' + t.h + ':' + t.s + ':' + t.l + ':' + t.mul; return A[k] || (A[k] = { img: toneCopy(A.img, t) }); };
+  const dArt = (k) => useArt() && toned(ART[k], district().tone);
+  // призрак без своего рисунка: чужой арт, оттенок района и умножение на цвет тела, чтобы похожие различались
+  const ghostTone = (def) => def.tone || (def.tone = { h: DISTRICTS[def.d].tone.h, s: Math.max(1, DISTRICTS[def.d].tone.s || 1), mul: def.body });
   const ALL_SRC = Object.assign({}, ART_SRC, UI_SRC, SCENE_SRC, EXTRA_SRC);
   Object.assign(ART_ASPECT, EXTRA_ASPECT);
   for (const k in ALL_SRC) {
@@ -3184,9 +3277,9 @@
     o = o || {};
     const def = GHOSTS[type];
     const phase = o.phase || 0;
-    const A = useArt() && ART['ghost-' + type];
+    const A = useArt() && (ART['ghost-' + type] || (def.art && toned(ART['ghost-' + def.art], ghostTone(def))));
     if (A) { // нарисованный спрайт: лёгкое покачивание ±1°, белая вспышка при попадании
-      const asp = ART_ASPECT['ghost-' + type] || 1;
+      const asp = ART_ASPECT['ghost-' + type] || ART_ASPECT['ghost-' + def.art] || 1;
       const dw = asp >= 1 ? r * 2.6 : r * 2.5 * asp, dh = dw / asp;
       ctx.save(); ctx.translate(x, y); ctx.rotate(Math.sin(phase) * 0.018);
       if (o.silhouette) ctx.drawImage(tinted(A, 'shadow', '#6b5f86'), -dw / 2, -dh / 2, dw, dh);
@@ -3236,7 +3329,7 @@
       ctx.lineTo(x, y - r * 1.4); ctx.lineTo(x + r * 0.25, y - r * 1.05); ctx.lineTo(x + r * 0.5, y - r * 1.3); ctx.lineTo(x + r * 0.5, y - r * 0.85); ctx.closePath(); ctx.fill(); ctx.stroke();
     }
     // аксессуары призраков новых районов
-    if (def.d >= 5 && def.shape !== 'fire' && def.shape !== 'king') {
+    if (def.d >= 5 && def.d <= 7 && def.shape !== 'fire' && def.shape !== 'king') {
       ctx.strokeStyle = INK; ctx.lineWidth = 2;
       if (def.d === 5) { // вязаная шапочка
         ctx.fillStyle = '#5f9bff'; ctx.beginPath(); ctx.arc(x, y - r * 0.55, r * 0.62, Math.PI * 1.05, Math.PI * 1.95); ctx.closePath(); ctx.fill(); ctx.stroke();
@@ -3295,7 +3388,7 @@
     const key = mapKeyNow();
     if (key === mapKey) return;
     mapKey = key;
-    const d = districtIndex(), F = FLOORS[d];
+    const d = district().base, F = FLOORS[d];
     const R = rng(S.house * 7919 + 13);
     const k = 2; // рисуем в 2x для чёткости
     mapCanvas = mapCanvas || document.createElement('canvas');
@@ -3305,7 +3398,7 @@
     // пол
     c.fillStyle = F.base; c.fillRect(0, 0, MAP_W, MAP_H);
     c.fillStyle = F.line;
-    const floorArt = useArt() && ART['floor-d' + (d + 1)];
+    const floorArt = dArt('floor-d' + (d + 1));
     if (floorArt) { // нарисованная плитка, повтор каждые 300 единиц
       const pat = c.createPattern(floorArt.img, 'repeat'); pat.setTransform(new DOMMatrix([300 / floorArt.img.width, 0, 0, 300 / floorArt.img.width, 0, 0]));
       c.fillStyle = pat; c.fillRect(0, 0, MAP_W, MAP_H);
@@ -3361,7 +3454,7 @@
       const kind = kinds[Math.floor(R() * kinds.length)];
       const big = kind === 'rug' || kind === 'net' || kind === 'bed' || kind === 'sofa' || kind === 'tree';
       let w = big ? 100 + R() * 50 : 42 + R() * 24, h = big ? 70 + R() * 40 : 42 + R() * 20;
-      const pa = useArt() && ART['prop-d' + (d + 1) + '-' + kind];
+      const pa = dArt('prop-d' + (d + 1) + '-' + kind);
       if (pa) { // размер по пропорциям картинки
         const asp = ART_ASPECT['prop-d' + (d + 1) + '-' + kind] || 1;
         w = big ? 110 + (w - 100) * 0.8 : 52 + (w - 42) * 0.8; h = w / asp;
@@ -3380,6 +3473,15 @@
         drawDecor(c, kind, x, y, w, h, R, F);
         if (SOLID[kind]) solids.push({ x: x + 4, y: y + 4, w: w - 8, h: h - 8 });
       }
+    }
+    // без арта новые районы перекрашиваем целиком (тот же оттенок, что у арта)
+    const T = district().tone;
+    if (T && !useArt() && 'filter' in c) {
+      const tmp = document.createElement('canvas'); tmp.width = mapCanvas.width; tmp.height = mapCanvas.height; tmp.getContext('2d').drawImage(mapCanvas, 0, 0);
+      c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
+      c.filter = 'hue-rotate(' + (T.h || 0) + 'deg) saturate(' + (T.s || 1) + ') brightness(' + (T.l || 1) + ')'; c.drawImage(tmp, 0, 0); c.filter = 'none';
+      if (T.mul) { c.globalCompositeOperation = 'multiply'; c.fillStyle = T.mul; c.fillRect(0, 0, tmp.width, tmp.height); }
+      c.restore();
     }
     // украшения события: 3–4 нарисованных предмета, сквозь них можно ходить
     const ev = curEvent();
@@ -3418,7 +3520,7 @@
     c.save();
     c.beginPath(); c.rect(0, 0, MAP_W, MAP_H); c.rect(W, W, IW, IH); c.clip('evenodd');
     c.fillStyle = F.wall; c.fillRect(0, 0, MAP_W, MAP_H);
-    const wallArt = useArt() && ART['wall-d' + (d + 1)];
+    const wallArt = dArt('wall-d' + (d + 1));
     if (wallArt) { // нарисованная стена: полоса вдоль каждого края, верх картинки — к внешнему краю
       const sc = W / wallArt.img.height, pat = c.createPattern(wallArt.img, 'repeat-x');
       pat.setTransform(new DOMMatrix([sc, 0, 0, sc, 0, 0])); c.fillStyle = pat;
@@ -6199,7 +6301,7 @@
     {
       ctx.save(); ctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
       const cp = toScreen(cat.x, cat.y);
-      const dark = moonActive() ? 0.12 : districtIndex() === 4 && !raid ? 0.58 : 0.3;
+      const dark = moonActive() ? 0.12 : district().feat === 'dark' && !raid ? 0.58 : 0.3;
       const lg = ctx.createRadialGradient(cp.x, cp.y, 70, cp.x, cp.y, 330);
       lg.addColorStop(0, 'rgba(20,10,45,0)'); lg.addColorStop(1, `rgba(20,10,45,${dark})`);
       ctx.fillStyle = lg; ctx.fillRect(VIEW.x, VIEW.y, VIEW.w, VIEW.h);
@@ -6330,6 +6432,7 @@
     state: () => S, sfx: SFX, mapImage: () => mapCanvas.toDataURL(), ghosts: () => ghosts, cat: () => cat, cam: () => cam, resetRoom: () => resetRoom(), open: (p) => { panel = p; }, gold: () => { goldCd = 0; }, goldObj: () => gold, toScreen,
     splash: () => { splash = { t: 0, out: 0 }; },
     tut: (n) => { S.tut = n; },
+    best: (n) => { bestPage = n; }, ghostKeys: () => Object.keys(GHOSTS),
     zones: () => zones,
     fx: () => ({ shots, shards, rockets, drops, addBoom, addCandy, booms }),
     emo: (k) => popEmo(k), toast: (t, e) => showToast(t, e), ask: (t, l, e) => ask(t, l, [{ label: 'OK', color: '#8ee08a', on: closeModal }], e),
