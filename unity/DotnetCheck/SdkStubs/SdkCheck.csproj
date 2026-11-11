@@ -6,7 +6,7 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <NoWarn>CS0649;CS0169;CS0414;CS0162;CS8632;CS0067</NoWarn>
     <Platform Condition="'$(Platform)' == ''">android</Platform>
-    <DefineConstants Condition="'$(Platform)' == 'android'">UNITY_ANDROID;CE_MAX;CE_IAP;CE_FIREBASE;CE_FIREBASE_RC;CE_CRASHLYTICS;CE_GA;CE_TENJIN;CE_NOTIF;TENJIN_APPLOVIN_ENABLED</DefineConstants>
+    <DefineConstants Condition="'$(Platform)' == 'android'">UNITY_ANDROID;CE_MAX;CE_IAP;CE_IAP_VALIDATE;CE_FIREBASE;CE_FIREBASE_RC;CE_CRASHLYTICS;CE_GA;CE_TENJIN;CE_NOTIF;TENJIN_APPLOVIN_ENABLED</DefineConstants>
     <DefineConstants Condition="'$(Platform)' == 'ios'">UNITY_IOS;CE_MAX;CE_IAP;CE_FIREBASE;CE_FIREBASE_RC;CE_CRASHLYTICS;CE_GA;CE_TENJIN;CE_NOTIF;TENJIN_APPLOVIN_ENABLED</DefineConstants>
   </PropertyGroup>
   <ItemGroup>

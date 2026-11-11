@@ -31,15 +31,23 @@ namespace CatExorcist
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Boot()
         {
-            if (I != null || FindObjectOfType<GameRoot>() != null) return;
+            if (I != null || Find<GameRoot>() != null) return;
             new GameObject("CatExorcist").AddComponent<GameRoot>();
         }
+
+#if UNITY_2023_1_OR_NEWER
+        internal static T Find<T>() where T : UnityEngine.Object => FindAnyObjectByType<T>();
+#else
+        internal static T Find<T>() where T : UnityEngine.Object => FindObjectOfType<T>();
+#endif
 
         void Awake()
         {
             if (I != null && I != this) { Destroy(gameObject); return; }
             I = this;
             DontDestroyOnLoad(gameObject);
+            // звук двумерный: слушатель живёт на корне игры, если в сцене своего нет
+            if (Find<AudioListener>() == null) gameObject.AddComponent<AudioListener>();
             Application.targetFrameRate = 60;
             Input.multiTouchEnabled = false;
             Screen.sleepTimeout = SleepTimeout.SystemSetting;

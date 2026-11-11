@@ -35,7 +35,7 @@
    - текст ATT и его переводы (галка Localize);
    - установите адаптеры сетей: Google AdMob (+ App ID для Android и iOS), Meta Audience Network, Unity Ads, Liftoff Monetize, Mintegral, Pangle, DT Exchange, Moloco;
    - в `Scripts/Integrations/SdkIds.cs` впишите id рекламных блоков rewarded и interstitial для Android и iOS.
-2. **Unity IAP** уже в `Packages/manifest.json` (4.12.2). В **Services** привяжите проект к Unity Cloud. Для проверки чеков: **Services → In-App Purchasing → Receipt Validation Obfuscator**, вставьте публичный ключ Google Play — включится `CE_IAP_VALIDATE`.
+2. **Unity IAP 5** уже в `Packages/manifest.json` (5.5.0: Google Play Billing 7+, как требует Google Play, и StoreKit 2). Версию 4 не возвращайте: Unity её больше не поддерживает, и с ней покупки останутся имитацией. В **Services** привяжите проект к Unity Cloud. Для проверки чеков Google Play: **Project Settings → Services → In-App Purchasing → Receipt Validation Obfuscator**, вставьте публичный ключ из Play Console (Monetize → Monetization setup) — включится `CE_IAP_VALIDATE`. Покупки App Store StoreKit 2 проверяет сам.
 3. **Firebase** (Analytics, Crashlytics, Remote Config) — пакеты `.unitypackage` или tgz из Firebase Unity SDK. Положите `google-services.json` и `GoogleService-Info.plist` в `Assets/`. В Remote Config заведите ключи из `AdPolicy.Defaults` (`ads_inter_*`), через A/B Testing гоняйте частоту рекламы.
 4. **GameAnalytics** — пакет SDK, затем **Window → GameAnalytics → Select Settings**: ключи игры для Android и iOS.
 5. **Tenjin** — Unity SDK, ключ в `SdkIds.TenjinApiKey`. Для дохода с показов MAX добавьте символ `TENJIN_APPLOVIN_ENABLED` (Player → Scripting Define Symbols).

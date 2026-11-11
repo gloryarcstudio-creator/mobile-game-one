@@ -17,7 +17,7 @@ namespace CatExorcist.EditorTools
         static readonly (string define, string[] types)[] Map =
         {
             ("CE_MAX", new[] { "MaxSdk" }),
-            ("CE_IAP", new[] { "UnityEngine.Purchasing.UnityPurchasing" }),
+            ("CE_IAP", new[] { "UnityEngine.Purchasing.StoreController" }), // Unity IAP 5+; с IAP 4 покупки остаются имитацией
             ("CE_IAP_VALIDATE", new[] { "UnityEngine.Purchasing.Security.GooglePlayTangle" }),
             ("CE_FIREBASE", new[] { "Firebase.Analytics.FirebaseAnalytics" }),
             ("CE_FIREBASE_RC", new[] { "Firebase.RemoteConfig.FirebaseRemoteConfig" }),

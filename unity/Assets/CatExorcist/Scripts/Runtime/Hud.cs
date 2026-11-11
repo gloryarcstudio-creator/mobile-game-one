@@ -65,7 +65,7 @@ namespace CatExorcist
             sc.matchWidthOrHeight = (float)Screen.width / Screen.height > 360f / 640f ? 1 : 0;
             cgo.AddComponent<GraphicRaycaster>();
             canvasRt = (RectTransform)cgo.transform;
-            if (FindObjectOfType<EventSystem>() == null)
+            if (GameRoot.Find<EventSystem>() == null)
             {
                 var es = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
                 es.transform.SetParent(transform, false);

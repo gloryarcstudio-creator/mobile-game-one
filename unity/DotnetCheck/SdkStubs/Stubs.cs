@@ -47,36 +47,55 @@ public class MaxSdk : MaxSdkBase
 
 namespace Unity.Services.Core { public static class UnityServices { public static Task InitializeAsync(InitializationOptions o = null) => Task.CompletedTask; } public class InitializationOptions { } }
 namespace Unity.Services.Core.Environments { public static class Ext { public static Unity.Services.Core.InitializationOptions SetEnvironmentName(this Unity.Services.Core.InitializationOptions o, string n) => o; } }
-namespace UnityEngine.Purchasing.Extension { public interface IPurchasingModule { } }
+// Unity IAP 5.5: подписи сверены с исходниками пакета com.unity.purchasing 5.5.0
 namespace UnityEngine.Purchasing
 {
     public enum ProductType { Consumable, NonConsumable, Subscription }
-    public enum PurchaseProcessingResult { Complete, Pending }
-    public enum InitializationFailureReason { PurchasingUnavailable, NoProductsAvailable, AppNotKnown }
-    public enum PurchaseFailureReason { Unknown }
-    public class PurchaseFailureDescription { public PurchaseFailureReason reason; public string message; }
-    public class ProductDefinition { public string id; public ProductType type; }
-    public class ProductMetadata { public decimal localizedPrice; public string localizedPriceString, isoCurrencyCode; }
-    public class Product { public ProductDefinition definition; public ProductMetadata metadata; public bool availableToPurchase; public string receipt; }
-    public class ProductCollection { public Product WithID(string id) => null; }
-    public interface IStoreController { ProductCollection products { get; } void InitiatePurchase(Product p); }
-    public interface IStoreExtension { }
-    public interface IExtensionProvider { T GetExtension<T>() where T : IStoreExtension; }
-    public interface IAppleExtensions : IStoreExtension { void RestoreTransactions(Action<bool, string> cb); }
-    public interface IGooglePlayStoreExtensions : IStoreExtension { void RestoreTransactions(Action<bool, string> cb); }
-    public class PurchaseEventArgs { public Product purchasedProduct; }
-    public interface IStoreListener
+    public enum PurchaseFailureReason { PurchasingUnavailable, ExistingPurchasePending, ProductUnavailable, SignatureInvalid, UserCancelled, PaymentDeclined, DuplicateTransaction, ValidationFailure, Unknown }
+    public class ProductDefinition { public ProductDefinition(string id, ProductType type) { this.id = id; this.type = type; } public string id { get; private set; } public ProductType type { get; private set; } }
+    public class ProductMetadata { public decimal localizedPrice { get; } public string localizedPriceString { get; } public string isoCurrencyCode { get; } }
+    public class Product { public ProductDefinition definition => null; public ProductMetadata metadata => null; public bool availableToPurchase => false; }
+    public class CartItem { public Product Product { get; } }
+    public interface ICart { IReadOnlyList<CartItem> Items(); }
+    public interface IOrderInfo { string Receipt { get; } string TransactionID { get; } }
+    public abstract class Order { public ICart CartOrdered { get; internal set; } public IOrderInfo Info { get; } }
+    public class PendingOrder : Order { }
+    public class ConfirmedOrder : Order { }
+    public class DeferredOrder : Order { }
+    public class FailedOrder : Order { public PurchaseFailureReason FailureReason => default; public string Details => null; }
+    public class Orders { public IReadOnlyList<ConfirmedOrder> ConfirmedOrders { get; } public IReadOnlyList<PendingOrder> PendingOrders { get; } public IReadOnlyList<DeferredOrder> DeferredOrders { get; } }
+    public class StoreConnectionFailureDescription { public string message; }
+    public class ProductFetchFailed { public List<ProductDefinition> FailedFetchProducts { get; } public string FailureReason { get; } }
+    public class PurchasesFetchFailureDescription { public string message; }
+    public interface IRetryPolicy { }
+    public class StoreController
     {
-        void OnInitializeFailed(InitializationFailureReason error);
-        void OnInitializeFailed(InitializationFailureReason error, string message);
-        PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs purchaseEvent);
-        void OnPurchaseFailed(Product product, PurchaseFailureReason failureReason);
-        void OnInitialized(IStoreController controller, IExtensionProvider extensions);
+        public event Action<StoreConnectionFailureDescription> OnStoreDisconnected;
+        public event Action OnStoreConnected;
+        public event Action<PendingOrder> OnPurchasePending;
+        public event Action<Order> OnPurchaseConfirmed;
+        public event Action<FailedOrder> OnPurchaseFailed;
+        public event Action<DeferredOrder> OnPurchaseDeferred;
+        public event Action<Orders> OnPurchasesFetched;
+        public event Action<PurchasesFetchFailureDescription> OnPurchasesFetchFailed;
+        public event Action<List<Product>> OnProductsFetched;
+        public event Action<ProductFetchFailed> OnProductsFetchFailed;
+        public Task Connect() => Task.CompletedTask;
+        public void FetchProducts(List<ProductDefinition> productDefinitions, IRetryPolicy retryPolicy = null) { }
+        public Product GetProductById(string catalogListingId) => null;
+        public void PurchaseProduct(Product product) { }
+        public void ConfirmPurchase(PendingOrder order) { }
+        public void FetchPurchases() { }
+        public void RestoreTransactions(Action<bool, string> callback) { }
     }
-    public interface IDetailedStoreListener : IStoreListener { void OnPurchaseFailed(Product product, PurchaseFailureDescription failureDescription); }
-    public class StandardPurchasingModule : Extension.IPurchasingModule { public static StandardPurchasingModule Instance() => null; }
-    public class ConfigurationBuilder { public static ConfigurationBuilder Instance(Extension.IPurchasingModule m) => null; public ConfigurationBuilder AddProduct(string id, ProductType t) => this; }
-    public static class UnityPurchasing { public static void Initialize(IDetailedStoreListener l, ConfigurationBuilder b) { } }
+    public static class UnityIAPServices { public static StoreController StoreController(string storeName = null) => null; }
+}
+namespace UnityEngine.Purchasing.Security
+{
+    public interface IPurchaseReceipt { }
+    public class IAPSecurityException : Exception { }
+    public class CrossPlatformValidator { public CrossPlatformValidator(byte[] googlePublicKey, string googleBundleId) { } public IPurchaseReceipt[] Validate(string unityIAPReceipt) => null; }
+    public class GooglePlayTangle { public static byte[] Data() => null; }
 }
 
 namespace Firebase
