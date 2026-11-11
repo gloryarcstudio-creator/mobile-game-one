@@ -2746,6 +2746,155 @@
   const EXTRA_ASPECT = {"ghost-egg": 0.73, "ghost-gift": 0.766, "ghost-heart": 0.941, "ghost-sandcastle": 0.777, "prop-ny-gifts": 1.107, "prop-ny-snowman": 0.806, "prop-ny-tree": 0.713, "prop-sp-basket": 1.003, "prop-sp-sakura": 0.841, "prop-sp-tulips": 1.029, "prop-su-board": 0.681, "prop-su-castle": 0.928, "prop-su-umbrella": 0.994, "prop-val-balloons": 1.049, "prop-val-choco": 0.863, "prop-val-roses": 0.875};
   const EXTRA_BOX = {"attach-brush": [0.0, 0.019, 0.931, 0.981], "attach-frost": [0.0, 0.019, 0.781, 0.981], "attach-magnet": [0.0, 0.031, 1.0, 0.969], "attach-narrow": [0.0, 0.263, 1.0, 0.738], "attach-rocket": [0.0, 0.019, 0.969, 0.981], "attach-storm": [0.0, 0.106, 1.0, 0.887], "attach-turbo": [0.0, 0.131, 1.0, 0.863], "attach-wide": [0.0, 0.019, 0.672, 0.981]};
   // EXTRA-META-END
+  // DISTRICT-META-BEGIN (создаётся tools/prepare-districts.py, не править руками)
+  const DIST_SRC = {
+    'floor-d10': 'art/dz-floor-d10.webp',
+    'floor-d11': 'art/dz-floor-d11.webp',
+    'floor-d12': 'art/dz-floor-d12.webp',
+    'floor-d13': 'art/dz-floor-d13.webp',
+    'floor-d14': 'art/dz-floor-d14.webp',
+    'floor-d15': 'art/dz-floor-d15.webp',
+    'floor-d16': 'art/dz-floor-d16.webp',
+    'floor-d17': 'art/dz-floor-d17.webp',
+    'floor-d18': 'art/dz-floor-d18.webp',
+    'floor-d19': 'art/dz-floor-d19.webp',
+    'floor-d20': 'art/dz-floor-d20.webp',
+    'floor-d9': 'art/dz-floor-d9.webp',
+    'ghost-abyss': 'art/dz-ghost-abyss.webp',
+    'ghost-angler': 'art/dz-ghost-angler.webp',
+    'ghost-ash': 'art/dz-ghost-ash.webp',
+    'ghost-balloon': 'art/dz-ghost-balloon.webp',
+    'ghost-bell': 'art/dz-ghost-bell.webp',
+    'ghost-cabinboy': 'art/dz-ghost-cabinboy.webp',
+    'ghost-cactus': 'art/dz-ghost-cactus.webp',
+    'ghost-catbeard': 'art/dz-ghost-catbeard.webp',
+    'ghost-chalk': 'art/dz-ghost-chalk.webp',
+    'ghost-clown': 'art/dz-ghost-clown.webp',
+    'ghost-conductor': 'art/dz-ghost-conductor.webp',
+    'ghost-cuckoo': 'art/dz-ghost-cuckoo.webp',
+    'ghost-darkknight': 'art/dz-ghost-darkknight.webp',
+    'ghost-firedragon': 'art/dz-ghost-firedragon.webp',
+    'ghost-firefly': 'art/dz-ghost-firefly.webp',
+    'ghost-flytrap': 'art/dz-ghost-flytrap.webp',
+    'ghost-gear': 'art/dz-ghost-gear.webp',
+    'ghost-ghostking': 'art/dz-ghost-ghostking.webp',
+    'ghost-ghosttrain': 'art/dz-ghost-ghosttrain.webp',
+    'ghost-glovepuppet': 'art/dz-ghost-glovepuppet.webp',
+    'ghost-grumpcloud': 'art/dz-ghost-grumpcloud.webp',
+    'ghost-headmistress': 'art/dz-ghost-headmistress.webp',
+    'ghost-juggler': 'art/dz-ghost-juggler.webp',
+    'ghost-kraken': 'art/dz-ghost-kraken.webp',
+    'ghost-lavagolem': 'art/dz-ghost-lavagolem.webp',
+    'ghost-mask': 'art/dz-ghost-mask.webp',
+    'ghost-mermaid': 'art/dz-ghost-mermaid.webp',
+    'ghost-mimic': 'art/dz-ghost-mimic.webp',
+    'ghost-mummy': 'art/dz-ghost-mummy.webp',
+    'ghost-parrot': 'art/dz-ghost-parrot.webp',
+    'ghost-pearl': 'art/dz-ghost-pearl.webp',
+    'ghost-pendulum': 'art/dz-ghost-pendulum.webp',
+    'ghost-pharaoh': 'art/dz-ghost-pharaoh.webp',
+    'ghost-puppet': 'art/dz-ghost-puppet.webp',
+    'ghost-puppeteer': 'art/dz-ghost-puppeteer.webp',
+    'ghost-rainbow': 'art/dz-ghost-rainbow.webp',
+    'ghost-rat': 'art/dz-ghost-rat.webp',
+    'ghost-ringmaster': 'art/dz-ghost-ringmaster.webp',
+    'ghost-rosequeen': 'art/dz-ghost-rosequeen.webp',
+    'ghost-salamander': 'art/dz-ghost-salamander.webp',
+    'ghost-sarcophagus': 'art/dz-ghost-sarcophagus.webp',
+    'ghost-scarab': 'art/dz-ghost-scarab.webp',
+    'ghost-shade': 'art/dz-ghost-shade.webp',
+    'ghost-stormlord': 'art/dz-ghost-stormlord.webp',
+    'ghost-textbook': 'art/dz-ghost-textbook.webp',
+    'ghost-thundercloud': 'art/dz-ghost-thundercloud.webp',
+    'ghost-timekeeper': 'art/dz-ghost-timekeeper.webp',
+    'ghost-tunnellight': 'art/dz-ghost-tunnellight.webp',
+    'prop-d10-board': 'art/dz-prop-d10-board.webp',
+    'prop-d10-books': 'art/dz-prop-d10-books.webp',
+    'prop-d10-desk': 'art/dz-prop-d10-desk.webp',
+    'prop-d10-globe': 'art/dz-prop-d10-globe.webp',
+    'prop-d10-locker': 'art/dz-prop-d10-locker.webp',
+    'prop-d10-plant': 'art/dz-prop-d10-plant.webp',
+    'prop-d11-bench': 'art/dz-prop-d11-bench.webp',
+    'prop-d11-bin': 'art/dz-prop-d11-bin.webp',
+    'prop-d11-cart': 'art/dz-prop-d11-cart.webp',
+    'prop-d11-column': 'art/dz-prop-d11-column.webp',
+    'prop-d11-lamp': 'art/dz-prop-d11-lamp.webp',
+    'prop-d11-turnstile': 'art/dz-prop-d11-turnstile.webp',
+    'prop-d12-barrel': 'art/dz-prop-d12-barrel.webp',
+    'prop-d12-cannon': 'art/dz-prop-d12-cannon.webp',
+    'prop-d12-chest': 'art/dz-prop-d12-chest.webp',
+    'prop-d12-flag': 'art/dz-prop-d12-flag.webp',
+    'prop-d12-palm': 'art/dz-prop-d12-palm.webp',
+    'prop-d12-wheel': 'art/dz-prop-d12-wheel.webp',
+    'prop-d13-bench': 'art/dz-prop-d13-bench.webp',
+    'prop-d13-flowerbed': 'art/dz-prop-d13-flowerbed.webp',
+    'prop-d13-fountain': 'art/dz-prop-d13-fountain.webp',
+    'prop-d13-lamp': 'art/dz-prop-d13-lamp.webp',
+    'prop-d13-pot': 'art/dz-prop-d13-pot.webp',
+    'prop-d13-topiary': 'art/dz-prop-d13-topiary.webp',
+    'prop-d14-gold': 'art/dz-prop-d14-gold.webp',
+    'prop-d14-obelisk': 'art/dz-prop-d14-obelisk.webp',
+    'prop-d14-sarcophagus': 'art/dz-prop-d14-sarcophagus.webp',
+    'prop-d14-statue': 'art/dz-prop-d14-statue.webp',
+    'prop-d14-torch': 'art/dz-prop-d14-torch.webp',
+    'prop-d14-urn': 'art/dz-prop-d14-urn.webp',
+    'prop-d15-bell': 'art/dz-prop-d15-bell.webp',
+    'prop-d15-clock': 'art/dz-prop-d15-clock.webp',
+    'prop-d15-crate': 'art/dz-prop-d15-crate.webp',
+    'prop-d15-gears': 'art/dz-prop-d15-gears.webp',
+    'prop-d15-hourglass': 'art/dz-prop-d15-hourglass.webp',
+    'prop-d15-lamp': 'art/dz-prop-d15-lamp.webp',
+    'prop-d16-booth': 'art/dz-prop-d16-booth.webp',
+    'prop-d16-candelabra': 'art/dz-prop-d16-candelabra.webp',
+    'prop-d16-rack': 'art/dz-prop-d16-rack.webp',
+    'prop-d16-seat': 'art/dz-prop-d16-seat.webp',
+    'prop-d16-spotlight': 'art/dz-prop-d16-spotlight.webp',
+    'prop-d16-trunk': 'art/dz-prop-d16-trunk.webp',
+    'prop-d17-amphora': 'art/dz-prop-d17-amphora.webp',
+    'prop-d17-clam': 'art/dz-prop-d17-clam.webp',
+    'prop-d17-column': 'art/dz-prop-d17-column.webp',
+    'prop-d17-coral': 'art/dz-prop-d17-coral.webp',
+    'prop-d17-seaweed': 'art/dz-prop-d17-seaweed.webp',
+    'prop-d17-statue': 'art/dz-prop-d17-statue.webp',
+    'prop-d18-brazier': 'art/dz-prop-d18-brazier.webp',
+    'prop-d18-crystal': 'art/dz-prop-d18-crystal.webp',
+    'prop-d18-obsidian': 'art/dz-prop-d18-obsidian.webp',
+    'prop-d18-rock': 'art/dz-prop-d18-rock.webp',
+    'prop-d18-skull': 'art/dz-prop-d18-skull.webp',
+    'prop-d18-vent': 'art/dz-prop-d18-vent.webp',
+    'prop-d19-balloon': 'art/dz-prop-d19-balloon.webp',
+    'prop-d19-harp': 'art/dz-prop-d19-harp.webp',
+    'prop-d19-lamp': 'art/dz-prop-d19-lamp.webp',
+    'prop-d19-pillar': 'art/dz-prop-d19-pillar.webp',
+    'prop-d19-rainbow': 'art/dz-prop-d19-rainbow.webp',
+    'prop-d19-statue': 'art/dz-prop-d19-statue.webp',
+    'prop-d20-banner': 'art/dz-prop-d20-banner.webp',
+    'prop-d20-brazier': 'art/dz-prop-d20-brazier.webp',
+    'prop-d20-cage': 'art/dz-prop-d20-cage.webp',
+    'prop-d20-chest': 'art/dz-prop-d20-chest.webp',
+    'prop-d20-gargoyle': 'art/dz-prop-d20-gargoyle.webp',
+    'prop-d20-throne': 'art/dz-prop-d20-throne.webp',
+    'prop-d9-ball': 'art/dz-prop-d9-ball.webp',
+    'prop-d9-cannon': 'art/dz-prop-d9-cannon.webp',
+    'prop-d9-hoop': 'art/dz-prop-d9-hoop.webp',
+    'prop-d9-lamp': 'art/dz-prop-d9-lamp.webp',
+    'prop-d9-podium': 'art/dz-prop-d9-podium.webp',
+    'prop-d9-popcorn': 'art/dz-prop-d9-popcorn.webp',
+    'wall-d10': 'art/dz-wall-d10.webp',
+    'wall-d11': 'art/dz-wall-d11.webp',
+    'wall-d12': 'art/dz-wall-d12.webp',
+    'wall-d13': 'art/dz-wall-d13.webp',
+    'wall-d14': 'art/dz-wall-d14.webp',
+    'wall-d15': 'art/dz-wall-d15.webp',
+    'wall-d16': 'art/dz-wall-d16.webp',
+    'wall-d17': 'art/dz-wall-d17.webp',
+    'wall-d18': 'art/dz-wall-d18.webp',
+    'wall-d19': 'art/dz-wall-d19.webp',
+    'wall-d20': 'art/dz-wall-d20.webp',
+    'wall-d9': 'art/dz-wall-d9.webp',
+  };
+  const DIST_ASPECT = {"ghost-abyss": 1.08, "ghost-angler": 0.949, "ghost-ash": 0.648, "ghost-balloon": 0.602, "ghost-bell": 0.715, "ghost-cabinboy": 0.785, "ghost-cactus": 0.824, "ghost-catbeard": 0.951, "ghost-chalk": 0.859, "ghost-clown": 0.77, "ghost-conductor": 0.863, "ghost-cuckoo": 0.711, "ghost-darkknight": 1.169, "ghost-firedragon": 0.865, "ghost-firefly": 0.852, "ghost-flytrap": 0.844, "ghost-gear": 0.859, "ghost-ghostking": 0.867, "ghost-ghosttrain": 0.904, "ghost-glovepuppet": 0.891, "ghost-grumpcloud": 0.699, "ghost-headmistress": 0.74, "ghost-juggler": 0.672, "ghost-kraken": 1.061, "ghost-lavagolem": 1.094, "ghost-mask": 1.196, "ghost-mermaid": 0.91, "ghost-mimic": 1.138, "ghost-mummy": 0.891, "ghost-parrot": 0.852, "ghost-pearl": 0.582, "ghost-pendulum": 0.863, "ghost-pharaoh": 1.021, "ghost-puppet": 0.742, "ghost-puppeteer": 0.846, "ghost-rainbow": 0.941, "ghost-rat": 1.108, "ghost-ringmaster": 0.914, "ghost-rosequeen": 0.917, "ghost-salamander": 1.085, "ghost-sarcophagus": 0.699, "ghost-scarab": 0.789, "ghost-shade": 0.672, "ghost-stormlord": 0.875, "ghost-textbook": 1.208, "ghost-thundercloud": 0.926, "ghost-timekeeper": 0.734, "ghost-tunnellight": 0.781, "prop-d10-board": 0.7, "prop-d10-books": 0.728, "prop-d10-desk": 0.912, "prop-d10-globe": 0.681, "prop-d10-locker": 0.647, "prop-d10-plant": 0.756, "prop-d11-bench": 1.029, "prop-d11-bin": 0.597, "prop-d11-cart": 1.053, "prop-d11-column": 0.588, "prop-d11-lamp": 0.237, "prop-d11-turnstile": 0.725, "prop-d12-barrel": 0.756, "prop-d12-cannon": 0.988, "prop-d12-chest": 0.847, "prop-d12-flag": 0.806, "prop-d12-palm": 0.719, "prop-d12-wheel": 0.781, "prop-d13-bench": 0.988, "prop-d13-flowerbed": 1.049, "prop-d13-fountain": 0.953, "prop-d13-lamp": 0.294, "prop-d13-pot": 0.741, "prop-d13-topiary": 0.675, "prop-d14-gold": 1.19, "prop-d14-obelisk": 0.5, "prop-d14-sarcophagus": 0.784, "prop-d14-statue": 0.791, "prop-d14-torch": 0.537, "prop-d14-urn": 0.6, "prop-d15-bell": 0.738, "prop-d15-clock": 0.388, "prop-d15-crate": 0.909, "prop-d15-gears": 1.143, "prop-d15-hourglass": 0.516, "prop-d15-lamp": 0.506, "prop-d16-booth": 0.697, "prop-d16-candelabra": 0.719, "prop-d16-rack": 1.003, "prop-d16-seat": 0.719, "prop-d16-spotlight": 0.616, "prop-d16-trunk": 0.891, "prop-d17-amphora": 1.333, "prop-d17-clam": 0.934, "prop-d17-column": 0.569, "prop-d17-coral": 0.878, "prop-d17-seaweed": 0.522, "prop-d17-statue": 0.794, "prop-d18-brazier": 0.741, "prop-d18-crystal": 0.806, "prop-d18-obsidian": 0.525, "prop-d18-rock": 1.056, "prop-d18-skull": 1.127, "prop-d18-vent": 0.681, "prop-d19-balloon": 0.647, "prop-d19-harp": 0.681, "prop-d19-lamp": 0.478, "prop-d19-pillar": 0.581, "prop-d19-rainbow": 1.422, "prop-d19-statue": 0.684, "prop-d20-banner": 0.584, "prop-d20-brazier": 0.647, "prop-d20-cage": 0.731, "prop-d20-chest": 1.016, "prop-d20-gargoyle": 0.722, "prop-d20-throne": 0.622, "prop-d9-ball": 0.956, "prop-d9-cannon": 0.903, "prop-d9-hoop": 0.547, "prop-d9-lamp": 0.478, "prop-d9-podium": 1.042, "prop-d9-popcorn": 0.597};
+  // DISTRICT-META-END
   const ART = {};
   let artPending = 0;
   const tintCopy = (img, color) => {
@@ -2776,11 +2925,13 @@
     return c;
   }
   const toned = (A, t) => { if (!A || !t) return A; const k = 'tone' + t.h + ':' + t.s + ':' + t.l + ':' + t.mul; return A[k] || (A[k] = { img: toneCopy(A.img, t) }); };
-  const dArt = (k) => useArt() && toned(ART[k], district().tone);
+  // свой пол есть — значит у района свой арт и перекраска не нужна
+  const ownArt = () => !!ART['floor-d' + (districtIndex() + 1)];
+  const dArt = (k) => useArt() && (ownArt() ? ART[k] : toned(ART[k], district().tone));
   // призрак без своего рисунка: чужой арт, оттенок района и умножение на цвет тела, чтобы похожие различались
   const ghostTone = (def) => def.tone || (def.tone = { h: DISTRICTS[def.d].tone.h, s: Math.max(1, DISTRICTS[def.d].tone.s || 1), mul: def.body });
-  const ALL_SRC = Object.assign({}, ART_SRC, UI_SRC, SCENE_SRC, EXTRA_SRC);
-  Object.assign(ART_ASPECT, EXTRA_ASPECT);
+  const ALL_SRC = Object.assign({}, ART_SRC, UI_SRC, SCENE_SRC, EXTRA_SRC, DIST_SRC);
+  Object.assign(ART_ASPECT, EXTRA_ASPECT, DIST_ASPECT);
   for (const k in ALL_SRC) {
     const img = new Image(); artPending++;
     img.onload = () => { ART[k] = { img }; if (--artPending === 0) artLoaded(); };
@@ -3380,8 +3531,25 @@
     ['crystal', 'snowman', 'rug', 'lamp', 'chest', 'crystal', 'armor', 'snowman'],
     ['vat', 'flasks', 'box', 'lamp', 'barrel', 'vat', 'shelf', 'flasks'],
     ['pillar', 'mirror', 'rug', 'candles', 'chest', 'pillar', 'plant', 'mirror'],
+    // районы 9–20: только с их собственным артом (без арта берётся набор района base)
+    ['podium', 'ball', 'cannon', 'popcorn', 'hoop', 'lamp', 'ball', 'podium'],
+    ['desk', 'globe', 'locker', 'books', 'board', 'plant', 'desk', 'desk'],
+    ['bench', 'turnstile', 'bin', 'lamp', 'column', 'cart', 'bench', 'column'],
+    ['chest', 'cannon', 'palm', 'barrel', 'flag', 'wheel', 'barrel', 'palm'],
+    ['flowerbed', 'fountain', 'bench', 'pot', 'topiary', 'lamp', 'flowerbed', 'pot'],
+    ['sarcophagus', 'statue', 'urn', 'torch', 'obelisk', 'gold', 'urn', 'torch'],
+    ['clock', 'hourglass', 'gears', 'bell', 'lamp', 'crate', 'crate', 'gears'],
+    ['seat', 'booth', 'trunk', 'spotlight', 'rack', 'candelabra', 'seat', 'seat'],
+    ['column', 'coral', 'clam', 'statue', 'amphora', 'seaweed', 'coral', 'seaweed'],
+    ['rock', 'crystal', 'vent', 'skull', 'obsidian', 'brazier', 'rock', 'crystal'],
+    ['pillar', 'harp', 'rainbow', 'lamp', 'balloon', 'statue', 'pillar', 'harp'],
+    ['throne', 'brazier', 'cage', 'gargoyle', 'banner', 'chest', 'gargoyle', 'brazier'],
   ];
-  const SOLID = { bed: 1, table: 1, box: 1, sofa: 1, shelf: 1, armor: 1, barrel: 1, rack: 1, grave: 1, tree: 1, anchor: 1, chest: 1, mannequin: 1, crystal: 1, snowman: 1, vat: 1, flasks: 1, pillar: 1, mirror: 1 };
+  const BIG_DECOR = { rug: 1, net: 1, bed: 1, sofa: 1, tree: 1, palm: 1, fountain: 1, booth: 1, throne: 1, balloon: 1, sarcophagus: 1, skull: 1 };
+  const SOLID = { bed: 1, table: 1, box: 1, sofa: 1, shelf: 1, armor: 1, barrel: 1, rack: 1, grave: 1, tree: 1, anchor: 1, chest: 1, mannequin: 1, crystal: 1, snowman: 1, vat: 1, flasks: 1, pillar: 1, mirror: 1,
+    podium: 1, cannon: 1, popcorn: 1, desk: 1, globe: 1, locker: 1, board: 1, bench: 1, turnstile: 1, bin: 1, column: 1, cart: 1, palm: 1, wheel: 1, flowerbed: 1, fountain: 1, pot: 1, topiary: 1,
+    sarcophagus: 1, statue: 1, urn: 1, obelisk: 1, clock: 1, hourglass: 1, gears: 1, bell: 1, crate: 1, seat: 1, booth: 1, trunk: 1, clam: 1, amphora: 1, rock: 1, skull: 1, obsidian: 1, brazier: 1,
+    harp: 1, balloon: 1, throne: 1, cage: 1, gargoyle: 1 };
 
   const mapKeyNow = () => S.house + ':' + districtIndex() + ':' + (useArt() ? 'art' : 'code') + ':' + (curEvent() ? curEvent().id : '');
   function buildMap() {
@@ -3389,6 +3557,7 @@
     if (key === mapKey) return;
     mapKey = key;
     const d = district().base, F = FLOORS[d];
+    const a = useArt() && ownArt() ? districtIndex() : d; // чей арт и набор мебели берём
     const R = rng(S.house * 7919 + 13);
     const k = 2; // рисуем в 2x для чёткости
     mapCanvas = mapCanvas || document.createElement('canvas');
@@ -3398,7 +3567,7 @@
     // пол
     c.fillStyle = F.base; c.fillRect(0, 0, MAP_W, MAP_H);
     c.fillStyle = F.line;
-    const floorArt = dArt('floor-d' + (d + 1));
+    const floorArt = dArt('floor-d' + (a + 1));
     if (floorArt) { // нарисованная плитка, повтор каждые 300 единиц
       const pat = c.createPattern(floorArt.img, 'repeat'); pat.setTransform(new DOMMatrix([300 / floorArt.img.width, 0, 0, 300 / floorArt.img.width, 0, 0]));
       c.fillStyle = pat; c.fillRect(0, 0, MAP_W, MAP_H);
@@ -3445,18 +3614,18 @@
     c.fillStyle = 'rgba(40,20,60,0.10)';
     for (let i = 0; i < 700; i++) { const px = R() * MAP_W, py = R() * MAP_H; if (!floorArt) c.fillRect(px, py, 2, 2); }
     // стены по краю
-    drawBorder(c, d, F, R);
+    drawBorder(c, d, F, R, a);
     // мебель
     solids = [];
-    const kinds = DECOR[d];
+    const kinds = DECOR[a];
     const placed = [];
     for (let i = 0; i < 90; i++) {
       const kind = kinds[Math.floor(R() * kinds.length)];
-      const big = kind === 'rug' || kind === 'net' || kind === 'bed' || kind === 'sofa' || kind === 'tree';
+      const big = BIG_DECOR[kind];
       let w = big ? 100 + R() * 50 : 42 + R() * 24, h = big ? 70 + R() * 40 : 42 + R() * 20;
-      const pa = dArt('prop-d' + (d + 1) + '-' + kind);
+      const pa = dArt('prop-d' + (a + 1) + '-' + kind);
       if (pa) { // размер по пропорциям картинки
-        const asp = ART_ASPECT['prop-d' + (d + 1) + '-' + kind] || 1;
+        const asp = ART_ASPECT['prop-d' + (a + 1) + '-' + kind] || 1;
         w = big ? 110 + (w - 100) * 0.8 : 52 + (w - 42) * 0.8; h = w / asp;
         if (h > w * 1.7) { h = w * 1.7; w = h * asp; }
       }
@@ -3503,7 +3672,13 @@
   }
 
   // Края карты: у каждого района своя текстура стены и детали
-  function drawBorder(c, d, F, R) {
+  // районы 9–20 со своим артом: [бортик у пола, колонны в углах], цвета взяты со стен
+  const OWN_EDGE = [
+    ['#e8b04a', '#a8303c'], ['#8a5a3c', '#6b6670'], ['#d8d0b8', '#3f7a7a'], ['#8a5a36', '#6b5a48'],
+    ['#f2eee6', '#8fb38a'], ['#e2c27a', '#c49a5a'], ['#c9a24a', '#7a3a32'], ['#e8b84a', '#4a2f5e'],
+    ['#7fb0b8', '#3e5866'], ['#ff8a3a', '#3a3036'], ['#f6e6a8', '#d8d2ea'], ['#a070e0', '#2e2640'],
+  ];
+  function drawBorder(c, d, F, R, a) {
     const W = WALL, IW = MAP_W - W * 2, IH = MAP_H - W * 2;
     // мягкая тень от стен на полу
     const sh = 22;
@@ -3520,7 +3695,7 @@
     c.save();
     c.beginPath(); c.rect(0, 0, MAP_W, MAP_H); c.rect(W, W, IW, IH); c.clip('evenodd');
     c.fillStyle = F.wall; c.fillRect(0, 0, MAP_W, MAP_H);
-    const wallArt = dArt('wall-d' + (d + 1));
+    const wallArt = dArt('wall-d' + (a === undefined ? d + 1 : a + 1));
     if (wallArt) { // нарисованная стена: полоса вдоль каждого края, верх картинки — к внешнему краю
       const sc = W / wallArt.img.height, pat = c.createPattern(wallArt.img, 'repeat-x');
       pat.setTransform(new DOMMatrix([sc, 0, 0, sc, 0, 0])); c.fillStyle = pat;
@@ -3573,22 +3748,25 @@
     for (const [x, y, w, h, x0, y0, x1, y1] of fade) { const g = c.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, 'rgba(20,10,30,0.45)'); g.addColorStop(1, 'rgba(20,10,30,0)'); c.fillStyle = g; c.fillRect(x, y, w, h); }
     c.restore();
 
+    // у района 9–20 свой арт стен: бортик и колонны в его цветах, детали старого района не рисуем
+    const own = a !== undefined && a >= 8;
+    const ownCol = own && OWN_EDGE[a - 8];
     // внутренний бортик
-    const trim = ['#f3e2c8', '#9d93b8', '#a7713f', '#f2c6d6', '#2f2a3a', '#eaf7ff', '#d9a441', '#ffd84d'][d];
+    const trim = own ? ownCol[0] : ['#f3e2c8', '#9d93b8', '#a7713f', '#f2c6d6', '#2f2a3a', '#eaf7ff', '#d9a441', '#ffd84d'][d];
     c.fillStyle = trim; c.fillRect(W - 8, W - 8, IW + 16, 8); c.fillRect(W - 8, MAP_H - W, IW + 16, 8); c.fillRect(W - 8, W - 8, 8, IH + 16); c.fillRect(MAP_W - W, W - 8, 8, IH + 16);
     c.strokeStyle = INK; c.lineWidth = 3; c.strokeRect(W, W, IW, IH); c.strokeRect(1.5, 1.5, MAP_W - 3, MAP_H - 3);
-    if (d === 2) { // причал: столбики вдоль края
+    if (!own && d === 2) { // причал: столбики вдоль края
       for (let x = W; x <= MAP_W - W; x += 80) for (const y of [W - 4, MAP_H - W + 4]) post(x, y, '#8a5a36');
       for (let y = W + 80; y <= MAP_H - W - 40; y += 80) for (const x of [W - 4, MAP_W - W + 4]) post(x, y, '#8a5a36');
     }
-    if (d === 5) { // сосульки по верхнему краю
+    if (!own && d === 5) { // сосульки по верхнему краю
       c.fillStyle = '#e8f6ff'; c.strokeStyle = INK; c.lineWidth = 1.5;
       for (let x = W; x < MAP_W - W; x += 18 + R() * 14) { const l = 10 + R() * 22; c.beginPath(); c.moveTo(x, W); c.lineTo(x + 5, W + l); c.lineTo(x + 10, W); c.closePath(); c.fill(); c.stroke(); }
     }
-    if (d === 7) { // золотая балюстрада
+    if (!own && d === 7) { // золотая балюстрада
       for (let x = W + 6; x <= MAP_W - W - 6; x += 22) for (const y of [W - 10, MAP_H - W + 2]) { c.fillStyle = '#ffe08a'; c.beginPath(); c.roundRect(x - 4, y, 8, 8, 3); c.fill(); c.lineWidth = 1.5; c.strokeStyle = INK; c.stroke(); }
     }
-    if (d === 4) { // кованая ограда
+    if (!own && d === 4) { // кованая ограда
       c.strokeStyle = '#2a2433'; c.lineWidth = 3;
       for (let x = W; x <= MAP_W - W; x += 12) { c.beginPath(); c.moveTo(x, W - 16); c.lineTo(x, W); c.stroke(); c.beginPath(); c.moveTo(x, MAP_H - W); c.lineTo(x, MAP_H - W + 16); c.stroke(); }
       for (let y = W; y <= MAP_H - W; y += 12) { c.beginPath(); c.moveTo(W - 16, y); c.lineTo(W, y); c.stroke(); c.beginPath(); c.moveTo(MAP_W - W, y); c.lineTo(MAP_W - W + 16, y); c.stroke(); }
@@ -3620,7 +3798,7 @@
       else { lamp(x + 40, W - 4); }
     }
     // колонны по углам
-    const col = ['#8a6450', '#585070', '#7a5636', '#9a6a82', '#5c5868', '#7fb0d0', '#6a5a48', '#4a3a80'][d];
+    const col = own ? ownCol[1] : ['#8a6450', '#585070', '#7a5636', '#9a6a82', '#5c5868', '#7fb0d0', '#6a5a48', '#4a3a80'][d];
     for (const [x, y] of [[0, 0], [MAP_W - W - 10, 0], [0, MAP_H - W - 10], [MAP_W - W - 10, MAP_H - W - 10]]) {
       c.fillStyle = 'rgba(0,0,0,0.25)'; c.fillRect(x + 6, y + 8, W + 10, W + 10);
       c.fillStyle = col; c.fillRect(x, y, W + 10, W + 10); c.lineWidth = 3; c.strokeStyle = INK; c.strokeRect(x + 1.5, y + 1.5, W + 7, W + 7);

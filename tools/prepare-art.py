@@ -25,7 +25,7 @@ A = os.path.join(SRC, 'assets')
 OUT = os.path.join(ROOT, 'art')
 os.makedirs(OUT, exist_ok=True)
 for f in os.listdir(OUT):  # старые картинки заменяются целиком (UI-набор и сцены не трогаем, их готовят prepare-ui.py и prepare-scenes.py)
-    if f.endswith(('.png', '.webp')) and not f.startswith(('ui-', 'icons-', 'scene-', 'x-')):
+    if f.endswith(('.png', '.webp')) and not f.startswith(('ui-', 'icons-', 'scene-', 'x-', 'dz-')):
         os.remove(os.path.join(OUT, f))
 
 SKINS = ['spotty', 'tabby', 'peach', 'black', 'white', 'siam', 'pirate', 'ninja', 'wizard', 'chef', 'astro',
