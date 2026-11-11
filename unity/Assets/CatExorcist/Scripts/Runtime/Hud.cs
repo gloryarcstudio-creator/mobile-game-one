@@ -23,6 +23,7 @@ namespace CatExorcist
         GameState S => G.S;
         Battle B => G.Battle;
 
+        CanvasScaler scaler;
         RectTransform canvasRt, safe, layerTop, layerBottom, viewRt, labelsRt, fxRt, panelLayer, page, modalLayer, overLayer;
         Canvas canvas;
         bool dirty = true;
@@ -58,11 +59,9 @@ namespace CatExorcist
             cgo.transform.SetParent(transform, false);
             canvas = cgo.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay; canvas.sortingOrder = 10;
-            var sc = cgo.AddComponent<CanvasScaler>();
-            sc.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize; sc.referenceResolution = new Vector2(360, 640);
-            sc.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-            // узкий экран — по ширине; широкий (планшет) — по высоте, иначе панели не влезут
-            sc.matchWidthOrHeight = (float)Screen.width / Screen.height > 360f / 640f ? 1 : 0;
+            scaler = cgo.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize; scaler.referenceResolution = new Vector2(360, 640);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             cgo.AddComponent<GraphicRaycaster>();
             canvasRt = (RectTransform)cgo.transform;
             if (GameRoot.Find<EventSystem>() == null)
@@ -129,8 +128,13 @@ namespace CatExorcist
         void UpdateSafeArea()
         {
             var sa = Screen.safeArea;
-            if (sa == lastSafe || Screen.width == 0) return;
+            if (sa == lastSafe || Screen.width == 0 || Screen.height == 0) return;
             lastSafe = sa;
+            // узкий экран — по ширине; широкий (планшет, окно редактора) — по высоте, иначе панели не влезут
+            scaler.matchWidthOrHeight = (float)Screen.width / Screen.height > 360f / 640f ? 1 : 0;
+            // игра портретная: шире 9:16 — колонка по центру, по бокам фон (как в веб-версии)
+            float maxW = sa.height * 360f / 640f;
+            if (sa.width > maxW + 1) sa = new Rect(sa.center.x - maxW / 2, sa.y, maxW, sa.height);
             safe.anchorMin = new Vector2(sa.xMin / Screen.width, sa.yMin / Screen.height);
             safe.anchorMax = new Vector2(sa.xMax / Screen.width, sa.yMax / Screen.height);
             safe.offsetMin = safe.offsetMax = Vector2.zero;
@@ -603,7 +607,7 @@ namespace CatExorcist
                     float t = emoT, inK = Mathf.Min(1, t / 0.25f), outK = Mathf.Max(0, (t - emoDur + 0.3f) / 0.3f);
                     float k = (1 - Mathf.Pow(1 - inK, 3)) * (1 - outK * outK), hop = Mathf.Abs(Mathf.Sin(t * 7)) * 6 * (1 - outK);
                     // нижний край на 92 выше верха нижней панели
-                    im.rectTransform.anchoredPosition = new Vector2(-w * k + 8, BottomInset() + 128 + 92 + hop);
+                    im.rectTransform.anchoredPosition = new Vector2(-w * k + 8 - RightInset(), BottomInset() + 128 + 92 + hop);
                 });
             }
             if (toast == null) return;
@@ -623,6 +627,7 @@ namespace CatExorcist
 
         float TopInset() => canvasRt.rect.height * (1 - safe.anchorMax.y);
         float BottomInset() => canvasRt.rect.height * safe.anchorMin.y;
+        float RightInset() => canvasRt.rect.width * (1 - safe.anchorMax.x);
 
         // ================================================================= надписи мира, эктоплазма, стрелки, джойстик
         readonly List<Lbl> labelPool = new List<Lbl>();
