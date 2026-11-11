@@ -135,7 +135,7 @@ namespace CatExorcist.Core
             string key = S.House + ":" + G.DistrictIndex + ":" + (ev != null ? ev.Id : "");
             if (key == MapKey) return;
             MapKey = key;
-            int d = G.District.Base;
+            int d = G.MapArt;
             var Rr = Mulberry((uint)(S.House * 7919 + 13));
             // те же вызовы генератора, что тратит на пол веб-версия, тут не нужны: расстановка своя, но стабильная для дома
             Props.Clear(); Solids.Clear();
@@ -144,7 +144,7 @@ namespace CatExorcist.Core
             for (int i = 0; i < 90; i++)
             {
                 var kind = kinds[(int)Math.Floor(Rr() * kinds.Count)];
-                bool big = kind == "rug" || kind == "net" || kind == "bed" || kind == "sofa" || kind == "tree";
+                bool big = D.BigDecor.Contains(kind);
                 double w = big ? 100 + Rr() * 50 : 42 + Rr() * 24, h = big ? 70 + Rr() * 40 : 42 + Rr() * 20;
                 string art = "prop-d" + (d + 1) + "-" + kind;
                 double asp = D.Aspect.TryGetValue(art, out var a) ? a : 1;

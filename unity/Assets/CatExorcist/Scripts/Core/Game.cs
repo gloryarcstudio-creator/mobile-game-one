@@ -61,6 +61,10 @@ namespace CatExorcist.Core
         public int DistrictIndexOf(int house) => ((house - 1) / D.HousesPerDistrict) % D.Districts.Count;
         public int DistrictIndex => DistrictIndexOf(S.House);
         public DistrictDef District => D.Districts[DistrictIndex];
+        /// <summary>У района свой нарисованный арт (пол, стены, мебель) — тогда без перекраски.</summary>
+        public bool OwnArt => D.OwnArt.Contains(DistrictIndex);
+        /// <summary>Чей арт и набор мебели берёт карта: свой у района с артом, иначе базового района.</summary>
+        public int MapArt => OwnArt ? DistrictIndex : District.Base;
         public bool IsBossRoom => S.Room == D.RoomsPerHouse;
         public bool MoonActive => Now < S.MoonUntil;
         public bool VipActive => Now < S.VipUntil;

@@ -21,6 +21,7 @@ const metaJson = (name) => { const m = src.match(new RegExp('const ' + name + ' 
 // ---- 1. Таблицы данных: исполняем кусок game.js с заглушками
 const dataSrc = slice(/^\s*const RARITY = \[/, /^\s*\/\/ Состояние$/);
 const mapSrc = slice(/^\s*const FLOORS = \[/, /^\s*const mapKeyNow/);
+const edgeSrc = slice(/^\s*const OWN_EDGE = \[/, /^\s*function drawBorder/);
 let rec = null; // запись того, что делает функция-награда
 const stubS = () => new Proxy({ crystals: 0, jars: 0, stones: 0, ecto: 0, moonUntil: 0, skins: [], skin: '' }, {});
 const sandbox = `
@@ -35,10 +36,11 @@ const sandbox = `
   const floaters = [], ui = () => false, toScreen = () => ({});
   ${dataSrc}
   ${mapSrc}
+  ${edgeSrc}
   return { RARITY, DISTRICTS, HOUSES_PER_DISTRICT, GHOSTS, EXPEDITIONS, EVENTS, ACHIEVEMENTS, ACH_REWARD, BEHAVIORS, ATTACH, RANKS, RANK_COLORS,
     RANK_WEIGHTS, RANK_WEIGHTS_HIGH, SUMMON_COST, BEST_MILESTONES, BEST_REWARDS, BEST_BONUS, QUEST_TYPES, TIERS, SKINS, CRYSTAL_PACKS, DAILY, WHEEL,
     RAID_TIME, ROOMS_PER_HOUSE, GHOSTS_PER_ROOM, MAX_ALIVE, PRESTIGE_HOUSE, VERSION, CIRCLE, UNLOCKS, ALTAR, DAILY_MISSIONS, MISSION_GEMS, MISSION_XP, CHEST_XP,
-    PASS_LEVELS, PASS_XP, PASS_DAYS, PASS_PRICE, PASS_SKIP, PASS_FREE, PASS_PREM, FLOORS, DECOR, SOLID,
+    PASS_LEVELS, PASS_XP, PASS_DAYS, PASS_PRICE, PASS_SKIP, PASS_FREE, PASS_PREM, FLOORS, DECOR, BIG_DECOR, SOLID, OWN_EDGE,
     setS: (v) => { S = v; }, getS: () => S };
 `;
 const env = new Function('__S', '__rec', 'window', 'document', sandbox);
@@ -94,9 +96,12 @@ const data = {
   pass: { levels: D.PASS_LEVELS, xp: D.PASS_XP, days: D.PASS_DAYS, price: D.PASS_PRICE, skip: D.PASS_SKIP,
     free: D.PASS_FREE.map((r) => Object.assign(strip(r), { reward: probe(r.apply) })),
     prem: D.PASS_PREM.map((r) => Object.assign(strip(r), { reward: probe(r.apply) })) },
-  floors: D.FLOORS, decor: D.DECOR, solid: Object.keys(D.SOLID),
+  floors: D.FLOORS, decor: D.DECOR, bigDecor: Object.keys(D.BIG_DECOR), solid: Object.keys(D.SOLID),
+  // районы со своим нарисованным полом (9–20): у них свой набор мебели, арт не перекрашивается
+  ownArt: D.DISTRICTS.map((_, i) => i).filter((i) => fs.existsSync(path.join(root, 'art', 'dz-floor-d' + (i + 1) + '.webp')) || fs.existsSync(path.join(root, 'art', 'floor-d' + (i + 1) + '.webp')) || fs.existsSync(path.join(root, 'art', 'x-floor-d' + (i + 1) + '.webp'))),
+  ownEdge: D.OWN_EDGE,
   uiSlice: metaJson('UI_SLICE'), uiIcons: metaJson('UI_ICONS'), extraBox: metaJson('EXTRA_BOX'),
-  aspect: Object.assign({}, metaJson('ART_ASPECT'), metaJson('EXTRA_ASPECT')),
+  aspect: Object.assign({}, metaJson('ART_ASPECT'), metaJson('EXTRA_ASPECT'), metaJson('DIST_ASPECT')),
 };
 // подписи UI-строк, которые в игре собираются из кусочков, переносим как есть: перевод ищется по тем же ключам
 fs.mkdirSync(path.join(OUT, 'Data'), { recursive: true });
@@ -126,7 +131,7 @@ for (const f of fs.readdirSync(path.join(root, 'i18n'))) {
 }
 console.log('переводы: ' + fs.readdirSync(I18N_OUT).length + ' языков, строк только для Unity: ' + Object.keys(extra).length + ' (добавлено ' + added + ')');
 
-// ---- 3. Арт: webp -> png (Unity не читает webp). Ключ = имя файла без «x-».
+// ---- 3. Арт: webp -> png (Unity не читает webp). Ключ = имя файла без «x-» и «dz-».
 if (!args.has('--no-art')) {
   const ART_OUT = path.join(OUT, 'Art');
   fs.mkdirSync(ART_OUT, { recursive: true });
@@ -139,6 +144,7 @@ for f in sorted(os.listdir(src)):
     if not f.endswith('.webp'): continue
     key = f[:-5]
     if key.startswith('x-'): key = key[2:]
+    elif key.startswith('dz-'): key = key[3:]
     o = os.path.join(dst, key + '.png')
     if os.path.exists(o) and os.path.getmtime(o) >= os.path.getmtime(os.path.join(src, f)): continue
     Image.open(os.path.join(src, f)).save(o, optimize=True); n += 1

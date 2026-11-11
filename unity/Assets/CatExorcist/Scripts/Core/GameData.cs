@@ -117,6 +117,11 @@ namespace CatExorcist.Core
         public List<FloorDef> Floors = new List<FloorDef>();
         public List<List<string>> Decor = new List<List<string>>();
         public HashSet<string> Solid = new HashSet<string>();
+        public HashSet<string> BigDecor = new HashSet<string>();
+        /// <summary>Районы со своим нарисованным полом, стенами и мебелью: их арт не перекрашивается.</summary>
+        public HashSet<int> OwnArt = new HashSet<int>();
+        /// <summary>Районы 9–20 со своим артом: [цвет бортика, цвет угловых колонн].</summary>
+        public List<string[]> OwnEdge = new List<string[]>();
         public Dictionary<string, int[]> UiSlice = new Dictionary<string, int[]>();
         public Dictionary<string, int[]> UiIcons = new Dictionary<string, int[]>();
         public Dictionary<string, double[]> ExtraBox = new Dictionary<string, double[]>();
@@ -215,6 +220,9 @@ namespace CatExorcist.Core
             foreach (var f in j["floors"].Items()) d.Floors.Add(new FloorDef { Base = f["base"].Str(), Line = f["line"].Str(), Wall = f["wall"].Str(), Style = f["style"].Str() });
             foreach (var row in j["decor"].Items()) d.Decor.Add(row.Strings());
             foreach (var s in j["solid"].Items()) d.Solid.Add(s.Str());
+            foreach (var s in j["bigDecor"].Items()) d.BigDecor.Add(s.Str());
+            foreach (var n in j["ownArt"].Items()) d.OwnArt.Add(n.Int());
+            foreach (var e in j["ownEdge"].Items()) d.OwnEdge.Add(e.Strings().ToArray());
             foreach (var kv in j["uiSlice"].Pairs()) d.UiSlice[kv.Key] = ToInts(kv.Value);
             foreach (var kv in j["uiIcons"].Pairs()) d.UiIcons[kv.Key] = ToInts(kv.Value);
             foreach (var kv in j["extraBox"].Pairs()) d.ExtraBox[kv.Key] = kv.Value.Nums().ToArray();

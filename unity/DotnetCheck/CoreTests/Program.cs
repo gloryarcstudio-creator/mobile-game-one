@@ -30,6 +30,7 @@ static class Program
         Run("Формулы = веб-версия", () => TestParity(data));
         Run("Сохранение", () => TestSave(data));
         Run("Покупки", () => TestProducts(data));
+        Run("Арт районов", () => TestDistrictArt(data));
         Run("Слияния и награды", () => TestEconomy(data));
         Run("Бой 90 минут на автопилоте", () => TestSimulation(data));
 
@@ -43,6 +44,22 @@ static class Program
         try { t(); }
         catch (Exception e) { fails++; Console.WriteLine("  ✗ исключение: " + e); }
         Console.WriteLine((fails == f0 ? "✓ " : "✗ ") + name);
+    }
+
+    // у каждого района со своим артом есть пол, стены, вся мебель из его набора; у каждого призрака — картинка
+    static void TestDistrictArt(GameData data)
+    {
+        bool Has(string key) => File.Exists(Path.Combine(Res, "Art", key + ".png"));
+        Check(data.Decor.Count == data.Districts.Count, "наборов мебели столько же, сколько районов");
+        Check(data.OwnEdge.Count >= data.Districts.Count - 8, "цвета бортика и колонн для районов 9+");
+        int props = 0;
+        foreach (var a in data.OwnArt)
+        {
+            Check(Has("floor-d" + (a + 1)) && Has("wall-d" + (a + 1)), "пол и стены района " + (a + 1));
+            foreach (var kind in data.Decor[a].Distinct()) { Check(Has("prop-d" + (a + 1) + "-" + kind), "prop-d" + (a + 1) + "-" + kind); props++; }
+        }
+        foreach (var g in data.Ghosts.Values) Check(Has("ghost-" + g.Key) || (g.Art != null && Has("ghost-" + g.Art)), "арт призрака " + g.Key);
+        Console.WriteLine("  районов со своим артом: " + data.OwnArt.Count + " из " + data.Districts.Count + ", предметов мебели: " + props);
     }
 
     static void TestLocIds(GameData data)

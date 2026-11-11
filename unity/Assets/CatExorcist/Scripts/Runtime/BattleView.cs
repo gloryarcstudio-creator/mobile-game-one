@@ -146,12 +146,14 @@ namespace CatExorcist
             builtKey = B.MapKey;
             for (int i = mapRoot.childCount - 1; i >= 0; i--) Destroy(mapRoot.GetChild(i).gameObject);
             var dist = G.District; int d = dist.Base;
-            var tone = dist.Tone != null ? Art.Tone(dist.Tone) : null;
+            // у района со своим артом (9–20) берём его пол, стены и мебель без перекраски
+            bool own = G.OwnArt; int art = G.MapArt;
+            var tone = !own && dist.Tone != null ? Art.Tone(dist.Tone) : null;
             int ord = -30000;
             float MW = (float)Battle.MapW, MH = (float)Battle.MapH, WL = (float)Battle.Wall;
             var F = G.D.Floors[Math.Min(d, G.D.Floors.Count - 1)];
             // пол: плитка повторяется каждые 300 единиц
-            var floor = Art.Get("floor-d" + (d + 1));
+            var floor = Art.Get("floor-d" + (art + 1));
             if (floor != null) { floor.texture.wrapMode = TextureWrapMode.Repeat; Quad("floor", floor.texture, new[] { V(0, 0), V(MW, 0), V(MW, MH), V(0, MH) }, new[] { new Vector2(0, 0), new Vector2(MW / 300f, 0), new Vector2(MW / 300f, -MH / 300f), new Vector2(0, -MH / 300f) }, tone, ord++, Color.white); }
             else Quad("floor", Texture2D.whiteTexture, new[] { V(0, 0), V(MW, 0), V(MW, MH), V(0, MH) }, null, null, ord++, C(F.Base));
             // пятна света и тени
@@ -168,7 +170,7 @@ namespace CatExorcist
             MapSprite(grad, WL + 11, MH / 2, MH - WL * 2, 22, Rgba(0, 0, 0, 0.28f), ord++, -Math.PI / 2);
             MapSprite(grad, MW - WL - 11, MH / 2, MH - WL * 2, 22, Rgba(0, 0, 0, 0.28f), ord++, Math.PI / 2);
             // стены: полоса вдоль каждого края, верх картинки к внешнему краю
-            var wall = Art.Get("wall-d" + (d + 1));
+            var wall = Art.Get("wall-d" + (art + 1));
             Color wallC = C(F.Wall);
             if (wall != null)
             {
@@ -186,6 +188,13 @@ namespace CatExorcist
                 MapSprite(Art.White, WL / 2, MH / 2, WL, MH, wallC, ord++);
                 MapSprite(Art.White, MW - WL / 2, MH / 2, WL, MH, wallC, ord++);
             }
+            // затемнение стены к внешнему краю, будто она уходит вверх
+            var fade = Rgba(20, 10, 30, 0.45f);
+            MapSprite(grad, MW / 2, WL / 2, MW, WL, fade, ord++, 0);
+            MapSprite(grad, MW / 2, MH - WL / 2, MW, WL, fade, ord++, Math.PI);
+            MapSprite(grad, WL / 2, MH / 2, MH, WL, fade, ord++, -Math.PI / 2);
+            MapSprite(grad, MW - WL / 2, MH / 2, MH, WL, fade, ord++, Math.PI / 2);
+            BuildEdge(own && art >= 8 && art - 8 < G.D.OwnEdge.Count ? G.D.OwnEdge[art - 8] : null, d, MW, MH, WL, ref ord);
             // мебель и украшения события (тень, затем предмет)
             foreach (var p in B.Props)
             {
@@ -195,6 +204,36 @@ namespace CatExorcist
                 var sr = MapSprite(a, p.X + p.W / 2, p.Y + p.H / 2, p.W, p.H, Color.white, ord++);
                 if (tone != null && p.Kind != "event" && sr != null) sr.sharedMaterial = tone;
             }
+        }
+
+        // бортик у пола и колонны в углах, как в drawBorder веб-версии
+        static readonly string[] Trim = { "#f3e2c8", "#9d93b8", "#a7713f", "#f2c6d6", "#2f2a3a", "#eaf7ff", "#d9a441", "#ffd84d" };
+        static readonly string[] Column = { "#8a6450", "#585070", "#7a5636", "#9a6a82", "#5c5868", "#7fb0d0", "#6a5a48", "#4a3a80" };
+        void BuildEdge(string[] ownCol, int d, float MW, float MH, float W, ref int ord)
+        {
+            int o = ord;
+            void Box(double x, double y, double w, double h, Color c) => MapSprite(Art.White, x + w / 2, y + h / 2, w, h, c, o++);
+            void Frame(double x, double y, double w, double h, double lw, Color c)
+            {
+                Box(x - lw / 2, y - lw / 2, w + lw, lw, c); Box(x - lw / 2, y + h - lw / 2, w + lw, lw, c);
+                Box(x - lw / 2, y + lw / 2, lw, h - lw, c); Box(x + w - lw / 2, y + lw / 2, lw, h - lw, c);
+            }
+            float IW = MW - W * 2, IH = MH - W * 2;
+            var ink = Art.Hex(Ui.INK);
+            var trim = C(ownCol != null ? ownCol[0] : Trim[Math.Min(d, Trim.Length - 1)]);
+            Box(W - 8, W - 8, IW + 16, 8, trim); Box(W - 8, MH - W, IW + 16, 8, trim);
+            Box(W - 8, W - 8, 8, IH + 16, trim); Box(MW - W, W - 8, 8, IH + 16, trim);
+            Frame(W, W, IW, IH, 3, ink); Frame(1.5, 1.5, MW - 3, MH - 3, 3, ink);
+            var col = C(ownCol != null ? ownCol[1] : Column[Math.Min(d, Column.Length - 1)]);
+            foreach (var (x, y) in new[] { (0f, 0f), (MW - W - 10, 0f), (0f, MH - W - 10), (MW - W - 10, MH - W - 10) })
+            {
+                Box(x + 6, y + 8, W + 10, W + 10, new Color(0, 0, 0, 0.25f));
+                Box(x, y, W + 10, W + 10, col);
+                Frame(x + 1.5, y + 1.5, W + 7, W + 7, 3, ink);
+                Box(x + 8, y + 8, W - 6, W - 6, new Color(1, 1, 1, 0.18f));
+                Box(x + 16, y + 16, W - 22, W - 22, new Color(0, 0, 0, 0.15f));
+            }
+            ord = o;
         }
 
         static Vector3 V(float x, float y) => new Vector3(x, -y, 0);
