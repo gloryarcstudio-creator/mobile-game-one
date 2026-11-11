@@ -463,9 +463,9 @@ namespace CatExorcist
                     {
                         var tx = ti < texts.Count ? texts[ti] : NewText(); ti++;
                         tx.text = tk.S; tx.fontSize = Mathf.Max(1, Mathf.RoundToInt(s)); tx.enabled = true;
-                        var ol = tx.GetComponent<Outline>();
-                        ol.enabled = !Ui.IsDark(color);
-                        ol.effectDistance = new Vector2(Mathf.Max(1f, s / 9f), -Mathf.Max(1f, s / 9f));
+                        var st = tx.GetComponent<Stroke>();
+                        st.enabled = !Ui.IsDark(color);
+                        st.Radius = Mathf.Max(1f, s / 10f); // как strokeText в вебе: lineWidth = max(2, size / 5)
                         Ui.Place(tx.rectTransform, lx - 2, ly - s * 0.75f + s * 0.1f, w + 4, s * 1.5f);
                     }
                     lx += w;
@@ -526,7 +526,7 @@ namespace CatExorcist
             var tx = n.gameObject.AddComponent<Text>();
             tx.font = Art.Font; tx.alignment = TextAnchor.MiddleCenter; tx.horizontalOverflow = HorizontalWrapMode.Overflow; tx.verticalOverflow = VerticalWrapMode.Overflow;
             tx.raycastTarget = false; tx.supportRichText = false;
-            var ol = n.gameObject.AddComponent<Outline>(); ol.effectColor = Art.Hex(Ui.INK); ol.useGraphicAlpha = true;
+            n.gameObject.AddComponent<Stroke>().Color = Art.Hex(Ui.INK);
             texts.Add(tx);
             return tx;
         }
@@ -544,6 +544,44 @@ namespace CatExorcist
             var c = Art.Hex(color, alpha);
             foreach (var t in texts) t.color = c;
             foreach (var i in icons) i.color = new Color(1, 1, 1, alpha);
+        }
+    }
+
+    /// <summary>
+    /// Обводка текста: копии букв по кругу радиуса Radius под самим текстом, как strokeText с круглыми углами.
+    /// Стандартный Outline рисует только 4 копии по диагоналям, и у крупных букв обводка рвётся и двоится.
+    /// </summary>
+    public sealed class Stroke : BaseMeshEffect
+    {
+        const int Dirs = 12;
+        static readonly List<UIVertex> src = new List<UIVertex>(), dst = new List<UIVertex>();
+        Color32 color = new Color32(0x2b, 0x23, 0x40, 255);
+        float radius = 1;
+
+        public Color Color { set { color = value; graphic?.SetVerticesDirty(); } }
+        public float Radius { set { if (Mathf.Approximately(radius, value)) return; radius = value; graphic?.SetVerticesDirty(); } }
+
+        public override void ModifyMesh(VertexHelper vh)
+        {
+            if (!IsActive() || radius <= 0 || vh.currentVertCount == 0) return;
+            src.Clear(); dst.Clear();
+            vh.GetUIVertexStream(src);
+            for (int k = 0; k < Dirs; k++)
+            {
+                float a = k * Mathf.PI * 2 / Dirs;
+                var off = new Vector3(Mathf.Cos(a) * radius, Mathf.Sin(a) * radius, 0);
+                for (int i = 0; i < src.Count; i++)
+                {
+                    var v = src[i];
+                    v.position += off;
+                    var c = color; c.a = (byte)(color.a * v.color.a / 255);
+                    v.color = c;
+                    dst.Add(v);
+                }
+            }
+            dst.AddRange(src);
+            vh.Clear();
+            vh.AddUIVertexTriangleStream(dst);
         }
     }
 

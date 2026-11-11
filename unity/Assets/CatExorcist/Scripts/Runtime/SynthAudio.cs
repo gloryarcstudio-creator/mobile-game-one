@@ -9,9 +9,13 @@ namespace CatExorcist
 {
     public sealed class SynthAudio : MonoBehaviour
     {
-        const int SR = 22050;
+        // 44,1 кГц и фильтры-биквады, как у Web Audio: на 22 кГц прямоугольник и пила звенели,
+        // а прежний фильтр шума выше ~4 кГц шёл вразнос и давал треск на полной громкости
+        const int SR = 44100;
         AudioSource sfxSrc, musA, musB;
-        readonly Dictionary<string, AudioClip> sfx = new Dictionary<string, AudioClip>();
+        readonly Dictionary<string, AudioClip[]> sfx = new Dictionary<string, AudioClip[]>();
+        // в вебе у частых звуков случайная высота; здесь несколько заранее посчитанных вариантов
+        static readonly Dictionary<string, double> Spread = new Dictionary<string, double> { ["shoot"] = 0.1, ["hit"] = 0.14, ["pop"] = 0.09, ["ecto"] = 0.16 };
         readonly Dictionary<string, float> last = new Dictionary<string, float>();
         readonly Dictionary<string, AudioClip> songs = new Dictionary<string, AudioClip>();
         readonly Dictionary<string, Task<float[]>> pending = new Dictionary<string, Task<float[]>>();
@@ -29,10 +33,16 @@ namespace CatExorcist
             musB = gameObject.AddComponent<AudioSource>(); musB.loop = true; musB.volume = 0;
             foreach (var name in SfxNames)
             {
-                var buf = RenderSfx(name);
-                var clip = AudioClip.Create("sfx-" + name, buf.Length, 1, SR, false);
-                clip.SetData(buf, 0);
-                sfx[name] = clip;
+                int n = Spread.TryGetValue(name, out var sp) ? 4 : 1;
+                var clips = new AudioClip[n];
+                for (int v = 0; v < n; v++)
+                {
+                    double k = n == 1 ? 1 : 1 - sp + 2 * sp * v / (n - 1);
+                    var buf = RenderSfx(name, k);
+                    clips[v] = AudioClip.Create("sfx-" + name + v, buf.Length, 1, SR, false);
+                    clips[v].SetData(buf, 0);
+                }
+                sfx[name] = clips;
             }
         }
 
@@ -40,7 +50,8 @@ namespace CatExorcist
 
         public void Play(string name)
         {
-            if (!sfxOn || !sfx.TryGetValue(name, out var clip)) return;
+            if (!sfxOn || !sfx.TryGetValue(name, out var clips)) return;
+            var clip = clips[clips.Length == 1 ? 0 : UnityEngine.Random.Range(0, clips.Length)];
             float now = Time.unscaledTime;
             if (last.TryGetValue(name, out var t) && now - t < (Limit.TryGetValue(name, out var l) ? l : 0.02f)) return;
             last[name] = now;
@@ -116,22 +127,59 @@ namespace CatExorcist
             return vol * Math.Pow(lo / vol, k);
         }
 
-        static double Osc(string type, double ph)
+        // PolyBLEP сглаживает скачки прямоугольника и пилы: без него высокие гармоники заворачиваются в слышимый «звон»
+        static double Blep(double t, double dt)
+        {
+            if (dt <= 0) return 0;
+            if (t < dt) { t /= dt; return t + t - t * t - 1; }
+            if (t > 1 - dt) { t = (t - 1) / dt; return t * t + t + t + 1; }
+            return 0;
+        }
+
+        static double Osc(string type, double ph, double dt)
         {
             double f = ph - Math.Floor(ph);
             switch (type)
             {
-                case "square": return f < 0.5 ? 1 : -1;
+                case "square": { double g = f + 0.5; g -= Math.Floor(g); return (f < 0.5 ? 1 : -1) + Blep(f, dt) - Blep(g, dt); }
                 case "triangle": return 1 - 4 * Math.Abs(f - 0.5);
-                case "sawtooth": return 2 * f - 1;
+                case "sawtooth": return 2 * f - 1 - Blep(f, dt);
                 default: return Math.Sin(2 * Math.PI * f);
             }
         }
 
+        /// <summary>Биквад по формулам RBJ — те же, что у BiquadFilterNode в Web Audio.</summary>
+        struct Biquad
+        {
+            double b0, b1, b2, a1, a2, x1, x2, y1, y2;
+            public void Set(string type, double fc, double q)
+            {
+                fc = Math.Max(10, Math.Min(fc, SR * 0.45));
+                double w = 2 * Math.PI * fc / SR, cs = Math.Cos(w), alpha = Math.Sin(w) / (2 * Math.Max(0.05, q));
+                switch (type)
+                {
+                    case "lowpass": b0 = (1 - cs) / 2; b1 = 1 - cs; b2 = b0; break;
+                    case "highpass": b0 = (1 + cs) / 2; b1 = -(1 + cs); b2 = b0; break;
+                    default: b0 = alpha; b1 = 0; b2 = -alpha; break; // полосовой, пик 0 дБ
+                }
+                double a0 = 1 + alpha;
+                b0 /= a0; b1 /= a0; b2 /= a0; a1 = -2 * cs / a0; a2 = (1 - alpha) / a0;
+            }
+            public double Run(double x)
+            {
+                double y = b0 * x + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2;
+                x2 = x1; x1 = x; y2 = y1; y1 = y;
+                return y;
+            }
+        }
+
+        // в Web Audio у lowpass/highpass Q задаётся в децибелах (по умолчанию 1 дБ), у полосового — как есть
+        static double QLin(string type, double q) => type == "lowpass" || type == "highpass" ? Math.Pow(10, q / 20) : q;
+
         static void Tone(Buf b, double freq, double dur, O o)
         {
-            double t0 = o.At + o.Delay, ph = 0, lp = 0;
-            double a = o.Lp > 0 ? 1 - Math.Exp(-2 * Math.PI * o.Lp / SR) : 1;
+            double t0 = o.At + o.Delay, ph = 0;
+            var lp = new Biquad(); if (o.Lp > 0) lp.Set("lowpass", o.Lp, QLin("lowpass", 1));
             int n = (int)((dur + 0.05) * SR), start = (int)(t0 * SR);
             for (int i = 0; i < n; i++)
             {
@@ -140,8 +188,8 @@ namespace CatExorcist
                 if (o.Slide > 0) f = Math.Max(30, f);
                 if (o.Vib > 0) f += Math.Sin(2 * Math.PI * 5.5 * t) * freq * o.Vib;
                 ph += f / SR;
-                double s = Osc(o.Type, ph);
-                if (o.Lp > 0) { lp += a * (s - lp); s = lp; }
+                double s = Osc(o.Type, ph, f / SR);
+                if (o.Lp > 0) s = lp.Run(s);
                 b.Add(start + i, (float)(s * Env(t, o.Vol, o.Attack, dur)));
             }
         }
@@ -150,15 +198,12 @@ namespace CatExorcist
         {
             double t0 = o.At + o.Delay;
             int n = (int)((dur + 0.05) * SR), start = (int)(t0 * SR);
-            double low = 0, band = 0;
+            var flt = new Biquad(); double q = QLin(o.NType, o.Q);
             for (int i = 0; i < n; i++)
             {
                 double t = (double)i / SR;
-                double fc = o.Slide > 0 ? o.Freq * Math.Pow(o.Slide, Math.Min(1, t / dur)) : o.Freq;
-                double f = 2 * Math.Sin(Math.PI * Math.Min(fc, SR * 0.45) / SR), q = 1 / Math.Max(0.5, o.Q);
-                double x = rnd.NextDouble() * 2 - 1;
-                low += f * band; double high = x - low - q * band; band += f * high;
-                double s = o.NType == "lowpass" ? low : o.NType == "highpass" ? high : band;
+                if (i % 16 == 0) flt.Set(o.NType, o.Slide > 0 ? o.Freq * Math.Pow(o.Slide, Math.Min(1, t / dur)) : o.Freq, q);
+                double s = flt.Run(rnd.NextDouble() * 2 - 1);
                 b.Add(start + i, (float)(s * Env(t, o.Vol, o.Attack == 0.005 ? 0.003 : o.Attack, dur)));
             }
         }
@@ -170,20 +215,20 @@ namespace CatExorcist
 
         static readonly string[] SfxNames = { "shoot", "hit", "crit", "pop", "bossDown", "suck", "caught", "escape", "ecto", "crystal", "click", "deny", "upgrade", "merge", "summon", "hurt", "enemyShot", "spawn", "boss", "clear", "reward", "tick", "goldAppear", "gold", "moon", "fail" };
 
-        static float[] RenderSfx(string name)
+        static float[] RenderSfx(string name, double k = 1)
         {
-            var b = new Buf(2.2); var r = new System.Random(name.GetHashCode());
+            var b = new Buf(2.2); var r = new System.Random(name.GetHashCode() + (int)(k * 1000));
             switch (name)
             {
-                case "shoot": Tone(b, 1000, 0.07, new O { Type = "square", Vol = 0.035, Slide = 0.45, Lp = 3000 }); Noise(b, 0.05, new O { Vol = 0.03, Freq = 5000 }, r); break;
-                case "hit": Tone(b, 280, 0.06, new O { Type = "triangle", Vol = 0.07, Slide = 0.6 }); break;
+                case "shoot": Tone(b, 1000 * k, 0.07, new O { Type = "square", Vol = 0.035, Slide = 0.45, Lp = 3000 }); Noise(b, 0.05, new O { Vol = 0.03, Freq = 5000 }, r); break;
+                case "hit": Tone(b, 280 * k, 0.06, new O { Type = "triangle", Vol = 0.07, Slide = 0.6 }); break;
                 case "crit": Tone(b, 1100, 0.08, new O { Type = "square", Vol = 0.05, Slide = 1.6, Lp = 4000 }); Tone(b, 1760, 0.14, new O { Vol = 0.06, Delay = 0.03 }); break;
-                case "pop": Tone(b, 460, 0.16, new O { Vol = 0.16, Slide = 2.4 }); Noise(b, 0.08, new O { Vol = 0.05, Freq = 1400 }, r); break;
+                case "pop": Tone(b, 460 * k, 0.16, new O { Vol = 0.16, Slide = 2.4 }); Noise(b, 0.08, new O { Vol = 0.05, Freq = 1400 }, r); break;
                 case "bossDown": Noise(b, 0.9, new O { Vol = 0.18, Freq = 300, NType = "lowpass", Slide = 0.3 }, r); Tone(b, 150, 0.8, new O { Type = "sawtooth", Vol = 0.1, Slide = 0.3, Lp = 900 }); Arp(b, new double[] { 523, 659, 784, 1047, 1319 }, 0.09, "square", 0.06); break;
                 case "suck": Noise(b, 0.6, new O { Vol = 0.12, Freq = 300, Slide = 8, Q = 4 }, r); Tone(b, 160, 0.6, new O { Type = "sawtooth", Vol = 0.03, Slide = 4, Lp = 1200 }); break;
                 case "caught": Arp(b, new double[] { 784, 988, 1175, 1568 }, 0.06, "triangle", 0.13); break;
                 case "escape": Tone(b, 500, 0.3, new O { Type = "sawtooth", Vol = 0.05, Slide = 0.35, Lp = 1500 }); Tone(b, 380, 0.3, new O { Vol = 0.08, Slide = 0.5, Delay = 0.08 }); break;
-                case "ecto": Tone(b, 1550, 0.06, new O { Vol = 0.045 }); break;
+                case "ecto": Tone(b, 1550 * k, 0.06, new O { Vol = 0.045 }); break;
                 case "crystal": Tone(b, 1568, 0.18, new O { Type = "triangle", Vol = 0.1 }); Tone(b, 2349, 0.25, new O { Vol = 0.07, Delay = 0.06 }); break;
                 case "click": Tone(b, 700, 0.05, new O { Type = "triangle", Vol = 0.1, Slide = 1.4 }); break;
                 case "deny": Tone(b, 220, 0.1, new O { Type = "square", Vol = 0.05, Lp = 1200 }); Tone(b, 196, 0.14, new O { Type = "square", Vol = 0.05, Delay = 0.08, Lp = 1200 }); break;
@@ -208,7 +253,7 @@ namespace CatExorcist
             int end = b.D.Length;
             while (end > 1 && Math.Abs(b.D[end - 1]) < 1e-4f) end--;
             var o = new float[end + 64];
-            for (int i = 0; i < end; i++) o[i] = (float)Math.Tanh(b.D[i] * 1.6);
+            for (int i = 0; i < end; i++) o[i] = Safe(Math.Tanh(b.D[i] * 1.6));
             return o;
         }
 
@@ -304,8 +349,10 @@ namespace CatExorcist
                 }
                 else if (st == 0 && bar % 2 == 0) Tone(b, Mtof(Deg(song, c) + 24), 2.5, new O { Vol = 0.03, Vib = 0.02, Attack = 0.3, At = t });
             }
-            for (int i = 0; i < b.D.Length; i++) b.D[i] = (float)Math.Tanh(b.D[i] * 1.4);
+            for (int i = 0; i < b.D.Length; i++) b.D[i] = Safe(Math.Tanh(b.D[i] * 1.4));
             return b.D;
         }
+
+        static float Safe(double v) => double.IsNaN(v) || double.IsInfinity(v) ? 0 : (float)v;
     }
 }
