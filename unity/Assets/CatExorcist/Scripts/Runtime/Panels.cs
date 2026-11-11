@@ -609,18 +609,19 @@ namespace CatExorcist
             foreach (var p in G.D.CrystalPacks) cards.Add((p.Amount, Price("gems" + p.Amount), p.Extra, false));
             for (int i = 0; i < cards.Count; i++)
             {
-                var c = cards[i]; float x = 24 + (i % 2) * 160, y = 142 + (i / 2) * 136;
-                Ui.Card(r, x, y, 152, 128, "#7fd1ff");
+                // карточки чуть ниже, чем в вебе: под сеткой нужна кнопка «Восстановить покупки»
+                var c = cards[i]; float x = 24 + (i % 2) * 160, y = 142 + (i / 2) * 124;
+                Ui.Card(r, x, y, 152, 118, "#7fd1ff");
                 var gp = Art.Get("gems-" + Math.Max(1, Math.Min(5, i)));
                 if (gp != null) Ui.Fit(r, gp, x + 76, y + 32, 52); else Ui.Text(r, "💎", x + 76, y + 30, 40, 22, "#ffffff");
                 if (c.free) { Ui.Orb(r, x + 104, y + 46, 11, "#ffc94d"); Ui.Icon(r, "ad", x + 104, y + 46, 13); }
                 Ui.Text(r, c.amount.ToString(), x + 76, y + 62, 140, 18, Ui.INK);
                 if (c.extra != null) { Ui.Round(r, x + 98, y + 6, 48, 18, 9, Art.Hex("#ff4d6d")); Ui.Text(r, c.extra, x + 122, y + 15, 44, 10, "#ffffff"); }
                 int amount = c.amount;
-                var b = Ui.Button(r, x + 16, y + 84, 120, 32, c.price, c.free ? "#ffc94d" : "#8ee08a", () => { if (c.free) G.FreeGems(); else G.Buy("gems" + amount); }, 13, !c.free || freeReady);
-                if (c.free && !freeReady) Live(Ui.Text(b.Visual, "", 60, 14.7f, 110, 13, "#ffffff"), () => Math.Ceiling((S.AdCrystalsAt - G.Now) / 60000.0) + T(" мин"));
+                var b = Ui.Button(r, x + 16, y + 80, 120, 30, c.price, c.free ? "#ffc94d" : "#8ee08a", () => { if (c.free) G.FreeGems(); else G.Buy("gems" + amount); }, 13, !c.free || freeReady);
+                if (c.free && !freeReady) Live(Ui.Text(b.Visual, "", 60, 13.7f, 110, 13, "#ffffff"), () => Math.Ceiling((S.AdCrystalsAt - G.Now) / 60000.0) + T(" мин"));
             }
-            Ui.Button(r, 90, 548 - 30, 180, 26, T("Восстановить покупки"), "#8a7bd1", () => Root.RestorePurchases(), 11);
+            Ui.Button(r, 90, 516, 180, 26, T("Восстановить покупки"), "#8a7bd1", () => Root.RestorePurchases(), 11);
         }
 
         static readonly string[] TierInfo = { "150–300 💎, бонус +6–8%", "600–900 💎, бонус +10–20%", "1200–2200 💎, открываются на домах 10–35", "донат $2.99–4.99, бонус +25–45%", "донат, Пропуск или события года, бонус +30–60%" };
