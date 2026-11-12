@@ -1,11 +1,11 @@
 # app-ads.txt for protekgames.com (Protek Games)
 # Lists the ad networks allowed to sell ads in our apps.
 #
-# Our games use AppLovin MAX mediation. When the accounts exist:
-#  - AppLovin dashboard > MAX > app-ads.txt gives the full list of lines for
-#    every network enabled in mediation (AppLovin, Google AdMob, and others).
-#  - The AdMob line is also in AdMob > Apps > View all apps > app-ads.txt.
-# Paste those lines below (without "# "), rebuild with build.py and upload.
+# Our games use Google AdMob with mediation. When the AdMob account exists:
+#  - AdMob > Apps > View all apps > app-ads.txt shows the exact line.
+#  - Each network added to mediation (Unity Ads and others) gives its own lines
+#    in its dashboard; add them here too.
+# Replace the publisher ID, remove the "# " in front of the line, rebuild with
+# build.py and upload.
 #
-# applovin.com, <your AppLovin key>, DIRECT
 # google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
