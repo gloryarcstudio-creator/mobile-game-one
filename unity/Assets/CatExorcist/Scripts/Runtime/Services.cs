@@ -37,8 +37,9 @@ namespace CatExorcist
         void Event(string name, Dictionary<string, object> p);
         /// <summary>Покупка: цена в валюте магазина (localizedPrice), код валюты ISO, чек магазина для проверки.</summary>
         void Purchase(string productId, double price, string currency, string receipt);
-        /// <summary>Доход с одного показа рекламы (ILRD) — для ROAS по кампаниям.</summary>
-        void AdRevenue(string network, string adUnit, string format, string placement, double revenueUsd);
+        /// <summary>Доход с одного показа рекламы (ILRD) — для ROAS по кампаниям. platform — медиация (AdMob, AppLovin),
+        /// network — сеть, выигравшая показ, value — сумма в валюте currency (ISO 4217).</summary>
+        void AdRevenue(string platform, string network, string adUnit, string format, string placement, double value, string currency);
         void SetConsent(bool analytics, bool ads);
     }
 
@@ -118,7 +119,8 @@ namespace CatExorcist
             Debug.Log("[analytics] " + s);
         }
         public void Purchase(string productId, double price, string currency, string receipt) => Event("purchase", new Dictionary<string, object> { ["id"] = productId, ["price"] = price, ["currency"] = currency });
-        public void AdRevenue(string network, string adUnit, string format, string placement, double revenueUsd) => Event("ad_revenue", new Dictionary<string, object> { ["net"] = network, ["format"] = format, ["usd"] = revenueUsd });
+        public void AdRevenue(string platform, string network, string adUnit, string format, string placement, double value, string currency) =>
+            Event("ad_revenue", new Dictionary<string, object> { ["platform"] = platform, ["net"] = network, ["format"] = format, ["value"] = value, ["currency"] = currency });
         public void SetConsent(bool analytics, bool ads) { }
     }
 

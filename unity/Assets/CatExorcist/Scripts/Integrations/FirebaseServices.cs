@@ -90,13 +90,18 @@ namespace CatExorcist.Integrations
         public void Purchase(string productId, double price, string currency, string receipt) =>
             Log("iap_purchase", new[] { new Parameter("product_id", productId), new Parameter("currency", currency ?? "") });
 
-        public void AdRevenue(string network, string adUnit, string format, string placement, double revenueUsd) =>
+        // Доход с показов AdMob SDK Google сам пишет в Firebase (ad_impression), когда приложение AdMob связано с проектом
+        // Firebase, — своё событие задвоило бы доход. Для остальных медиаций пишем ad_impression сами.
+        public void AdRevenue(string platform, string network, string adUnit, string format, string placement, double value, string currency)
+        {
+            if (platform == "AdMob") return;
             Log("ad_impression", new[]
             {
-                new Parameter("ad_platform", "AppLovin"), new Parameter("ad_source", network ?? ""), new Parameter("ad_unit_name", adUnit ?? ""),
+                new Parameter("ad_platform", platform ?? ""), new Parameter("ad_source", network ?? ""), new Parameter("ad_unit_name", adUnit ?? ""),
                 new Parameter("ad_format", format ?? ""), new Parameter("placement", placement ?? ""),
-                new Parameter("currency", "USD"), new Parameter("value", revenueUsd),
+                new Parameter("currency", currency ?? "USD"), new Parameter("value", value),
             });
+        }
     }
 
 #if CE_FIREBASE_RC

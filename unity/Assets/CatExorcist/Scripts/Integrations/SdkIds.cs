@@ -1,9 +1,23 @@
-// Ключи и идентификаторы SDK. Заполнить перед релизом (см. docs/unity/UNITY_SETUP.md).
-// Ключ SDK AppLovin вводится не здесь, а в AppLovin → Integration Manager (он попадает в манифест и Info.plist).
+// Ключи и идентификаторы SDK. Заполнить перед релизом (см. docs/unity/README.md).
 namespace CatExorcist.Integrations
 {
     public static class SdkIds
     {
+        // ---- Google AdMob: id рекламных блоков (вид ca-app-pub-…/…). App ID (с «~») вписывается в Editor/AdMobSetup.cs.
+#if UNITY_IOS
+        public const string AdMobRewarded = "REPLACE_IOS_ADMOB_REWARDED";
+        public const string AdMobInterstitial = "REPLACE_IOS_ADMOB_INTERSTITIAL";
+        // демо-блоки Google: всегда отдают тестовую рекламу (Development Build и пока свои id не вписаны)
+        public const string AdMobTestRewarded = "ca-app-pub-3940256099942544/1712485313";
+        public const string AdMobTestInterstitial = "ca-app-pub-3940256099942544/4411468910";
+#else
+        public const string AdMobRewarded = "REPLACE_ANDROID_ADMOB_REWARDED";
+        public const string AdMobInterstitial = "REPLACE_ANDROID_ADMOB_INTERSTITIAL";
+        public const string AdMobTestRewarded = "ca-app-pub-3940256099942544/5224354917";
+        public const string AdMobTestInterstitial = "ca-app-pub-3940256099942544/1033173712";
+#endif
+
+        // ---- AppLovin MAX (на будущее, если AppLovin откроет приём издателей). Ключ SDK — в AppLovin → Integration Manager.
 #if UNITY_IOS
         public const string MaxRewarded = "REPLACE_IOS_REWARDED_AD_UNIT";
         public const string MaxInterstitial = "REPLACE_IOS_INTERSTITIAL_AD_UNIT";

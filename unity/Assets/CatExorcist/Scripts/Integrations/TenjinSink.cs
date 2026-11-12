@@ -66,7 +66,7 @@ namespace CatExorcist.Integrations
             tj.Transaction(productId, currency, 1, price, tx, payload, signature);
         }
 
-        public void AdRevenue(string network, string adUnit, string format, string placement, double revenueUsd) { }
+        public void AdRevenue(string platform, string network, string adUnit, string format, string placement, double value, string currency) { }
     }
 }
 #endif

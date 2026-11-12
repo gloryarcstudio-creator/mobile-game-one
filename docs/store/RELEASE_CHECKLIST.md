@@ -5,7 +5,7 @@
 ## 1. Проект и сборка
 
 - [ ] Открыть `unity/` в Unity 6 LTS, нажать Play, пройти туториал, открыть каждое окно (см. `docs/unity/README.md`).
-- [ ] Импортировать SDK: MAX, Firebase, GameAnalytics, Tenjin; заполнить ключи (`SdkIds.cs`, Integration Manager, настройки GameAnalytics, файлы Firebase).
+- [ ] Импортировать SDK: Firebase, GameAnalytics, Tenjin (Google Mobile Ads уже в манифесте пакетов); заполнить ключи (App ID AdMob в `Editor/AdMobSetup.cs`, id блоков в `SdkIds.cs`, настройки GameAnalytics, файлы Firebase).
 - [ ] Собрать AAB с ключом загрузки (`CE_KEYSTORE…`), включить Play App Signing.
 - [ ] Собрать Xcode-проект, подписать, Archive, загрузить в App Store Connect.
 - ✓ id `com.gloryarc.catexorcist`, компания PROTEK s.r.o., портрет, IL2CPP, ARM64 + ARMv7, minSdk 24, iOS 13+, AAB.
@@ -15,10 +15,10 @@
 
 - ✓ Rewarded только по кнопке, награда названа заранее и выдаётся сразу.
 - ✓ Interstitial только на паузе между комнатами, мягкие пороги, всё в Remote Config; после любой покупки — никогда.
-- ✓ Окно согласия Google UMP (ЕЭЗ, UK, Швейцария) и ATT через поток согласия MAX; кнопка «Настройки конфиденциальности» в Настройках для тех, кому показывалось окно.
-- ✓ Доход с каждого показа (ILRD) уходит в Firebase (`ad_impression`) и в Tenjin.
-- [ ] В MAX: тестовые устройства для разработки; настоящую рекламу на своих телефонах не кликать.
-- [ ] **app-ads.txt** на https://protekgames.com/app-ads.txt: взять готовый файл в MAX → Account → app-ads.txt, проверить в AdMob (App → app-ads.txt status).
+- ✓ Окно согласия Google UMP (ЕЭЗ, UK, Швейцария) и ATT (сообщения AdMob → Privacy & messaging); кнопка «Настройки конфиденциальности» в Настройках для тех, кому показывалось окно.
+- ✓ Доход с каждого показа (ILRD) уходит в аналитику; в Firebase `ad_impression` пишет сам SDK Google после связки AdMob с Firebase.
+- ✓ В Development Build только демо-блоки Google с тестовой рекламой. Настоящую рекламу на своих телефонах не кликать.
+- [ ] **app-ads.txt** на https://protekgames.com/app-ads.txt: строка AdMob `google.com, pub-…, DIRECT, f08c47fec0942fa0` (pub-id из AdMob → Settings) плюс строки каждой сети медиации; проверить в AdMob (Apps → app-ads.txt).
 - [ ] В Play Console и App Store Connect сайт разработчика — именно https://protekgames.com, иначе app-ads.txt не найдут.
 - [ ] Платёжные профили и налоговые формы (W-8BEN-E) в каждой сети.
 - [ ] Meta Audience Network и Moloco включат показ только после публикации в сторе и их проверки.

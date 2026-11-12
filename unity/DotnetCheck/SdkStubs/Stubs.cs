@@ -179,3 +179,68 @@ namespace Unity.Notifications.iOS
         public static int ApplicationBadge { get; set; }
     }
 }
+
+// ---- Google Mobile Ads 11.6 (com.google.ads.mobile): только то, что использует AdMobAds.cs
+namespace GoogleMobileAds.Api
+{
+    public class InitializationStatus { }
+    public static class MobileAds
+    {
+        public static bool RaiseAdEventsOnUnityMainThread { get; set; }
+        public static void Initialize(Action<InitializationStatus> initCompleteAction) { }
+    }
+    public class AdRequest { }
+    public class AdValue
+    {
+        public enum PrecisionType { Unknown = 0, Estimated = 1, PublisherProvided = 2, Precise = 3 }
+        public PrecisionType Precision { get; set; }
+        public long Value { get; set; }
+        public string CurrencyCode { get; set; }
+    }
+    public class Reward : EventArgs { public string Type; public double Amount; }
+    public class AdError { public int GetCode() => 0; public string GetDomain() => ""; public string GetMessage() => ""; }
+    public class LoadAdError : AdError { public ResponseInfo GetResponseInfo() => null; }
+    public class AdapterResponseInfo { public string AdapterClassName => ""; public string AdSourceName => ""; }
+    public class ResponseInfo { public AdapterResponseInfo GetLoadedAdapterResponseInfo() => null; public string GetResponseId() => ""; }
+    public class RewardedAd
+    {
+        public event Action<AdValue> OnAdPaid;
+        public event Action OnAdFullScreenContentClosed;
+        public event Action<AdError> OnAdFullScreenContentFailed;
+        public static void Load(string adUnitId, AdRequest request, Action<RewardedAd, LoadAdError> adLoadCallback) { }
+        public bool CanShowAd() => false;
+        public void Show(Action<Reward> userRewardEarnedCallback) { }
+        public void Destroy() { }
+        public ResponseInfo GetResponseInfo() => null;
+    }
+    public class InterstitialAd
+    {
+        public event Action<AdValue> OnAdPaid;
+        public event Action OnAdFullScreenContentClosed;
+        public event Action<AdError> OnAdFullScreenContentFailed;
+        public static void Load(string adUnitId, AdRequest request, Action<InterstitialAd, LoadAdError> adLoadCallback) { }
+        public bool CanShowAd() => false;
+        public void Show() { }
+        public void Destroy() { }
+        public ResponseInfo GetResponseInfo() => null;
+    }
+}
+namespace GoogleMobileAds.Ump.Api
+{
+    public enum ConsentStatus { Unknown = 0, NotRequired = 1, Required = 2, Obtained = 3 }
+    public enum PrivacyOptionsRequirementStatus { Unknown = 0, NotRequired = 1, Required = 2 }
+    public class FormError { public int ErrorCode { get; private set; } public string Message { get; private set; } }
+    public class ConsentRequestParameters { public bool TagForUnderAgeOfConsent; public string ConsentSyncId; }
+    public static class ConsentInformation
+    {
+        public static ConsentStatus ConsentStatus => ConsentStatus.Unknown;
+        public static PrivacyOptionsRequirementStatus PrivacyOptionsRequirementStatus => PrivacyOptionsRequirementStatus.Unknown;
+        public static void Update(ConsentRequestParameters request, Action<FormError> consentInfoUpdateCallback) { }
+        public static bool CanRequestAds() => false;
+    }
+    public class ConsentForm
+    {
+        public static void LoadAndShowConsentFormIfRequired(Action<FormError> onDismissed) { }
+        public static void ShowPrivacyOptionsForm(Action<FormError> onDismissed) { }
+    }
+}

@@ -16,6 +16,7 @@ namespace CatExorcist.EditorTools
         // символ → типы, по которым видно, что SDK есть
         static readonly (string define, string[] types)[] Map =
         {
+            ("CE_ADMOB", new[] { "GoogleMobileAds.Api.MobileAds" }), // пакет com.google.ads.mobile (уже в Packages/manifest.json)
             ("CE_MAX", new[] { "MaxSdk" }),
             ("CE_IAP", new[] { "UnityEngine.Purchasing.StoreController" }), // Unity IAP 5+; с IAP 4 покупки остаются имитацией
             ("CE_IAP_VALIDATE", new[] { "UnityEngine.Purchasing.Security.GooglePlayTangle" }),

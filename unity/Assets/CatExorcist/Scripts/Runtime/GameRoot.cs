@@ -421,7 +421,7 @@ namespace CatExorcist
         }
     }
 
-    /// <summary>Чтение согласия по стандарту IAB TCF v2 (его пишет Google UMP, который показывает MAX).</summary>
+    /// <summary>Чтение согласия по стандарту IAB TCF v2 (его пишет Google UMP — окно согласия AdMob или MAX).</summary>
     public struct Consent
     {
         public bool GdprApplies, Analytics, Ads;

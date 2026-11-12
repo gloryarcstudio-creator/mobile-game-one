@@ -1,5 +1,5 @@
 // После сборки iOS: Info.plist для App Store Connect (экспортное шифрование, текст ATT), отключение bitcode.
-// Окно ATT показывает MAX в своём потоке согласия; локализованные тексты ATT — в AppLovin Integration Manager.
+// Окно ATT показывает Google UMP после пояснения (AdMob → Privacy & messaging → IDFA explainer).
 #if UNITY_IOS
 using System.IO;
 using UnityEditor;
@@ -10,8 +10,6 @@ namespace CatExorcist.EditorTools
 {
     public static class IosPostprocess
     {
-        const string AttText = "This lets us show you ads that are more relevant. The game stays free either way.";
-
         [PostProcessBuild(900)]
         public static void OnPostprocessBuild(BuildTarget target, string path)
         {
@@ -21,7 +19,7 @@ namespace CatExorcist.EditorTools
             plist.ReadFromFile(plistPath);
             var root = plist.root;
             root.SetBoolean("ITSAppUsesNonExemptEncryption", false); // только стандартный HTTPS
-            if (!root.values.ContainsKey("NSUserTrackingUsageDescription")) root.SetString("NSUserTrackingUsageDescription", AttText);
+            if (!root.values.ContainsKey("NSUserTrackingUsageDescription")) root.SetString("NSUserTrackingUsageDescription", AdMobSetup.AttText);
             root.SetBoolean("UIRequiresFullScreen", true);
             File.WriteAllText(plistPath, plist.WriteToString());
 

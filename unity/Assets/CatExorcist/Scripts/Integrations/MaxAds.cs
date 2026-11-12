@@ -69,7 +69,7 @@ namespace CatExorcist.Integrations
         void HookRewarded()
         {
             MaxSdkCallbacks.Rewarded.OnAdLoadedEvent += (id, info) => rewardedRetry = 0;
-            MaxSdkCallbacks.Rewarded.OnAdLoadFailedEvent += (id, err) => Retry(ref rewardedRetry, () => MaxSdk.LoadRewardedAd(SdkIds.MaxRewarded));
+            MaxSdkCallbacks.Rewarded.OnAdLoadFailedEvent += (id, err) => Delay.Retry(ref rewardedRetry, () => MaxSdk.LoadRewardedAd(SdkIds.MaxRewarded));
             MaxSdkCallbacks.Rewarded.OnAdReceivedRewardEvent += (id, reward, info) => rewardEarned = true;
             MaxSdkCallbacks.Rewarded.OnAdDisplayFailedEvent += (id, err, info) => { FinishRewarded(false); MaxSdk.LoadRewardedAd(SdkIds.MaxRewarded); };
             MaxSdkCallbacks.Rewarded.OnAdHiddenEvent += (id, info) => { FinishRewarded(rewardEarned); MaxSdk.LoadRewardedAd(SdkIds.MaxRewarded); };
@@ -95,7 +95,7 @@ namespace CatExorcist.Integrations
         void HookInterstitial()
         {
             MaxSdkCallbacks.Interstitial.OnAdLoadedEvent += (id, info) => interRetry = 0;
-            MaxSdkCallbacks.Interstitial.OnAdLoadFailedEvent += (id, err) => Retry(ref interRetry, () => MaxSdk.LoadInterstitial(SdkIds.MaxInterstitial));
+            MaxSdkCallbacks.Interstitial.OnAdLoadFailedEvent += (id, err) => Delay.Retry(ref interRetry, () => MaxSdk.LoadInterstitial(SdkIds.MaxInterstitial));
             MaxSdkCallbacks.Interstitial.OnAdDisplayFailedEvent += (id, err, info) => { FinishInter(); MaxSdk.LoadInterstitial(SdkIds.MaxInterstitial); };
             MaxSdkCallbacks.Interstitial.OnAdHiddenEvent += (id, info) => { FinishInter(); MaxSdk.LoadInterstitial(SdkIds.MaxInterstitial); };
             MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += (id, info) => Revenue(info, "interstitial");
@@ -104,31 +104,12 @@ namespace CatExorcist.Integrations
         void FinishInter() { var cb = interDone; interDone = null; cb?.Invoke(); }
 
         // ---------------- общее
-        static void Retry(ref int attempt, Action load)
-        {
-            attempt = Math.Min(attempt + 1, 6);
-            float delay = (float)Math.Pow(2, attempt); // 2, 4 … 64 с
-            Delay.Run(delay, load);
-        }
-
         void Revenue(MaxSdkBase.AdInfo info, string format)
         {
             foreach (var a in Services.Analytics)
-                try { a.AdRevenue(info.NetworkName, info.AdUnitIdentifier, format, string.IsNullOrEmpty(info.Placement) ? lastPlacement : info.Placement, info.Revenue); }
+                try { a.AdRevenue("AppLovin", info.NetworkName, info.AdUnitIdentifier, format, string.IsNullOrEmpty(info.Placement) ? lastPlacement : info.Placement, info.Revenue, "USD"); }
                 catch (Exception e) { Debug.LogException(e); }
         }
-    }
-
-    /// <summary>Отложенный вызов без корутин в чужих объектах.</summary>
-    sealed class Delay : MonoBehaviour
-    {
-        static Delay inst;
-        public static void Run(float secs, Action a)
-        {
-            if (inst == null) { var go = new GameObject("ce-delay"); DontDestroyOnLoad(go); inst = go.AddComponent<Delay>(); }
-            inst.StartCoroutine(inst.Wait(secs, a));
-        }
-        System.Collections.IEnumerator Wait(float s, Action a) { yield return new WaitForSecondsRealtime(s); a?.Invoke(); }
     }
 }
 #endif

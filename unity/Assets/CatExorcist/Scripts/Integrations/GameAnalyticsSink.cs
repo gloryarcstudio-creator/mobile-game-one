@@ -45,8 +45,8 @@ namespace CatExorcist.Integrations
                 case "house_reached": { int h = Int(p, "house"); Run(() => GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, "house", "h" + (h - 1).ToString("000"))); return; }
                 case "boss_fail": { int h = Int(p, "house"); Run(() => GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, "house", "h" + h.ToString("000"))); return; }
                 case "tutorial_step": { int s = Int(p, "step"); Run(() => GameAnalytics.NewDesignEvent("tutorial:step" + s)); return; }
-                case "ad_rewarded_complete": { var pl = Str(p, "placement"); Run(() => GameAnalytics.NewAdEvent(GAAdAction.RewardReceived, GAAdType.RewardedVideo, "max", pl)); return; }
-                case "ad_interstitial": { var w = Str(p, "where"); Run(() => GameAnalytics.NewAdEvent(GAAdAction.Show, GAAdType.Interstitial, "max", w)); return; }
+                case "ad_rewarded_complete": { var pl = Str(p, "placement"); Run(() => GameAnalytics.NewAdEvent(GAAdAction.RewardReceived, GAAdType.RewardedVideo, Services.Ads.Name, pl)); return; }
+                case "ad_interstitial": { var w = Str(p, "where"); Run(() => GameAnalytics.NewAdEvent(GAAdAction.Show, GAAdType.Interstitial, Services.Ads.Name, w)); return; }
             }
             float val = 0;
             if (p != null) foreach (var kv in p) if (kv.Value is IConvertible c && !(kv.Value is string)) { val = c.ToSingle(null); break; }
@@ -61,7 +61,7 @@ namespace CatExorcist.Integrations
             Run(() => GameAnalytics.NewBusinessEvent(currency ?? "USD", cents, "iap", item, "shop"));
         }
 
-        public void AdRevenue(string network, string adUnit, string format, string placement, double revenueUsd) { }
+        public void AdRevenue(string platform, string network, string adUnit, string format, string placement, double value, string currency) { }
     }
 }
 #endif

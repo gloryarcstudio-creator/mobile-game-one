@@ -1,6 +1,6 @@
 # Google Play: Data safety и целевая аудитория
 
-Ответы для **Play Console → Policy → App content**. Они соответствуют набору SDK Unity-версии (AppLovin MAX с сетями AdMob, Meta Audience Network, Unity Ads, Liftoff, Mintegral, Pangle, DT Exchange, Moloco; Firebase Analytics, Crashlytics, Remote Config; GameAnalytics; Tenjin; Google Play Billing через Unity IAP) и политике https://protekgames.com/privacy/#cat-exorcist. Перед отправкой сверьте с разделом Data safety в документации каждой сети: если подключите другую сеть, её данные надо добавить.
+Ответы для **Play Console → Policy → App content**. Они соответствуют набору SDK Unity-версии (Google AdMob с медиацией: Unity Ads, Meta Audience Network, Liftoff, Mintegral, Pangle и другие сети по мере подключения; Firebase Analytics, Crashlytics, Remote Config; GameAnalytics; Tenjin; Google Play Billing через Unity IAP) и политике https://protekgames.com/privacy/#cat-exorcist. Перед отправкой сверьте с разделом Data safety в документации каждой сети: если подключите другую сеть, её данные надо добавить.
 
 ## Сбор и передача данных
 
@@ -24,8 +24,8 @@
 ## Другие анкеты App content
 
 - **Ads**: приложение содержит рекламу — **Да**.
-- **Advertising ID**: используется — **Да**, цели Advertising, Analytics. Разрешение `com.google.android.gms.permission.AD_ID` добавляют SDK (MAX и Firebase), проверьте его в собранном манифесте (Android Studio → Merged Manifest или `aapt dump permissions`).
-- **Target audience and content**: возраст **13–15, 16–17, 18+**, без детей до 13. MAX и часть сетей не входят в программу Families, поэтому игра не должна попадать в детскую аудиторию. На вопрос «может ли приложение непреднамеренно привлекать детей» честно отвечаем исходя из стиля; если Google решит, что игра привлекает детей, он потребует режим Families и сертифицированные SDK. Описание и скриншоты не адресуем детям.
+- **Advertising ID**: используется — **Да**, цели Advertising, Analytics. Разрешение `com.google.android.gms.permission.AD_ID` добавляют SDK (Google Mobile Ads и Firebase), проверьте его в собранном манифесте (Android Studio → Merged Manifest или `aapt dump permissions`).
+- **Target audience and content**: возраст **13–15, 16–17, 18+**, без детей до 13. Часть сетей медиации не входит в программу Families, поэтому игра не должна попадать в детскую аудиторию. На вопрос «может ли приложение непреднамеренно привлекать детей» честно отвечаем исходя из стиля; если Google решит, что игра привлекает детей, он потребует режим Families и сертифицированные SDK. Описание и скриншоты не адресуем детям.
 - **Content rating**: см. `CONTENT_RATING.md`.
 - **Government apps / Financial features / Health / News**: нет.
 - **Data deletion**: ссылка https://protekgames.com/privacy/#cat-exorcist (раздел об удалении данных).
