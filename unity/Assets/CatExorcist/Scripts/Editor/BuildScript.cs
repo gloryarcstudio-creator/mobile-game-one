@@ -2,7 +2,8 @@
 //   Unity -batchmode -quit -projectPath unity -executeMethod CatExorcist.EditorTools.BuildScript.Android
 //   Unity -batchmode -quit -projectPath unity -executeMethod CatExorcist.EditorTools.BuildScript.IOS
 // Переменные окружения: CE_VERSION (1.0.0), CE_BUILD (номер сборки, растёт с каждой загрузкой),
-// CE_KEYSTORE, CE_KEYSTORE_PASS, CE_KEY_ALIAS, CE_KEY_PASS (ключ загрузки Google Play; без них — отладочная подпись).
+// CE_KEYSTORE, CE_KEYSTORE_PASS, CE_KEY_ALIAS, CE_KEY_PASS (ключ загрузки Google Play; без них — ключ из Publishing Settings,
+// а если и его нет — отладочная подпись).
 using System;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -39,7 +40,7 @@ namespace CatExorcist.EditorTools
                 PlayerSettings.Android.keyaliasName = Env("CE_KEY_ALIAS", "upload");
                 PlayerSettings.Android.keyaliasPass = Env("CE_KEY_PASS", "");
             }
-            else Debug.LogWarning("CE_KEYSTORE not set: the AAB is signed with the debug key and Google Play will reject it.");
+            else if (!PlayerSettings.Android.useCustomKeystore) Debug.LogWarning("No upload key: set Custom Keystore in Player → Publishing Settings (or CE_KEYSTORE), otherwise Google Play rejects the AAB.");
             EditorUserBuildSettings.buildAppBundle = Env("CE_APK") == null;
             Run(BuildTarget.Android, EditorUserBuildSettings.buildAppBundle ? "Builds/Android/cat-exorcist.aab" : "Builds/Android/cat-exorcist.apk");
         }
