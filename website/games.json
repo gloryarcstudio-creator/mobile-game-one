@@ -1,0 +1,15 @@
+[
+  {
+    "slug": "cat-exorcist",
+    "name": "Cat Exorcist",
+    "tagline": "A ginger cat with a ghost vacuum cleans haunted houses, one room at a time.",
+    "art": "/games/cat-exorcist/media/key.webp",
+    "status": "dev",
+    "status_label": "In development",
+    "chips": [
+      "Android · iOS",
+      "Idle action",
+      "14 languages"
+    ]
+  }
+]

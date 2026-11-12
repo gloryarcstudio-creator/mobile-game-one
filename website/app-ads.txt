@@ -1,0 +1,6 @@
+# app-ads.txt for protekgames.com (Protek Games)
+# Ad networks allowed to sell ads in our apps.
+# When a network is added to AdMob mediation (Unity Ads and others),
+# add the lines from its dashboard below, rebuild with build.py and upload.
+
+google.com, pub-3555927089972039, DIRECT, f08c47fec0942fa0
