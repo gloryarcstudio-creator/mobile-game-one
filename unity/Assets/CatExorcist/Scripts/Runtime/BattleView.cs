@@ -432,13 +432,48 @@ namespace CatExorcist
             double y = cat.Y + bobY;
             float breath = 1 + 0.018f * (0.5f - 0.5f * Mathf.Cos(time * 2 * Mathf.PI / 2.8f));
             W.Ellipse(cat.X, cat.Y + 28, 30 - Math.Abs(walk) * 3, 8, Rgba(30, 15, 50, 0.25f));
-            const double D = 96, fy = 0.91;
+            const double D = 96, fy = 0.91, k = D / 512;
             double ph = cat.Bob * 2.6;
-            double tilt = catWk > 0.02f ? Math.Sin(ph) * 0.03 * catWk + 0.03 * catWk : walk * 0.05;
-            double lift = catWk > 0.02f ? (1 - Math.Abs(Math.Sin(ph))) * 2.4 * catWk : 0;
-            // картинка кота: опорная точка у ног (fy), центр картинки выше неё на D*(fy-0.5)
-            double baseY = y + 27 - lift, cy = baseY - D * (fy - 0.5) * breath;
-            W.Spr(A, cat.X + f * Math.Sin(tilt) * D * (fy - 0.5), cy, D, D * breath, f * tilt, Color.white, null, f < 0);
+            // фантом парит, у него шага нет (как в веб-версии)
+            float wa = skin == "phantom" ? 0 : catWk;
+            bool stepping = wa > 0.02f && A != null;
+            double tilt = stepping ? Math.Sin(ph) * 0.03 * wa + 0.03 * wa : walk * 0.05;
+            double lift = stepping ? (1 - Math.Abs(Math.Sin(ph))) * 2.4 * wa : 0;
+            // при шаге туловище не прыгает вместе с bobY: качается само (как в веб-версии)
+            double baseY = (stepping ? y - bobY * wa : y) + 27 - lift;
+            string ak = Art.Get("cat-" + skin) != null ? "cat-" + skin : "cat-ginger";
+            if (stepping)
+            {
+                // ходьба: картинку режем на туловище и две лапы (поза у всех скинов одна),
+                // лапы шагают по очереди от бедра — как murzikSprite в веб-версии
+                double px0 = A.rect.width / 512;
+                double lx = cat.X, ly = cat.Y + bobY * (1 - wa) + 27;
+                for (int i = 0; i < 2; i++)
+                {
+                    var L = Legs[i];
+                    double pi = ph + i * Math.PI, sw = Math.Sin(pi), lf = Math.Max(0, Math.Cos(pi));
+                    double hx = -D / 2 + (L.x + L.w / 2) * k, hy = -D * fy + Hip * k - lf * 4 * wa;
+                    double footY = -D * fy + Foot * k + 1;
+                    // пыль из-под лапы сразу после шага
+                    double t = ((((pi - Math.PI / 2) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
+                    if (t < 0.28) W.Ellipse(lx + f * (hx - sw * 4), ly + footY, 3 + t * 22, 1.5 + t * 6, Rgba(235, 225, 255, (float)((1 - t / 0.28) * 0.35 * wa)));
+                    double r = -sw * 0.32 * wa;
+                    double cyl = (LegTop - Hip) * k + (512 - LegTop) * k / 2; // центр лапы ниже бедра
+                    var leg = Art.CropPx(ak, (float)(L.x * px0), (float)(LegTop * px0), (float)(L.w * px0), (float)((512 - LegTop) * px0));
+                    W.Spr(leg, lx + f * (hx - Math.Sin(r) * cyl), ly + hy + Math.Cos(r) * cyl, L.w * k, (512 - LegTop) * k, f * r, Color.white, null, f < 0);
+                }
+                // туловище из трёх кусков: всё выше среза лап + края картинки по бокам от лап (хвост)
+                double x0 = Legs[0].x, x1 = Legs[1].x + Legs[1].w;
+                BodyPart(ak, px0, 0, 0, 512, LegCut, cat.X, baseY, f, tilt, breath);
+                BodyPart(ak, px0, 0, LegCut, x0, 512 - LegCut, cat.X, baseY, f, tilt, breath);
+                BodyPart(ak, px0, x1, LegCut, 512 - x1, 512 - LegCut, cat.X, baseY, f, tilt, breath);
+            }
+            else
+            {
+                // картинка кота: опорная точка у ног (fy), центр картинки выше неё на D*(fy-0.5)
+                double cy = baseY - D * (fy - 0.5) * breath;
+                W.Spr(A, cat.X + f * Math.Sin(tilt) * D * (fy - 0.5), cy, D, D * breath, f * tilt, Color.white, null, f < 0);
+            }
             if (S.Prestiges > 0) W.Ring(cat.X, y - 62, 14, 3, C("#fff1a8"));
             // насадка в лапе
             string kind = G.MainKind;
@@ -470,6 +505,21 @@ namespace CatExorcist
                 W.Glow(tx, ty, rr, new Color(1, 1, 1, 0.9f), true);
                 W.Glow(tx, ty, rr * 1.2, C(eqColor, 0.6f), true);
             }
+        }
+
+        // Нарезка кота для ходьбы, в пикселях картинки 512×512 (те же числа, что LEGS/HIP в веб-версии).
+        static readonly (double x, double w)[] Legs = { (178, 99), (277, 89) };
+        const double LegTop = 360, Hip = 398, LegCut = 402, Foot = 482;
+
+        // Кусок туловища (sx, sy, sw, sh в координатах 512) поворачивается вокруг точки у ног (ox, oy),
+        // как drawImage после translate/scale(f,1)/rotate/scale(1,breath) на холсте.
+        void BodyPart(string key, double px0, double sx, double sy, double sw, double sh, double ox, double oy, int f, double tilt, float breath)
+        {
+            const double D = 96, fy = 0.91, k = D / 512;
+            var sp = Art.CropPx(key, (float)(sx * px0), (float)(sy * px0), (float)(sw * px0), (float)(sh * px0));
+            double cx = -D / 2 + (sx + sw / 2) * k, cy = (-D * fy + (sy + sh / 2) * k) * breath;
+            double c = Math.Cos(tilt), s = Math.Sin(tilt);
+            W.Spr(sp, ox + f * (cx * c - cy * s), oy + cx * s + cy * c, sw * k, sh * k * breath, f * tilt, Color.white, null, f < 0);
         }
 
         // ============================================== опасности, снаряды

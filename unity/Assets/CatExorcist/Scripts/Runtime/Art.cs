@@ -218,7 +218,7 @@ namespace CatExorcist
             var r = src.rect;
             float x = Mathf.Clamp(r.x + sx, r.x, r.xMax - 1), w = Mathf.Clamp(sw, 1, r.xMax - x);
             float y = Mathf.Clamp(r.yMax - sy - sh, r.y, r.yMax - 1), h = Mathf.Clamp(sh, 1, r.yMax - y);
-            s = Sprite.Create(src.texture, new Rect(x, y, w, h), new Vector2(0.5f, 0.5f), 100);
+            s = Sprite.Create(src.texture, new Rect(x, y, w, h), new Vector2(0.5f, 0.5f), 100, 0, SpriteMeshType.FullRect);
             cache[ck] = s;
             return s;
         }
