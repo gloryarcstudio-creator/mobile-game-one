@@ -1,4 +1,4 @@
-// После сборки iOS: Info.plist для App Store Connect (экспортное шифрование, текст ATT), отключение bitcode.
+// После сборки iOS: Info.plist для App Store Connect (экспортное шифрование, текст ATT, согласие Firebase по умолчанию), отключение bitcode.
 // Окно ATT показывает Google UMP после пояснения (AdMob → Privacy & messaging → IDFA explainer).
 #if UNITY_IOS
 using System.IO;
@@ -21,6 +21,10 @@ namespace CatExorcist.EditorTools
             root.SetBoolean("ITSAppUsesNonExemptEncryption", false); // только стандартный HTTPS
             if (!root.values.ContainsKey("NSUserTrackingUsageDescription")) root.SetString("NSUserTrackingUsageDescription", AdMobSetup.AttText);
             root.SetBoolean("UIRequiresFullScreen", true);
+            // режим согласия Firebase до ответа в окне UMP: всё запрещено (см. AndroidPostprocess.cs)
+            foreach (var k in new[] { "GOOGLE_ANALYTICS_DEFAULT_ALLOW_ANALYTICS_STORAGE", "GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE",
+                                      "GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA", "GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS" })
+                root.SetBoolean(k, false);
             File.WriteAllText(plistPath, plist.WriteToString());
 
             var projPath = PBXProject.GetPBXProjectPath(path);
