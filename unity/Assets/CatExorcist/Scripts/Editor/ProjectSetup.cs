@@ -13,7 +13,7 @@ namespace CatExorcist.EditorTools
     [InitializeOnLoad]
     public static class ProjectSetup
     {
-        public const string AppId = "com.gloryarc.catexorcist";
+        public const string AppId = "com.protekgames.catexorcist";
         public const string Company = "PROTEK s.r.o.";
         public const string Product = "Cat Exorcist";
         public const string Version = "1.0.0";

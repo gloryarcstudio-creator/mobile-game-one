@@ -23,7 +23,7 @@
 4. Unity создаст `.meta`-файлы для всех ассетов — закоммитьте их, чтобы ссылки на ассеты не менялись между компьютерами.
 5. Нажмите **Play**. Покупки в редакторе идут через тестовый магазин Unity, реклама — через заглушки Google (в редакторе это картинка-макет вместо настоящей рекламы). Окно Game поставьте в портрет, например 1080×1920.
 
-Настройка проекта ставит: id `com.gloryarc.catexorcist`, компанию PROTEK s.r.o., название Cat Exorcist, только портрет, IL2CPP, ARM64 + ARMv7, minSdk 24, targetSdk «самый новый установленный» (Google Play требует 35+), AAB, iOS 13+, цвета в Gamma (как в вебе), иконку.
+Настройка проекта ставит: id `com.protekgames.catexorcist`, компанию PROTEK s.r.o., название Cat Exorcist, только портрет, IL2CPP, ARM64 + ARMv7, minSdk 24, targetSdk «самый новый установленный» (Google Play требует 35+), AAB, iOS 13+, цвета в Gamma (как в вебе), иконку.
 
 ## Подключение SDK (порядок важен)
 
@@ -38,7 +38,7 @@
    - Доход с каждого показа (ILRD) уходит в аналитику; в Firebase его пишет сам SDK Google, когда приложение AdMob связано с проектом Firebase (AdMob → App settings → Link to Firebase).
    - **AppLovin MAX** оставлен в `Integrations/MaxAds.cs` на случай, если AppLovin снова начнёт принимать издателей: импорт плагина MAX и id в `SdkIds.cs` включают его вместо AdMob.
 2. **Unity IAP 5** уже в `Packages/manifest.json` (5.5.0: Google Play Billing 7+, как требует Google Play, и StoreKit 2). Версию 4 не возвращайте: Unity её больше не поддерживает, и с ней покупки останутся имитацией. В **Services** привяжите проект к Unity Cloud. Для проверки чеков Google Play: **Project Settings → Services → In-App Purchasing → Receipt Validation Obfuscator**, вставьте публичный ключ из Play Console (Monetize → Monetization setup) — включится `CE_IAP_VALIDATE`. Покупки App Store StoreKit 2 проверяет сам.
-3. **Firebase** (Analytics, Crashlytics, Remote Config) — пакеты `.unitypackage` или tgz из Firebase Unity SDK. Положите `google-services.json` и `GoogleService-Info.plist` в `Assets/`. В Remote Config заведите ключи из `AdPolicy.Defaults` (`ads_inter_*`), через A/B Testing гоняйте частоту рекламы.
+3. **Firebase** (Analytics, Crashlytics, Remote Config) — пакеты `.unitypackage` или tgz из Firebase Unity SDK. Файлы `google-services.json` и `GoogleService-Info.plist` проекта Firebase уже лежат в `Assets/`. При импорте `.unitypackage` снимите галку с папки ExternalDependencyManager: она уже стоит пакетом вместе с Google Mobile Ads, две копии конфликтуют. В Remote Config заведите ключи из `AdPolicy.Defaults` (`ads_inter_*`), через A/B Testing гоняйте частоту рекламы.
 4. **GameAnalytics** — пакет SDK, затем **Window → GameAnalytics → Select Settings**: ключи игры для Android и iOS.
 5. **Tenjin** — Unity SDK, ключ в `SdkIds.TenjinApiKey`. Для дохода с показов (только если стоит MAX) добавьте символ `TENJIN_APPLOVIN_ENABLED` (Player → Scripting Define Symbols).
 6. **Уведомления** уже в манифесте (Mobile Notifications 2.4). В **Project Settings → Mobile Notifications** добавьте маленькую белую иконку для Android.

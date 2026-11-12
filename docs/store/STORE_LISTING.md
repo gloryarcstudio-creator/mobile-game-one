@@ -7,7 +7,7 @@
 - Издатель / продавец: **PROTEK s.r.o.**
 - Сайт: https://protekgames.com · Email: info@protekgames.com · Политика: https://protekgames.com/privacy/#cat-exorcist
 - Категория: Games → Casual (Google Play), Games → Casual + Simulation (App Store)
-- Пакет / Bundle ID: `com.gloryarc.catexorcist`
+- Пакет / Bundle ID: `com.protekgames.catexorcist`
 
 ## English
 

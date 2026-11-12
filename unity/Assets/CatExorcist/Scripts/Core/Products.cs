@@ -14,7 +14,7 @@ namespace CatExorcist.Core
 
     public static class Products
     {
-        public const string Prefix = "com.gloryarc.catexorcist.";
+        public const string Prefix = "com.protekgames.catexorcist.";
         public static readonly List<ProductDef> All = new List<ProductDef>();
         static readonly Dictionary<string, ProductDef> byId = new Dictionary<string, ProductDef>();
 

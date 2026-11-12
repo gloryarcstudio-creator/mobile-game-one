@@ -4,28 +4,28 @@
 
 | id | Тип в Play / App Store | Цена | Название (en) | Что даёт |
 |---|---|---|---|---|
-| `com.gloryarc.catexorcist.gems100` | Consumable | $0.99 | 100 Crystals | 100 кристаллов |
-| `com.gloryarc.catexorcist.gems550` | Consumable | $4.99 | 550 Crystals | 550 кристаллов (+10%) |
-| `com.gloryarc.catexorcist.gems1200` | Consumable | $9.99 | 1,200 Crystals | 1200 кристаллов (+20%) |
-| `com.gloryarc.catexorcist.gems2600` | Consumable | $19.99 | 2,600 Crystals | 2600 кристаллов (+30%) |
-| `com.gloryarc.catexorcist.gems7000` | Consumable | $49.99 | 7,000 Crystals | 7000 кристаллов (+40%) |
-| `com.gloryarc.catexorcist.starter` | Non-consumable | $1.99 | Starter Pack | Эпический дух ★★, 300 кристаллов, насадка A, 5-й слот отряда |
-| `com.gloryarc.catexorcist.vip7` | Consumable | $6.99 | VIP for 7 Days | 7 дней: x2, авто, +1 слот насадок, без рекламы, +100 кристаллов в день, +50% опыта пропуска, +4 ч офлайна |
-| `com.gloryarc.catexorcist.noads` | Non-consumable | $4.99 | No Ads | Убирает рекламу между уровнями; видео за награды остаются по желанию |
-| `com.gloryarc.catexorcist.weekly` | Consumable | $14.99 | Weekly Pack | Насадка S, 500 кристаллов, 20 банок |
-| `com.gloryarc.catexorcist.autoup` | Non-consumable | $2.99 | Auto Upgrade Forever | Автопрокачка навсегда |
-| `com.gloryarc.catexorcist.automerge` | Non-consumable | $2.99 | Auto Merge Forever | Автослияние навсегда |
-| `com.gloryarc.catexorcist.autobundle` | Non-consumable | $4.99 | Automation Forever | Автопрокачка и автослияние навсегда |
-| `com.gloryarc.catexorcist.pass` | Consumable | $4.99 | Ghost Pass (Season) | Премиум-награды текущего сезона пропуска |
-| `com.gloryarc.catexorcist.moonboost` | Consumable | $2.99 | Moon Booster | x2 лунных камней на 3 освящения |
-| `com.gloryarc.catexorcist.skin_vampire` | Non-consumable | $2.99 | Vampire Cat Skin | Скин и его бонус |
-| `com.gloryarc.catexorcist.skin_devil` | Non-consumable | $3.99 | Devil Cat Skin | Скин и его бонус |
-| `com.gloryarc.catexorcist.skin_angel` | Non-consumable | $3.99 | Angel Cat Skin | Скин и его бонус |
-| `com.gloryarc.catexorcist.skin_santa` | Non-consumable | $4.99 | Santa Cat Skin | Скин и его бонус |
-| `com.gloryarc.catexorcist.skin_robot` | Non-consumable | $3.99 | Robot Cat Skin | Скин и его бонус |
-| `com.gloryarc.catexorcist.skin_dragon` | Non-consumable | $4.99 | Dragon Cat Skin | Скин и его бонус |
-| `com.gloryarc.catexorcist.skin_golden` | Non-consumable | $9.99 | Golden Cat Skin | Скин и его бонус |
-| `com.gloryarc.catexorcist.skin_phantom` | Non-consumable | $12.99 | Phantom Cat Skin | Скин и его бонус |
+| `com.protekgames.catexorcist.gems100` | Consumable | $0.99 | 100 Crystals | 100 кристаллов |
+| `com.protekgames.catexorcist.gems550` | Consumable | $4.99 | 550 Crystals | 550 кристаллов (+10%) |
+| `com.protekgames.catexorcist.gems1200` | Consumable | $9.99 | 1,200 Crystals | 1200 кристаллов (+20%) |
+| `com.protekgames.catexorcist.gems2600` | Consumable | $19.99 | 2,600 Crystals | 2600 кристаллов (+30%) |
+| `com.protekgames.catexorcist.gems7000` | Consumable | $49.99 | 7,000 Crystals | 7000 кристаллов (+40%) |
+| `com.protekgames.catexorcist.starter` | Non-consumable | $1.99 | Starter Pack | Эпический дух ★★, 300 кристаллов, насадка A, 5-й слот отряда |
+| `com.protekgames.catexorcist.vip7` | Consumable | $6.99 | VIP for 7 Days | 7 дней: x2, авто, +1 слот насадок, без рекламы, +100 кристаллов в день, +50% опыта пропуска, +4 ч офлайна |
+| `com.protekgames.catexorcist.noads` | Non-consumable | $4.99 | No Ads | Убирает рекламу между уровнями; видео за награды остаются по желанию |
+| `com.protekgames.catexorcist.weekly` | Consumable | $14.99 | Weekly Pack | Насадка S, 500 кристаллов, 20 банок |
+| `com.protekgames.catexorcist.autoup` | Non-consumable | $2.99 | Auto Upgrade Forever | Автопрокачка навсегда |
+| `com.protekgames.catexorcist.automerge` | Non-consumable | $2.99 | Auto Merge Forever | Автослияние навсегда |
+| `com.protekgames.catexorcist.autobundle` | Non-consumable | $4.99 | Automation Forever | Автопрокачка и автослияние навсегда |
+| `com.protekgames.catexorcist.pass` | Consumable | $4.99 | Ghost Pass (Season) | Премиум-награды текущего сезона пропуска |
+| `com.protekgames.catexorcist.moonboost` | Consumable | $2.99 | Moon Booster | x2 лунных камней на 3 освящения |
+| `com.protekgames.catexorcist.skin_vampire` | Non-consumable | $2.99 | Vampire Cat Skin | Скин и его бонус |
+| `com.protekgames.catexorcist.skin_devil` | Non-consumable | $3.99 | Devil Cat Skin | Скин и его бонус |
+| `com.protekgames.catexorcist.skin_angel` | Non-consumable | $3.99 | Angel Cat Skin | Скин и его бонус |
+| `com.protekgames.catexorcist.skin_santa` | Non-consumable | $4.99 | Santa Cat Skin | Скин и его бонус |
+| `com.protekgames.catexorcist.skin_robot` | Non-consumable | $3.99 | Robot Cat Skin | Скин и его бонус |
+| `com.protekgames.catexorcist.skin_dragon` | Non-consumable | $4.99 | Dragon Cat Skin | Скин и его бонус |
+| `com.protekgames.catexorcist.skin_golden` | Non-consumable | $9.99 | Golden Cat Skin | Скин и его бонус |
+| `com.protekgames.catexorcist.skin_phantom` | Non-consumable | $12.99 | Phantom Cat Skin | Скин и его бонус |
 
 ## Что важно для проверки
 

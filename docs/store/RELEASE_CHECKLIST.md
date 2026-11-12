@@ -8,7 +8,7 @@
 - [ ] Импортировать SDK: Firebase, GameAnalytics, Tenjin (Google Mobile Ads уже в манифесте пакетов); заполнить ключи (App ID AdMob в `Editor/AdMobSetup.cs`, id блоков в `SdkIds.cs`, настройки GameAnalytics, файлы Firebase).
 - [ ] Собрать AAB с ключом загрузки (`CE_KEYSTORE…`), включить Play App Signing.
 - [ ] Собрать Xcode-проект, подписать, Archive, загрузить в App Store Connect.
-- ✓ id `com.gloryarc.catexorcist`, компания PROTEK s.r.o., портрет, IL2CPP, ARM64 + ARMv7, minSdk 24, iOS 13+, AAB.
+- ✓ id `com.protekgames.catexorcist`, компания PROTEK s.r.o., портрет, IL2CPP, ARM64 + ARMv7, minSdk 24, iOS 13+, AAB.
 - [ ] targetSdk: в Android SDK Manager должен стоять API 35 или новее (Google Play требует 35+ для новых игр, с августа 2026 возможно 36 — проверьте актуальное требование в Play Console).
 
 ## 2. Реклама
