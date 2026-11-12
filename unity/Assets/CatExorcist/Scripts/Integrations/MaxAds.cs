@@ -15,6 +15,7 @@ namespace CatExorcist.Integrations
         static void Register() { if (SdkIds.IsSet(SdkIds.MaxRewarded)) Services.Ads = new MaxAds(); }
 
         public string Name => "max";
+        public string Status => "inited=" + inited;
         bool inited;
         int rewardedRetry, interRetry;
         Action<bool> rewardedDone;

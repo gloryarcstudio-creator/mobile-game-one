@@ -332,7 +332,10 @@ namespace CatExorcist
             var ads = Services.Ads;
             if (ads == null || !ads.RewardedReady)
             {
-                Toast(Loc.T("Реклама ещё не загрузилась. Попробуй через минуту"));
+                var msg = Loc.T("Реклама ещё не загрузилась. Попробуй через минуту");
+                if (Debug.isDebugBuild && ads != null) msg += "\n[" + ads.Name + "] " + ads.Status; // причина — только в Development Build
+                Toast(msg);
+                if (ads != null) Debug.Log("Ads not ready: " + ads.Status);
                 G.Track("ad_rewarded_not_ready", "placement", placement);
                 return;
             }

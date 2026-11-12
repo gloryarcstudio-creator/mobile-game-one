@@ -19,6 +19,8 @@ namespace CatExorcist
         /// <summary>Нужна ли кнопка «Настройки конфиденциальности» (игрок из ЕЭЗ/UK, согласие через UMP).</summary>
         bool PrivacyOptionsRequired { get; }
         void ShowPrivacyOptions();
+        /// <summary>Состояние для отладки (согласие, инициализация, последняя ошибка). Показывается только в Development Build.</summary>
+        string Status { get; }
     }
 
     public interface IPurchaseService
@@ -82,6 +84,7 @@ namespace CatExorcist
     public sealed class SimAds : IAdService
     {
         public string Name => "sim";
+        public string Status => "sim";
         public void Init(Action onReady) => onReady?.Invoke();
         public bool RewardedReady => true;
         public bool InterstitialReady => false;

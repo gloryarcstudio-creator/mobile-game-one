@@ -37,6 +37,25 @@ namespace CatExorcist.Integrations
         bool rewardEarned;
         Action interDone;
         string lastPlacement = "";
+        string lastError = "";
+
+        public string Status
+        {
+            get
+            {
+                string consent = "?", canReq = "?";
+                try { consent = ConsentInformation.ConsentStatus.ToString(); canReq = ConsentInformation.CanRequestAds().ToString(); } catch (Exception e) { consent = "err " + e.Message; }
+                return "consent=" + consent + " canRequest=" + canReq + " init=" + (inited ? "ok" : initStarted ? "pending" : "no")
+                    + " rewarded=" + (RewardedReady ? "ready" : rewardedLoading ? "loading" : "none") + (Test ? " test" : "")
+                    + (lastError.Length > 0 ? " | " + lastError : "");
+            }
+        }
+
+        void Fail(string where, string msg)
+        {
+            lastError = where + ": " + msg;
+            Debug.LogWarning("AdMob " + lastError);
+        }
 
         public void Init(Action ready)
         {
@@ -45,11 +64,11 @@ namespace CatExorcist.Integrations
             if (Test && !Application.isEditor) Debug.Log("AdMob: test ads (Development Build or ad unit ids not set in SdkIds)");
             ConsentInformation.Update(new ConsentRequestParameters(), err =>
             {
-                if (err != null) Debug.LogWarning("UMP update: " + err.Message);
+                if (err != null) Fail("UMP update", err.ErrorCode + " " + err.Message);
                 // окно согласия показывается только тем, кому оно нужно (ЕЭЗ/UK; на iOS — ещё ATT, если настроен IDFA explainer)
                 ConsentForm.LoadAndShowConsentFormIfRequired(formErr =>
                 {
-                    if (formErr != null) Debug.LogWarning("UMP form: " + formErr.Message);
+                    if (formErr != null) Fail("UMP form", formErr.ErrorCode + " " + formErr.Message);
                     bool again = readyFired;
                     StartSdk();
                     if (again) GameRoot.I?.OnConsentChanged(); // окно открылось уже после старта (согласие устарело)
@@ -62,15 +81,19 @@ namespace CatExorcist.Integrations
         void StartSdk()
         {
             if (initStarted) { Ready(); return; }
-            if (!ConsentInformation.CanRequestAds()) { Ready(); return; } // отказ или нет сети: игра идёт без рекламы
+            if (!ConsentInformation.CanRequestAds()) { Fail("consent", "ads not allowed yet (" + ConsentInformation.ConsentStatus + ")"); Ready(); return; } // отказ или нет сети: игра идёт без рекламы
             initStarted = true;
-            MobileAds.Initialize(status =>
+            try
             {
-                inited = true;
-                LoadRewarded();
-                LoadInter();
-                Ready();
-            });
+                MobileAds.Initialize(status =>
+                {
+                    inited = true;
+                    LoadRewarded();
+                    LoadInter();
+                    Ready();
+                });
+            }
+            catch (Exception e) { initStarted = false; Fail("init", e.Message); Ready(); }
         }
 
         void Ready()
@@ -87,7 +110,7 @@ namespace CatExorcist.Integrations
         {
             ConsentForm.ShowPrivacyOptionsForm(err =>
             {
-                if (err != null) Debug.LogWarning("UMP privacy options: " + err.Message);
+                if (err != null) Fail("UMP privacy options", err.Message);
                 StartSdk(); // игрок мог дать согласие только сейчас
                 GameRoot.I?.OnConsentChanged();
             });
@@ -110,8 +133,9 @@ namespace CatExorcist.Integrations
             RewardedAd.Load(RewardedId, new AdRequest(), (ad, err) =>
             {
                 rewardedLoading = false;
-                if (err != null || ad == null) { Debug.Log("AdMob rewarded load: " + err?.GetMessage()); Delay.Retry(ref rewardedRetry, LoadRewarded); return; }
+                if (err != null || ad == null) { Fail("rewarded load", err != null ? err.GetCode() + " " + err.GetMessage() : "no ad"); Delay.Retry(ref rewardedRetry, LoadRewarded); return; }
                 rewardedRetry = 0;
+                if (lastError.StartsWith("rewarded load")) lastError = "";
                 rewarded = ad;
                 ad.OnAdPaid += v => Revenue(ad.GetResponseInfo(), v, "rewarded", RewardedId);
                 ad.OnAdFullScreenContentClosed += () =>
@@ -123,7 +147,7 @@ namespace CatExorcist.Integrations
                 };
                 ad.OnAdFullScreenContentFailed += e =>
                 {
-                    Debug.LogWarning("AdMob rewarded show: " + e?.GetMessage());
+                    Fail("rewarded show", e?.GetMessage());
                     Drop(ad);
                     FinishRewarded(false);
                     LoadRewarded();
@@ -161,14 +185,14 @@ namespace CatExorcist.Integrations
             InterstitialAd.Load(id, new AdRequest(), (ad, err) =>
             {
                 interLoading = false;
-                if (err != null || ad == null) { Debug.Log("AdMob interstitial load: " + err?.GetMessage()); Delay.Retry(ref interRetry, LoadInter); return; }
+                if (err != null || ad == null) { Fail("inter load", err != null ? err.GetCode() + " " + err.GetMessage() : "no ad"); Delay.Retry(ref interRetry, LoadInter); return; }
                 interRetry = 0;
                 inter = ad;
                 ad.OnAdPaid += v => Revenue(ad.GetResponseInfo(), v, "interstitial", id);
                 ad.OnAdFullScreenContentClosed += () => { DropInter(ad); FinishInter(); LoadInter(); };
                 ad.OnAdFullScreenContentFailed += e =>
                 {
-                    Debug.LogWarning("AdMob interstitial show: " + e?.GetMessage());
+                    Fail("inter show", e?.GetMessage());
                     DropInter(ad); FinishInter(); LoadInter();
                 };
             });
