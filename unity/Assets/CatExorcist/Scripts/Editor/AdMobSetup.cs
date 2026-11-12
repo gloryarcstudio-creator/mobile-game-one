@@ -17,8 +17,8 @@ namespace CatExorcist.EditorTools
     public sealed class AdMobSetup : IPreprocessBuildWithReport
     {
         // App ID из AdMob → Apps → App settings (вид ca-app-pub-…~…)
-        public const string AndroidAppId = "REPLACE_ADMOB_ANDROID_APP_ID";
-        public const string IosAppId = "REPLACE_ADMOB_IOS_APP_ID";
+        public const string AndroidAppId = "ca-app-pub-3555927089972039~3608995872";
+        public const string IosAppId = "ca-app-pub-3555927089972039~5567964866";
 
         const string TestAndroidAppId = "ca-app-pub-3940256099942544~3347511713";
         const string TestIosAppId = "ca-app-pub-3940256099942544~1458002511";
