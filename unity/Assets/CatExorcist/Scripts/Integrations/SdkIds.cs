@@ -5,14 +5,14 @@ namespace CatExorcist.Integrations
     {
         // ---- Google AdMob: id рекламных блоков (вид ca-app-pub-…/…). App ID (с «~») вписывается в Editor/AdMobSetup.cs.
 #if UNITY_IOS
-        public const string AdMobRewarded = "REPLACE_IOS_ADMOB_REWARDED";
+        public const string AdMobRewarded = "ca-app-pub-3555927089972039/2567376948";
         public const string AdMobInterstitial = "ca-app-pub-3555927089972039/2267994048";
         // демо-блоки Google: всегда отдают тестовую рекламу (Development Build и пока свои id не вписаны)
         public const string AdMobTestRewarded = "ca-app-pub-3940256099942544/1712485313";
         public const string AdMobTestInterstitial = "ca-app-pub-3940256099942544/4411468910";
 #else
-        public const string AdMobRewarded = "REPLACE_ANDROID_ADMOB_REWARDED";
-        public const string AdMobInterstitial = "REPLACE_ANDROID_ADMOB_INTERSTITIAL";
+        public const string AdMobRewarded = "ca-app-pub-3555927089972039/1338055755";
+        public const string AdMobInterstitial = "ca-app-pub-3555927089972039/2039783397";
         public const string AdMobTestRewarded = "ca-app-pub-3940256099942544/5224354917";
         public const string AdMobTestInterstitial = "ca-app-pub-3940256099942544/1033173712";
 #endif
