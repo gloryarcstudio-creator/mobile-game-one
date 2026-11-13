@@ -1,4 +1,4 @@
-// После генерации Gradle-проекта Android: режим согласия Firebase по умолчанию «запрещено».
+// После генерации Gradle-проекта Android: режим согласия Firebase по умолчанию «запрещено» и пометка «это игра».
 // Firebase Analytics стартует вместе с процессом, раньше кода игры, поэтому без этих флагов первые события
 // (first_open, session_start) ушли бы с идентификаторами до ответа игрока в окне согласия UMP.
 // После ответа FirebaseAnalyticsSink.SetConsent открывает то, что игрок разрешил (вне ЕЭЗ/UK — всё).
@@ -42,6 +42,8 @@ namespace CatExorcist.EditorTools
                 doc.Load(manifest);
                 var app = doc.SelectSingleNode("/manifest/application") as XmlElement;
                 if (app == null) { Debug.LogWarning("Cat Exorcist: <application> not found in " + manifest); return; }
+                // Android 16 (target 36) на планшетах и складных игнорирует запрет поворота — кроме игр: помечаем себя игрой
+                if (string.IsNullOrEmpty(app.GetAttribute("appCategory", AndroidNs))) SetAndroidAttr(doc, app, "appCategory", "game");
                 foreach (var name in ConsentDefaults)
                 {
                     XmlElement meta = null;

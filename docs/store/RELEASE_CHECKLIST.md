@@ -9,7 +9,7 @@
 - [ ] Собрать AAB с ключом загрузки (`CE_KEYSTORE…`), включить Play App Signing.
 - [ ] Собрать Xcode-проект, подписать, Archive, загрузить в App Store Connect.
 - ✓ id `com.protekgames.catexorcist`, компания PROTEK s.r.o., портрет, IL2CPP, ARM64 + ARMv7, minSdk 24, iOS 13+, AAB.
-- [ ] targetSdk: в Android SDK Manager должен стоять API 35 или новее (Google Play требует 35+ для новых игр, с августа 2026 возможно 36 — проверьте актуальное требование в Play Console).
+- [ ] targetSdk 36: Player → Other Settings → Target API Level = API level 36 (Google Play требует 36+; ставится само при открытии проекта и сборке через меню Cat Exorcist). Unity 6000.0.46f1 или новее; если SDK 36 не установлен, Unity предложит скачать его при сборке — согласиться.
 
 ## 2. Реклама
 

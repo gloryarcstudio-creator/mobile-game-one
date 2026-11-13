@@ -17,6 +17,7 @@ namespace CatExorcist.EditorTools
         public const string Company = "PROTEK s.r.o.";
         public const string Product = "Cat Exorcist";
         public const string Version = "1.0.0";
+        public const int TargetApi = 36;
         public const string ScenePath = "Assets/CatExorcist/Scenes/Main.unity";
         const string IconPath = "Assets/CatExorcist/Branding/app-icon.png";
 
@@ -25,6 +26,11 @@ namespace CatExorcist.EditorTools
             EditorApplication.delayCall += () =>
             {
                 if (Pss.GetId(BuildTargetGroup.Android) != AppId) Apply();
+                else if ((int)PlayerSettings.Android.targetSdkVersion < TargetApi)
+                {
+                    PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)TargetApi;
+                    Debug.Log("Cat Exorcist: Android Target API Level set to " + TargetApi + " (Google Play requirement)");
+                }
             };
         }
 
@@ -53,7 +59,9 @@ namespace CatExorcist.EditorTools
             Pss.SetBackend(BuildTargetGroup.Android, ScriptingImplementation.IL2CPP);
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64 | AndroidArchitecture.ARMv7;
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel24;
-            PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto; // самый новый установленный SDK (нужен 35+)
+            // Google Play с 2026 требует target API 36 (Unity 6000.0.46f1+). «Auto» брал самый новый установленный SDK (у многих 35) —
+            // поэтому ставим 36 явно, а более новый выбор вручную не понижаем. Нужный SDK Unity предложит скачать при сборке.
+            if ((int)PlayerSettings.Android.targetSdkVersion < TargetApi) PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)TargetApi;
             PlayerSettings.Android.renderOutsideSafeArea = true;
             PlayerSettings.Android.startInFullscreen = true;
             PlayerSettings.Android.forceInternetPermission = true;
