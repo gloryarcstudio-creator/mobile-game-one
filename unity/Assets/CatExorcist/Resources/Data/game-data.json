@@ -1,0 +1,4408 @@
+{
+ "version": "0.9.0",
+ "rarity": [
+  {
+   "name": "Обычный",
+   "color": "#c9c3e6",
+   "hp": 1,
+   "reward": 1,
+   "squad": 1
+  },
+  {
+   "name": "Редкий",
+   "color": "#7fd1ff",
+   "hp": 2,
+   "reward": 2.5,
+   "squad": 2.2
+  },
+  {
+   "name": "Эпический",
+   "color": "#d68cff",
+   "hp": 4,
+   "reward": 6,
+   "squad": 5
+  },
+  {
+   "name": "Легендарный",
+   "color": "#ffc94d",
+   "hp": 12,
+   "reward": 25,
+   "squad": 14
+  }
+ ],
+ "districts": [
+  {
+   "name": "Спальный квартал",
+   "hue": 38,
+   "ghosts": [
+    "sheet",
+    "sock",
+    "fire"
+   ],
+   "boss": "washer",
+   "set": "x1.25 урона кота",
+   "base": 0
+  },
+  {
+   "name": "Старый город",
+   "hue": 260,
+   "ghosts": [
+    "armor",
+    "portrait",
+    "candle"
+   ],
+   "boss": "headless",
+   "set": "x1.25 урона кота",
+   "base": 1
+  },
+  {
+   "name": "Порт",
+   "hue": 195,
+   "ghosts": [
+    "drowned",
+    "jelly",
+    "lantern"
+   ],
+   "boss": "ship",
+   "set": "x1.25 урона кота",
+   "base": 2
+  },
+  {
+   "name": "Универмаг",
+   "hue": 330,
+   "ghosts": [
+    "mannequin",
+    "toy",
+    "tv"
+   ],
+   "boss": "carousel",
+   "set": "x1.25 урона кота",
+   "base": 3
+  },
+  {
+   "name": "Кладбище котов",
+   "hue": 150,
+   "ghosts": [
+    "skelecat",
+    "pumpkin",
+    "wisp"
+   ],
+   "boss": "ninelives",
+   "set": "x1.25 урона кота",
+   "feature": "густая тьма",
+   "feat": "dark",
+   "base": 4
+  },
+  {
+   "name": "Ледяной замок",
+   "hue": 200,
+   "ghosts": [
+    "snowman",
+    "icicle",
+    "aurora"
+   ],
+   "boss": "frostqueen",
+   "set": "x1.25 урона кота",
+   "feature": "скользкий лёд",
+   "feat": "ice",
+   "base": 5
+  },
+  {
+   "name": "Безумная лаборатория",
+   "hue": 100,
+   "ghosts": [
+    "slime",
+    "flask",
+    "spark"
+   ],
+   "boss": "franken",
+   "set": "x1.25 урона кота",
+   "feature": "лужи кислоты",
+   "feat": "acid",
+   "base": 6
+  },
+  {
+   "name": "Лунный дворец",
+   "hue": 280,
+   "ghosts": [
+    "moth",
+    "mirror",
+    "starling"
+   ],
+   "boss": "moonking",
+   "set": "x1.25 урона кота",
+   "feature": "звездопад",
+   "feat": "stars",
+   "base": 7
+  },
+  {
+   "name": "Цирк-шапито",
+   "base": 3,
+   "tone": {
+    "h": 20,
+    "s": 2,
+    "mul": "#ffd88a"
+   },
+   "ghosts": [
+    "clown",
+    "balloon",
+    "juggler"
+   ],
+   "boss": "ringmaster",
+   "set": "x1.25 урона кота"
+  },
+  {
+   "name": "Заброшенная школа",
+   "base": 1,
+   "tone": {
+    "h": -40,
+    "s": 0.85
+   },
+   "ghosts": [
+    "chalk",
+    "textbook",
+    "bell"
+   ],
+   "boss": "headmistress",
+   "set": "x1.25 урона кота"
+  },
+  {
+   "name": "Подземка",
+   "base": 6,
+   "tone": {
+    "h": 160,
+    "l": 0.8
+   },
+   "ghosts": [
+    "rat",
+    "conductor",
+    "tunnellight"
+   ],
+   "boss": "ghosttrain",
+   "set": "x1.25 урона кота",
+   "feature": "темнота туннелей",
+   "feat": "dark"
+  },
+  {
+   "name": "Пиратская бухта",
+   "base": 2,
+   "tone": {
+    "h": -20,
+    "s": 1.4
+   },
+   "ghosts": [
+    "cabinboy",
+    "parrot",
+    "mimic"
+   ],
+   "boss": "catbeard",
+   "set": "x1.25 урона кота"
+  },
+  {
+   "name": "Ботанический сад",
+   "base": 6,
+   "tone": {
+    "h": -85,
+    "s": 2.4
+   },
+   "ghosts": [
+    "flytrap",
+    "cactus",
+    "firefly"
+   ],
+   "boss": "rosequeen",
+   "set": "x1.25 урона кота",
+   "feature": "ядовитые лужи",
+   "feat": "acid"
+  },
+  {
+   "name": "Пустынная пирамида",
+   "base": 4,
+   "tone": {
+    "h": -55,
+    "s": 0.75,
+    "l": 1.12
+   },
+   "ghosts": [
+    "mummy",
+    "scarab",
+    "sarcophagus"
+   ],
+   "boss": "pharaoh",
+   "set": "x1.25 урона кота",
+   "feature": "камнепад",
+   "feat": "stars"
+  },
+  {
+   "name": "Часовая башня",
+   "base": 1,
+   "tone": {
+    "h": 165
+   },
+   "ghosts": [
+    "gear",
+    "cuckoo",
+    "pendulum"
+   ],
+   "boss": "timekeeper",
+   "set": "x1.25 урона кота"
+  },
+  {
+   "name": "Кукольный театр",
+   "base": 3,
+   "tone": {
+    "h": 10,
+    "s": 2.5,
+    "l": 0.85,
+    "mul": "#ff9a9a"
+   },
+   "ghosts": [
+    "puppet",
+    "glovepuppet",
+    "mask"
+   ],
+   "boss": "puppeteer",
+   "set": "x1.25 урона кота"
+  },
+  {
+   "name": "Затонувший город",
+   "base": 2,
+   "tone": {
+    "h": -35,
+    "l": 0.85
+   },
+   "ghosts": [
+    "mermaid",
+    "angler",
+    "pearl"
+   ],
+   "boss": "kraken",
+   "set": "x1.25 урона кота",
+   "feature": "тёмная глубина",
+   "feat": "dark"
+  },
+  {
+   "name": "Вулкан",
+   "base": 5,
+   "tone": {
+    "h": 170,
+    "s": 2,
+    "l": 0.65
+   },
+   "ghosts": [
+    "lavagolem",
+    "salamander",
+    "ash"
+   ],
+   "boss": "firedragon",
+   "set": "x1.25 урона кота",
+   "feature": "лужи лавы",
+   "feat": "acid"
+  },
+  {
+   "name": "Облачное королевство",
+   "base": 7,
+   "tone": {
+    "h": -70,
+    "l": 1.1
+   },
+   "ghosts": [
+    "grumpcloud",
+    "rainbow",
+    "thundercloud"
+   ],
+   "boss": "stormlord",
+   "set": "x1.25 урона кота",
+   "feature": "скользкие облака",
+   "feat": "ice"
+  },
+  {
+   "name": "Тёмная цитадель",
+   "base": 7,
+   "tone": {
+    "h": 90,
+    "s": 1.2,
+    "l": 0.55
+   },
+   "ghosts": [
+    "shade",
+    "darkknight",
+    "abyss"
+   ],
+   "boss": "ghostking",
+   "set": "x1.25 урона кота",
+   "feature": "огненный дождь",
+   "feat": "stars"
+  }
+ ],
+ "housesPerDistrict": 10,
+ "ghosts": {
+  "sheet": {
+   "name": "Простынка",
+   "rarity": 0,
+   "body": "#f6f3ff",
+   "shape": "sheet",
+   "d": 0
+  },
+  "sock": {
+   "name": "Носок-полтергейст",
+   "rarity": 1,
+   "body": "#ffd6e3",
+   "shape": "sock",
+   "d": 0,
+   "beh": "split"
+  },
+  "fire": {
+   "name": "Дух камина",
+   "rarity": 2,
+   "body": "#ffc08a",
+   "shape": "fire",
+   "d": 0,
+   "beh": "kite"
+  },
+  "washer": {
+   "name": "Стиральная машина",
+   "rarity": 3,
+   "body": "#e3f1ff",
+   "shape": "washer",
+   "d": 0
+  },
+  "armor": {
+   "name": "Пустые доспехи",
+   "rarity": 0,
+   "body": "#d9dde6",
+   "shape": "sock",
+   "d": 1,
+   "beh": "charge"
+  },
+  "portrait": {
+   "name": "Портрет-шептун",
+   "rarity": 1,
+   "body": "#f3e2b8",
+   "shape": "sheet",
+   "d": 1,
+   "beh": "blink"
+  },
+  "candle": {
+   "name": "Свечной дух",
+   "rarity": 2,
+   "body": "#fff0a8",
+   "shape": "fire",
+   "d": 1,
+   "beh": "heal"
+  },
+  "headless": {
+   "name": "Безголовый дворецкий",
+   "rarity": 3,
+   "body": "#cfc6ff",
+   "shape": "king",
+   "d": 1
+  },
+  "drowned": {
+   "name": "Утопленник",
+   "rarity": 0,
+   "body": "#bfe9e4",
+   "shape": "sheet",
+   "d": 2
+  },
+  "jelly": {
+   "name": "Медуза-призрак",
+   "rarity": 1,
+   "body": "#ffc6f0",
+   "shape": "sock",
+   "d": 2,
+   "beh": "split"
+  },
+  "lantern": {
+   "name": "Маячный огонёк",
+   "rarity": 2,
+   "body": "#ffe08a",
+   "shape": "fire",
+   "d": 2,
+   "beh": "kite"
+  },
+  "ship": {
+   "name": "Корабль-призрак",
+   "rarity": 3,
+   "body": "#b9d7f0",
+   "shape": "king",
+   "d": 2
+  },
+  "mannequin": {
+   "name": "Манекен",
+   "rarity": 0,
+   "body": "#f1d9cc",
+   "shape": "sock",
+   "d": 3,
+   "beh": "charge"
+  },
+  "toy": {
+   "name": "Плюшевый мишка",
+   "rarity": 1,
+   "body": "#e8c49a",
+   "shape": "sheet",
+   "d": 3,
+   "beh": "heal"
+  },
+  "tv": {
+   "name": "Телевизор-шипун",
+   "rarity": 2,
+   "body": "#c8f0ff",
+   "shape": "fire",
+   "d": 3,
+   "beh": "blink"
+  },
+  "carousel": {
+   "name": "Карусель-дух",
+   "rarity": 3,
+   "body": "#ffd1e8",
+   "shape": "king",
+   "d": 3
+  },
+  "skelecat": {
+   "name": "Кот-скелет",
+   "rarity": 0,
+   "body": "#eeeeee",
+   "shape": "sheet",
+   "d": 4,
+   "beh": "charge"
+  },
+  "pumpkin": {
+   "name": "Тыквенный дух",
+   "rarity": 1,
+   "body": "#ffb36b",
+   "shape": "sock",
+   "d": 4,
+   "beh": "bomber"
+  },
+  "wisp": {
+   "name": "Блуждающий огонёк",
+   "rarity": 2,
+   "body": "#a8ffcf",
+   "shape": "fire",
+   "d": 4,
+   "beh": "blink"
+  },
+  "ninelives": {
+   "name": "Король девяти жизней",
+   "rarity": 3,
+   "body": "#bda8ff",
+   "shape": "king",
+   "d": 4
+  },
+  "snowman": {
+   "name": "Снеговик-бука",
+   "rarity": 0,
+   "body": "#eef8ff",
+   "shape": "sheet",
+   "d": 5
+  },
+  "icicle": {
+   "name": "Сосулька-шептунья",
+   "rarity": 1,
+   "body": "#bfe6ff",
+   "shape": "sock",
+   "d": 5,
+   "beh": "charge"
+  },
+  "aurora": {
+   "name": "Дух северного сияния",
+   "rarity": 2,
+   "body": "#9fffe0",
+   "shape": "fire",
+   "d": 5,
+   "beh": "heal"
+  },
+  "frostqueen": {
+   "name": "Снежная королева",
+   "rarity": 3,
+   "body": "#cde8ff",
+   "shape": "king",
+   "d": 5
+  },
+  "slime": {
+   "name": "Слизень из колбы",
+   "rarity": 0,
+   "body": "#b6f5a0",
+   "shape": "sheet",
+   "d": 6,
+   "beh": "split"
+  },
+  "flask": {
+   "name": "Летучая колба",
+   "rarity": 1,
+   "body": "#d8ffb8",
+   "shape": "sock",
+   "d": 6,
+   "beh": "bomber"
+  },
+  "spark": {
+   "name": "Шаровая молния",
+   "rarity": 2,
+   "body": "#fff27a",
+   "shape": "fire",
+   "d": 6,
+   "beh": "kite"
+  },
+  "franken": {
+   "name": "Доктор Мяукенштейн",
+   "rarity": 3,
+   "body": "#a8e0a0",
+   "shape": "king",
+   "d": 6
+  },
+  "moth": {
+   "name": "Лунная моль",
+   "rarity": 0,
+   "body": "#e6d6ff",
+   "shape": "sheet",
+   "d": 7
+  },
+  "mirror": {
+   "name": "Зеркальный двойник",
+   "rarity": 1,
+   "body": "#d8e8ff",
+   "shape": "sock",
+   "d": 7,
+   "beh": "blink"
+  },
+  "starling": {
+   "name": "Падающая звезда",
+   "rarity": 2,
+   "body": "#fff0c0",
+   "shape": "fire",
+   "d": 7,
+   "beh": "bomber"
+  },
+  "moonking": {
+   "name": "Лунный король",
+   "rarity": 3,
+   "body": "#e0c8ff",
+   "shape": "king",
+   "d": 7
+  },
+  "jacko": {
+   "name": "Джек-фонарь",
+   "rarity": 1,
+   "body": "#ffb35a",
+   "shape": "fire",
+   "d": 4,
+   "event": true
+  },
+  "gift": {
+   "name": "Подарочный дух",
+   "rarity": 1,
+   "body": "#ff7a8a",
+   "shape": "sheet",
+   "d": 4,
+   "event": true
+  },
+  "heart": {
+   "name": "Дух-валентинка",
+   "rarity": 1,
+   "body": "#ff9fc4",
+   "shape": "sheet",
+   "d": 4,
+   "event": true
+  },
+  "egg": {
+   "name": "Пасхальный дух",
+   "rarity": 1,
+   "body": "#fff1b8",
+   "shape": "sheet",
+   "d": 4,
+   "event": true
+  },
+  "sandcastle": {
+   "name": "Песочный замок",
+   "rarity": 1,
+   "body": "#f2d29a",
+   "shape": "king",
+   "d": 4,
+   "event": true
+  },
+  "clown": {
+   "name": "Клоун-хохотун",
+   "rarity": 0,
+   "body": "#ffd1dc",
+   "shape": "sock",
+   "d": 8,
+   "beh": "charge",
+   "art": "mannequin"
+  },
+  "balloon": {
+   "name": "Шарик-призрак",
+   "rarity": 1,
+   "body": "#ff9ab0",
+   "shape": "sheet",
+   "d": 8,
+   "beh": "split",
+   "art": "jelly"
+  },
+  "juggler": {
+   "name": "Огненный жонглёр",
+   "rarity": 2,
+   "body": "#ffc06b",
+   "shape": "fire",
+   "d": 8,
+   "beh": "kite",
+   "art": "fire"
+  },
+  "ringmaster": {
+   "name": "Директор цирка",
+   "rarity": 3,
+   "body": "#ffb3c8",
+   "shape": "king",
+   "d": 8,
+   "art": "carousel",
+   "skill": "spiral",
+   "shout": "Алле-оп!"
+  },
+  "chalk": {
+   "name": "Меловой призрак",
+   "rarity": 0,
+   "body": "#f4f4f4",
+   "shape": "sheet",
+   "d": 9,
+   "art": "sheet"
+  },
+  "textbook": {
+   "name": "Летающий учебник",
+   "rarity": 1,
+   "body": "#cfe3ff",
+   "shape": "sock",
+   "d": 9,
+   "beh": "blink",
+   "art": "portrait"
+  },
+  "bell": {
+   "name": "Дух звонка",
+   "rarity": 2,
+   "body": "#ffe28a",
+   "shape": "fire",
+   "d": 9,
+   "beh": "heal",
+   "art": "candle"
+  },
+  "headmistress": {
+   "name": "Строгая завуч",
+   "rarity": 3,
+   "body": "#d6c8ff",
+   "shape": "king",
+   "d": 9,
+   "art": "headless",
+   "skill": "dash",
+   "shout": "К доске!"
+  },
+  "rat": {
+   "name": "Крысиный дух",
+   "rarity": 0,
+   "body": "#cfc6bd",
+   "shape": "sheet",
+   "d": 10,
+   "beh": "charge",
+   "art": "skelecat"
+  },
+  "conductor": {
+   "name": "Призрак-контролёр",
+   "rarity": 1,
+   "body": "#b8d0ff",
+   "shape": "sock",
+   "d": 10,
+   "beh": "blink",
+   "art": "armor"
+  },
+  "tunnellight": {
+   "name": "Огни туннеля",
+   "rarity": 2,
+   "body": "#fff07a",
+   "shape": "fire",
+   "d": 10,
+   "beh": "kite",
+   "art": "lantern"
+  },
+  "ghosttrain": {
+   "name": "Поезд-призрак",
+   "rarity": 3,
+   "body": "#c4d6ee",
+   "shape": "king",
+   "d": 10,
+   "art": "ship",
+   "skill": "cannon",
+   "shout": "Ту-ту!"
+  },
+  "cabinboy": {
+   "name": "Скелет-юнга",
+   "rarity": 0,
+   "body": "#efe6d6",
+   "shape": "sheet",
+   "d": 11,
+   "art": "drowned"
+  },
+  "parrot": {
+   "name": "Призрачный попугай",
+   "rarity": 1,
+   "body": "#9ff0a8",
+   "shape": "sock",
+   "d": 11,
+   "beh": "bomber",
+   "art": "jelly"
+  },
+  "mimic": {
+   "name": "Сундук-мимик",
+   "rarity": 2,
+   "body": "#ffd27a",
+   "shape": "fire",
+   "d": 11,
+   "beh": "blink",
+   "art": "wisp"
+  },
+  "catbeard": {
+   "name": "Капитан Кошачья Борода",
+   "rarity": 3,
+   "body": "#b9d7f0",
+   "shape": "king",
+   "d": 11,
+   "art": "ship",
+   "skill": "cannon",
+   "shout": "На абордаж!"
+  },
+  "flytrap": {
+   "name": "Хищный цветок",
+   "rarity": 0,
+   "body": "#b6f5a0",
+   "shape": "sheet",
+   "d": 12,
+   "beh": "split",
+   "art": "slime"
+  },
+  "cactus": {
+   "name": "Колючий кактус",
+   "rarity": 1,
+   "body": "#9fe08a",
+   "shape": "sock",
+   "d": 12,
+   "beh": "bomber",
+   "art": "flask"
+  },
+  "firefly": {
+   "name": "Светлячок",
+   "rarity": 2,
+   "body": "#fff27a",
+   "shape": "fire",
+   "d": 12,
+   "beh": "kite",
+   "art": "spark"
+  },
+  "rosequeen": {
+   "name": "Королева роз",
+   "rarity": 3,
+   "body": "#ffb3c8",
+   "shape": "king",
+   "d": 12,
+   "art": "franken",
+   "skill": "lightning",
+   "shout": "Шипы!"
+  },
+  "mummy": {
+   "name": "Мумия-котик",
+   "rarity": 0,
+   "body": "#f1e3c0",
+   "shape": "sheet",
+   "d": 13,
+   "beh": "charge",
+   "art": "skelecat"
+  },
+  "scarab": {
+   "name": "Скарабей",
+   "rarity": 1,
+   "body": "#7fd1ff",
+   "shape": "sock",
+   "d": 13,
+   "beh": "bomber",
+   "art": "pumpkin"
+  },
+  "sarcophagus": {
+   "name": "Дух саркофага",
+   "rarity": 2,
+   "body": "#ffd86b",
+   "shape": "fire",
+   "d": 13,
+   "beh": "blink",
+   "art": "wisp"
+  },
+  "pharaoh": {
+   "name": "Кот-фараон",
+   "rarity": 3,
+   "body": "#ffe08a",
+   "shape": "king",
+   "d": 13,
+   "art": "ninelives",
+   "skill": "summon",
+   "shout": "Проклятие!"
+  },
+  "gear": {
+   "name": "Шестерёнка",
+   "rarity": 0,
+   "body": "#e0d4b0",
+   "shape": "sock",
+   "d": 14,
+   "beh": "charge",
+   "art": "armor"
+  },
+  "cuckoo": {
+   "name": "Кукушка из часов",
+   "rarity": 1,
+   "body": "#ffd6a0",
+   "shape": "sheet",
+   "d": 14,
+   "beh": "blink",
+   "art": "portrait"
+  },
+  "pendulum": {
+   "name": "Дух маятника",
+   "rarity": 2,
+   "body": "#fff0a8",
+   "shape": "fire",
+   "d": 14,
+   "beh": "heal",
+   "art": "candle"
+  },
+  "timekeeper": {
+   "name": "Хранитель времени",
+   "rarity": 3,
+   "body": "#cfc6ff",
+   "shape": "king",
+   "d": 14,
+   "art": "headless",
+   "skill": "dash",
+   "shout": "Тик-так!"
+  },
+  "puppet": {
+   "name": "Марионетка",
+   "rarity": 0,
+   "body": "#f1d9cc",
+   "shape": "sock",
+   "d": 15,
+   "beh": "charge",
+   "art": "mannequin"
+  },
+  "glovepuppet": {
+   "name": "Кукла-перчатка",
+   "rarity": 1,
+   "body": "#e8c49a",
+   "shape": "sheet",
+   "d": 15,
+   "beh": "heal",
+   "art": "toy"
+  },
+  "mask": {
+   "name": "Театральная маска",
+   "rarity": 2,
+   "body": "#c8f0ff",
+   "shape": "fire",
+   "d": 15,
+   "beh": "blink",
+   "art": "tv"
+  },
+  "puppeteer": {
+   "name": "Кукловод",
+   "rarity": 3,
+   "body": "#ffd1e8",
+   "shape": "king",
+   "d": 15,
+   "art": "carousel",
+   "skill": "spiral",
+   "shout": "Занавес!"
+  },
+  "mermaid": {
+   "name": "Дух русалки",
+   "rarity": 0,
+   "body": "#bfe9e4",
+   "shape": "sheet",
+   "d": 16,
+   "art": "drowned"
+  },
+  "angler": {
+   "name": "Рыба-удильщик",
+   "rarity": 1,
+   "body": "#ffc6f0",
+   "shape": "sock",
+   "d": 16,
+   "beh": "split",
+   "art": "jelly"
+  },
+  "pearl": {
+   "name": "Жемчужный огонёк",
+   "rarity": 2,
+   "body": "#ffe08a",
+   "shape": "fire",
+   "d": 16,
+   "beh": "kite",
+   "art": "lantern"
+  },
+  "kraken": {
+   "name": "Кракен",
+   "rarity": 3,
+   "body": "#b9d7f0",
+   "shape": "king",
+   "d": 16,
+   "art": "ship",
+   "skill": "cannon",
+   "shout": "Щупальца!"
+  },
+  "lavagolem": {
+   "name": "Лавовый голем",
+   "rarity": 0,
+   "body": "#ffb07a",
+   "shape": "sheet",
+   "d": 17,
+   "art": "snowman"
+  },
+  "salamander": {
+   "name": "Огненная саламандра",
+   "rarity": 1,
+   "body": "#ff9a6b",
+   "shape": "sock",
+   "d": 17,
+   "beh": "charge",
+   "art": "icicle"
+  },
+  "ash": {
+   "name": "Дух пепла",
+   "rarity": 2,
+   "body": "#ffd0a0",
+   "shape": "fire",
+   "d": 17,
+   "beh": "heal",
+   "art": "aurora"
+  },
+  "firedragon": {
+   "name": "Огненный дракон",
+   "rarity": 3,
+   "body": "#ffb3a0",
+   "shape": "king",
+   "d": 17,
+   "art": "frostqueen",
+   "skill": "frost",
+   "shout": "Извержение!"
+  },
+  "grumpcloud": {
+   "name": "Облачко-ворчун",
+   "rarity": 0,
+   "body": "#e6eeff",
+   "shape": "sheet",
+   "d": 18,
+   "art": "moth"
+  },
+  "rainbow": {
+   "name": "Дух радуги",
+   "rarity": 1,
+   "body": "#ffd8f0",
+   "shape": "sock",
+   "d": 18,
+   "beh": "blink",
+   "art": "mirror"
+  },
+  "thundercloud": {
+   "name": "Грозовая тучка",
+   "rarity": 2,
+   "body": "#c8d8ff",
+   "shape": "fire",
+   "d": 18,
+   "beh": "bomber",
+   "art": "starling"
+  },
+  "stormlord": {
+   "name": "Повелитель бурь",
+   "rarity": 3,
+   "body": "#d0c8ff",
+   "shape": "king",
+   "d": 18,
+   "art": "moonking",
+   "skill": "stars",
+   "shout": "Гроза!"
+  },
+  "shade": {
+   "name": "Тень",
+   "rarity": 0,
+   "body": "#b0a0d0",
+   "shape": "sheet",
+   "d": 19,
+   "art": "moth"
+  },
+  "darkknight": {
+   "name": "Рыцарь тьмы",
+   "rarity": 1,
+   "body": "#a8a0c0",
+   "shape": "sock",
+   "d": 19,
+   "beh": "charge",
+   "art": "armor"
+  },
+  "abyss": {
+   "name": "Око бездны",
+   "rarity": 2,
+   "body": "#d0a8ff",
+   "shape": "fire",
+   "d": 19,
+   "beh": "bomber",
+   "art": "starling"
+  },
+  "ghostking": {
+   "name": "Король призраков",
+   "rarity": 3,
+   "body": "#e0c8ff",
+   "shape": "king",
+   "d": 19,
+   "art": "moonking",
+   "skill": "stars",
+   "shout": "Конец света!"
+  },
+  "golden": {
+   "name": "Золотой призрак",
+   "rarity": 3,
+   "body": "#ffd84d",
+   "shape": "sheet",
+   "d": -1
+  },
+  "mansion": {
+   "name": "Призрачный особняк",
+   "rarity": 3,
+   "body": "#c9b8ff",
+   "shape": "king",
+   "d": -1
+  }
+ },
+ "expeditions": [
+  {
+   "name": "Разведка",
+   "place": "чердак соседнего дома",
+   "min": 30,
+   "gems": 8,
+   "jars": 2,
+   "xp": 20
+  },
+  {
+   "name": "Поход",
+   "place": "заброшенный парк",
+   "min": 120,
+   "gems": 25,
+   "jars": 4,
+   "attach": 2,
+   "xp": 50
+  },
+  {
+   "name": "Экспедиция",
+   "place": "старый маяк за городом",
+   "min": 480,
+   "gems": 60,
+   "jars": 8,
+   "attach": 3,
+   "stones": 3,
+   "xp": 120
+  }
+ ],
+ "events": [
+  {
+   "id": "halloween",
+   "name": "Ночь тыкв",
+   "from": 920,
+   "to": 1010,
+   "cur": "🍬",
+   "art": "candy",
+   "curName": "Конфеты",
+   "btn": "🎃",
+   "btnName": "Тыквы",
+   "color": "#ff9a3d",
+   "skin": "jack",
+   "ghost": "jacko",
+   "props": [],
+   "gpS": "Джек-фонарь даёт сразу 5"
+  },
+  {
+   "id": "newyear",
+   "name": "Новогодняя ночь",
+   "from": 1120,
+   "to": 10,
+   "cur": "❅",
+   "art": "cur-snowflake",
+   "curName": "Снежинки",
+   "btn": "❅",
+   "btnName": "Ёлка",
+   "color": "#5fb8ff",
+   "skin": "tree",
+   "ghost": "gift",
+   "props": [
+    "ny-tree",
+    "ny-gifts",
+    "ny-snowman"
+   ],
+   "gpS": "Подарочный дух даёт сразу 5"
+  },
+  {
+   "id": "valentine",
+   "name": "Кошачий Валентин",
+   "from": 107,
+   "to": 115,
+   "cur": "💗",
+   "art": "cur-heart",
+   "curName": "Сердечки",
+   "btn": "💗",
+   "btnName": "Валентин",
+   "color": "#ff6b9a",
+   "skin": "cupid",
+   "ghost": "heart",
+   "props": [
+    "val-roses",
+    "val-balloons",
+    "val-choco"
+   ],
+   "gpS": "Дух-валентинка даёт сразу 5"
+  },
+  {
+   "id": "spring",
+   "name": "Весенний сад",
+   "from": 220,
+   "to": 320,
+   "cur": "🌸",
+   "art": "cur-petal",
+   "curName": "Лепестки",
+   "btn": "🌸",
+   "btnName": "Весна",
+   "color": "#6fd36a",
+   "skin": "bunny",
+   "ghost": "egg",
+   "props": [
+    "sp-tulips",
+    "sp-basket",
+    "sp-sakura"
+   ],
+   "gpS": "Пасхальный дух даёт сразу 5"
+  },
+  {
+   "id": "summer",
+   "name": "Летние каникулы",
+   "from": 600,
+   "to": 630,
+   "cur": "🐚",
+   "art": "cur-shell",
+   "curName": "Ракушки",
+   "btn": "🐚",
+   "btnName": "Лето",
+   "color": "#ffb84d",
+   "skin": "beach",
+   "ghost": "sandcastle",
+   "props": [
+    "su-umbrella",
+    "su-castle",
+    "su-board"
+   ],
+   "gpS": "Песочный замок даёт сразу 5"
+  }
+ ],
+ "achievements": [
+  {
+   "id": "kills",
+   "icon": "👻",
+   "name": "Гроза призраков",
+   "unit": "побед",
+   "tiers": [
+    100,
+    1000,
+    10000,
+    100000,
+    1000000
+   ]
+  },
+  {
+   "id": "captures",
+   "icon": "🫙",
+   "name": "Коллекционер",
+   "unit": "поимок",
+   "tiers": [
+    10,
+    100,
+    500,
+    2500,
+    10000
+   ]
+  },
+  {
+   "id": "bosses",
+   "icon": "👑",
+   "name": "Охотник на боссов",
+   "unit": "боссов",
+   "tiers": [
+    5,
+    25,
+    100,
+    300,
+    1000
+   ]
+  },
+  {
+   "id": "house",
+   "icon": "🏚",
+   "name": "Экзорцист города",
+   "unit": "дом",
+   "tiers": [
+    5,
+    15,
+    30,
+    50,
+    80,
+    120,
+    160,
+    200
+   ]
+  },
+  {
+   "id": "prestige",
+   "icon": "✨",
+   "name": "Свет луны",
+   "unit": "освящений",
+   "tiers": [
+    1,
+    5,
+    15,
+    40,
+    100
+   ]
+  },
+  {
+   "id": "elites",
+   "icon": "⭐",
+   "name": "Золотая лихорадка",
+   "unit": "элит",
+   "tiers": [
+    5,
+    50,
+    250,
+    1000
+   ]
+  },
+  {
+   "id": "merges",
+   "icon": "🔁",
+   "name": "Алхимик",
+   "unit": "слияний",
+   "tiers": [
+    5,
+    50,
+    250,
+    1000
+   ]
+  },
+  {
+   "id": "summons",
+   "icon": "🧹",
+   "name": "Мастер насадок",
+   "unit": "призывов",
+   "tiers": [
+    10,
+    100,
+    500,
+    2000
+   ]
+  },
+  {
+   "id": "raid",
+   "icon": "⚔",
+   "name": "Покоритель особняка",
+   "unit": "этаж",
+   "tiers": [
+    5,
+    10,
+    20,
+    35,
+    50
+   ]
+  },
+  {
+   "id": "upgrades",
+   "icon": "⚙",
+   "name": "Инженер",
+   "unit": "улучшений",
+   "tiers": [
+    50,
+    500,
+    2500,
+    10000
+   ]
+  },
+  {
+   "id": "bestiary",
+   "icon": "📖",
+   "name": "Знаток нечисти",
+   "unit": "видов",
+   "tiers": [
+    4,
+    12,
+    20,
+    32,
+    50,
+    80
+   ]
+  },
+  {
+   "id": "skins",
+   "icon": "🎁",
+   "name": "Модник",
+   "unit": "скинов",
+   "tiers": [
+    2,
+    5,
+    10,
+    18
+   ]
+  },
+  {
+   "id": "streak",
+   "icon": "🔥",
+   "name": "Верный кот",
+   "unit": "дней подряд",
+   "tiers": [
+    3,
+    7,
+    14,
+    30,
+    60
+   ]
+  },
+  {
+   "id": "exps",
+   "icon": "🧭",
+   "name": "Путешественник",
+   "unit": "походов",
+   "tiers": [
+    3,
+    15,
+    50,
+    150
+   ]
+  },
+  {
+   "id": "spins",
+   "icon": "🎡",
+   "name": "Везунчик",
+   "unit": "вращений",
+   "tiers": [
+    10,
+    50,
+    200
+   ]
+  }
+ ],
+ "achReward": [
+  20,
+  50,
+  120,
+  300,
+  800
+ ],
+ "behaviors": {
+  "split": {
+   "name": "Делится",
+   "color": "#ff8fb8",
+   "hint": "делится надвое, когда его победишь"
+  },
+  "kite": {
+   "name": "Стрелок",
+   "color": "#ffb35a",
+   "hint": "держится подальше и чаще стреляет"
+  },
+  "charge": {
+   "name": "Таран",
+   "color": "#8a9bd1",
+   "hint": "замирает и бросается по прямой: отойди с линии"
+  },
+  "blink": {
+   "name": "Прыгун",
+   "color": "#b48cff",
+   "hint": "исчезает и появляется рядом с котом"
+  },
+  "heal": {
+   "name": "Лекарь",
+   "color": "#5fd38a",
+   "hint": "лечит соседей: лови или бей его первым"
+  },
+  "bomber": {
+   "name": "Подрывник",
+   "color": "#ff6b5a",
+   "hint": "подлетает и взрывается: беги из круга"
+  }
+ },
+ "attach": {
+  "narrow": {
+   "name": "Узкая",
+   "color": "#4fb4ff",
+   "desc": "дальность и пробитие насквозь"
+  },
+  "wide": {
+   "name": "Широкая",
+   "color": "#7ddc6a",
+   "desc": "луч бьёт по площади"
+  },
+  "turbo": {
+   "name": "Турбо",
+   "color": "#ff9a3d",
+   "desc": "скорострельность"
+  },
+  "brush": {
+   "name": "Лазерная щётка",
+   "color": "#ff6fa0",
+   "desc": "шанс и сила крита"
+  },
+  "frost": {
+   "name": "Ледяная",
+   "color": "#a8f0ff",
+   "desc": "замедление и заморозка"
+  },
+  "magnet": {
+   "name": "Магнитная",
+   "color": "#ffc93a",
+   "desc": "эктоплазма и кристаллы"
+  },
+  "rocket": {
+   "name": "Пылевые ракеты",
+   "color": "#c77dff",
+   "desc": "самонаводящиеся ракеты со взрывом"
+  },
+  "storm": {
+   "name": "Грозовая",
+   "color": "#e9ff5c",
+   "desc": "цепная молния"
+  }
+ },
+ "ranks": [
+  "D",
+  "C",
+  "B",
+  "A",
+  "S",
+  "SS",
+  "SSS"
+ ],
+ "rankColors": [
+  "#b8b8c8",
+  "#8ee08a",
+  "#7fd1ff",
+  "#d68cff",
+  "#ffc94d",
+  "#ff7a7a",
+  "#ff5cf0"
+ ],
+ "rankWeights": [
+  0.6,
+  0.27,
+  0.1,
+  0.025,
+  0.005
+ ],
+ "rankWeightsHigh": [
+  0.575,
+  0.27,
+  0.1,
+  0.038,
+  0.012,
+  0.004,
+  0.001
+ ],
+ "summonCost": 30,
+ "bestMilestones": [
+  1,
+  10,
+  50,
+  200
+ ],
+ "bestRewards": [
+  10,
+  20,
+  50,
+  120
+ ],
+ "bestBonus": 0.03,
+ "quests": {
+  "kills": {
+   "goal": 40
+  },
+  "captures": {
+   "goal": 6
+  },
+  "upgrades": {
+   "goal": 10
+  },
+  "rooms": {
+   "goal": 6
+  },
+  "summons": {
+   "goal": 3
+  },
+  "merges": {
+   "goal": 2
+  }
+ },
+ "tiers": [
+  {
+   "name": "Обычные",
+   "one": "ОБЫЧНЫЙ",
+   "short": "Обыч.",
+   "color": "#8fa3b8"
+  },
+  {
+   "name": "Редкие",
+   "one": "РЕДКИЙ",
+   "short": "Редк.",
+   "color": "#4d9bff"
+  },
+  {
+   "name": "Эпические",
+   "one": "ЭПИК",
+   "short": "Эпик",
+   "color": "#a86bff"
+  },
+  {
+   "name": "Легендарные",
+   "one": "ЛЕГЕНДА",
+   "short": "Леген.",
+   "color": "#ff9f1a"
+  },
+  {
+   "name": "Мифические",
+   "one": "МИФ",
+   "short": "Миф.",
+   "color": "#ff4d8a"
+  }
+ ],
+ "skins": {
+  "ginger": {
+   "tier": 0,
+   "name": "Рыжик",
+   "body": "#f2a65a",
+   "dark": "#d9853a",
+   "pat": "tabby",
+   "collar": "#e8304f",
+   "charm": "bell",
+   "bonus": {},
+   "text": "Стартовый"
+  },
+  "spotty": {
+   "tier": 0,
+   "name": "Пятнышко",
+   "body": "#f4efe6",
+   "dark": "#8a5a3c",
+   "pat": "spots",
+   "collar": "#4d9bff",
+   "charm": "bell",
+   "eyes": [
+    "#8ad05a",
+    "#8ad05a"
+   ],
+   "bonus": {
+    "income": 1.08
+   },
+   "text": "+8% эктоплазмы",
+   "crystals": 150
+  },
+  "tabby": {
+   "tier": 0,
+   "name": "Полосатик",
+   "body": "#a8a4b4",
+   "dark": "#6e6a7c",
+   "pat": "tabby",
+   "hat": "beanie",
+   "hatC": "#ff5c5c",
+   "bonus": {
+    "dmg": 1.08
+   },
+   "text": "+8% урона",
+   "crystals": 250
+  },
+  "peach": {
+   "tier": 0,
+   "name": "Персик",
+   "body": "#ffe6cc",
+   "dark": "#f29a5a",
+   "pat": "calico",
+   "hat": "flower",
+   "eyes": [
+    "#5fa8ff",
+    "#5fa8ff"
+   ],
+   "collar": "#8ee08a",
+   "charm": "heart",
+   "bonus": {
+    "rate": 1.06
+   },
+   "text": "+6% скорости",
+   "crystals": 300
+  },
+  "black": {
+   "tier": 1,
+   "name": "Уголёк",
+   "body": "#5d566e",
+   "dark": "#3f3a4f",
+   "pat": "tuxedo",
+   "eyes": [
+    "#d6f25a",
+    "#d6f25a"
+   ],
+   "slit": true,
+   "ear": "#a77fb3",
+   "collar": "#8a5ad6",
+   "charm": "star",
+   "tail": "white",
+   "bonus": {
+    "rate": 1.15
+   },
+   "text": "+15% скорости",
+   "crystals": 600
+  },
+  "white": {
+   "tier": 1,
+   "name": "Снежок",
+   "body": "#f4f1ea",
+   "dark": "#d8d2c4",
+   "pat": "fluffy",
+   "eyes": [
+    "#6ec3ff",
+    "#ffc94d"
+   ],
+   "scarf": "#6ec3ff",
+   "tail": "fluff",
+   "bonus": {
+    "income": 1.2
+   },
+   "text": "+20% эктоплазмы",
+   "crystals": 700
+  },
+  "siam": {
+   "tier": 1,
+   "name": "Сапфир",
+   "body": "#f3e6d2",
+   "dark": "#5a4038",
+   "pat": "points",
+   "eyes": [
+    "#4d9bff",
+    "#4d9bff"
+   ],
+   "hat": "headphones",
+   "hatC": "#ff8fb1",
+   "bonus": {
+    "dmg": 1.15
+   },
+   "text": "+15% урона",
+   "crystals": 800
+  },
+  "pirate": {
+   "tier": 1,
+   "name": "Капитан Мяу",
+   "body": "#c98a5a",
+   "dark": "#8a5a36",
+   "pat": "tabby",
+   "hat": "pirate",
+   "patch": true,
+   "collar": "#e8304f",
+   "charm": "gem",
+   "tank": "#8a5a36",
+   "bonus": {
+    "dmg": 1.1,
+    "income": 1.1
+   },
+   "text": "+10% урон и доход",
+   "crystals": 900
+  },
+  "ninja": {
+   "tier": 2,
+   "name": "Ниндзя",
+   "body": "#8a8fa8",
+   "dark": "#5c6078",
+   "pat": "tabby",
+   "mask": true,
+   "tail": "ribbon",
+   "tank": "#3f3a4f",
+   "bonus": {
+    "dmg": 1.2,
+    "rate": 1.1
+   },
+   "text": "+20% урон, +10% скорость",
+   "crystals": 1200,
+   "req": 10
+  },
+  "wizard": {
+   "tier": 2,
+   "name": "Мурлин",
+   "body": "#9fb0ee",
+   "dark": "#6577cc",
+   "pat": "none",
+   "hat": "wizard",
+   "hatC": "#5a3fb0",
+   "eyes": [
+    "#ffd24d",
+    "#ffd24d"
+   ],
+   "sparkle": "#fff3a6",
+   "tank": "#5a3fb0",
+   "liquid": "#c9a0ff",
+   "bonus": {
+    "dmg": 1.3
+   },
+   "text": "+30% урона",
+   "crystals": 1500,
+   "req": 15
+  },
+  "chef": {
+   "tier": 2,
+   "name": "Пирожок",
+   "body": "#f7d9a8",
+   "dark": "#e0b070",
+   "pat": "tabby",
+   "hat": "chef",
+   "scarf": "#ff5c5c",
+   "bonus": {
+    "income": 1.35
+   },
+   "text": "+35% эктоплазмы",
+   "crystals": 1600,
+   "req": 20
+  },
+  "astro": {
+   "tier": 2,
+   "name": "Космокот",
+   "body": "#c8c4d8",
+   "dark": "#8a86a0",
+   "pat": "none",
+   "helmet": true,
+   "tank": "#e8e8f0",
+   "eyes": [
+    "#3ddc97",
+    "#3ddc97"
+   ],
+   "bonus": {
+    "dmg": 1.15,
+    "rate": 1.15
+   },
+   "text": "+15% урон и скорость",
+   "crystals": 2000,
+   "req": 25
+  },
+  "vampire": {
+   "tier": 3,
+   "name": "Граф Мурракула",
+   "body": "#c7b3e6",
+   "dark": "#8f6fc4",
+   "pat": "none",
+   "cape": true,
+   "fangs": true,
+   "eyes": [
+    "#ff4d6d",
+    "#ff4d6d"
+   ],
+   "slit": true,
+   "tail": "heart",
+   "tank": "#6a2a50",
+   "liquid": "#ff5c7a",
+   "bonus": {
+    "dmg": 1.35
+   },
+   "text": "+35% урона",
+   "usd": "$2.99"
+  },
+  "devil": {
+   "tier": 3,
+   "name": "Чертёнок",
+   "body": "#ff7b7b",
+   "dark": "#c43c4c",
+   "pat": "none",
+   "hat": "horns",
+   "eyes": [
+    "#ffd24d",
+    "#ffd24d"
+   ],
+   "slit": true,
+   "fangs": true,
+   "tail": "arrow",
+   "aura": "255,90,60",
+   "tank": "#3f2a3a",
+   "liquid": "#ff9a3d",
+   "bonus": {
+    "dmg": 1.4
+   },
+   "text": "+40% урона",
+   "usd": "$3.99"
+  },
+  "angel": {
+   "tier": 3,
+   "name": "Пушинка",
+   "body": "#fffaf0",
+   "dark": "#e8dcc4",
+   "pat": "fluffy",
+   "hat": "halo",
+   "wings": true,
+   "eyes": [
+    "#7fd1ff",
+    "#7fd1ff"
+   ],
+   "tail": "fluff",
+   "aura": "255,240,180",
+   "tank": "#f2e6c4",
+   "liquid": "#fff3a6",
+   "bonus": {
+    "income": 1.4
+   },
+   "text": "+40% эктоплазмы",
+   "usd": "$3.99"
+  },
+  "santa": {
+   "tier": 3,
+   "name": "Дед Мурмороз",
+   "body": "#e8e4ee",
+   "dark": "#b8b4c8",
+   "pat": "fluffy",
+   "hat": "santa",
+   "beard": true,
+   "tank": "#e8304f",
+   "bonus": {
+    "dmg": 1.25,
+    "income": 1.25
+   },
+   "text": "+25% урон и доход",
+   "usd": "$4.99"
+  },
+  "golden": {
+   "tier": 4,
+   "name": "Золотой кот",
+   "body": "#ffd24d",
+   "dark": "#e0a91f",
+   "pat": "none",
+   "metal": true,
+   "hat": "crown",
+   "gem": true,
+   "pearls": true,
+   "eyes": [
+    "#3ddc97",
+    "#3ddc97"
+   ],
+   "ear": "#ff9f5a",
+   "aura": "255,220,90",
+   "sparkle": "#fff6c0",
+   "tank": "#ffc94d",
+   "bonus": {
+    "dmg": 1.5,
+    "income": 1.5
+   },
+   "text": "+50% урон и доход",
+   "usd": "$9.99"
+  },
+  "reaper": {
+   "tier": 4,
+   "name": "Кот-Жнец",
+   "body": "#6a6286",
+   "dark": "#433c58",
+   "pat": "none",
+   "hat": "wizard",
+   "hatC": "#2a2638",
+   "cape": true,
+   "eyes": [
+    "#9dff7a",
+    "#9dff7a"
+   ],
+   "slit": true,
+   "aura": "150,255,140",
+   "sparkle": "#c8ffb8",
+   "tank": "#2a2638",
+   "liquid": "#9dff7a",
+   "bonus": {
+    "dmg": 1.5,
+    "income": 1.3
+   },
+   "text": "+50% урон, +30% доход",
+   "pass": true
+  },
+  "jack": {
+   "tier": 4,
+   "name": "Кот-Тыква",
+   "body": "#ffb35a",
+   "dark": "#e8701f",
+   "pat": "tabby",
+   "hat": "pumpkin",
+   "eyes": [
+    "#ffd24d",
+    "#ffd24d"
+   ],
+   "slit": true,
+   "aura": "255,150,60",
+   "sparkle": "#ffe0a0",
+   "tank": "#3f2a3a",
+   "liquid": "#ff9a3d",
+   "tail": "arrow",
+   "bonus": {
+    "dmg": 1.3,
+    "income": 1.3
+   },
+   "text": "+30% урон и доход",
+   "event": "halloween"
+  },
+  "samurai": {
+   "tier": 2,
+   "name": "Самурай",
+   "body": "#a8a4b4",
+   "dark": "#6e6a7c",
+   "pat": "tabby",
+   "scarf": "#e8304f",
+   "tank": "#7a2a3a",
+   "bonus": {
+    "dmg": 1.25,
+    "rate": 1.1
+   },
+   "text": "+25% урон, +10% скорость",
+   "crystals": 1800,
+   "req": 30
+  },
+  "detective": {
+   "tier": 1,
+   "name": "Шерлок Мяумс",
+   "body": "#c9a27a",
+   "dark": "#8a6a4a",
+   "pat": "tabby",
+   "hat": "beanie",
+   "hatC": "#8a6a4a",
+   "scarf": "#8a5a36",
+   "bonus": {
+    "income": 1.15,
+    "dmg": 1.05
+   },
+   "text": "+15% доход, +5% урон",
+   "crystals": 850
+  },
+  "knight": {
+   "tier": 2,
+   "name": "Сэр Мурлот",
+   "body": "#f4f1ea",
+   "dark": "#d8d2c4",
+   "pat": "none",
+   "helmet": true,
+   "tank": "#9aa6c0",
+   "bonus": {
+    "dmg": 1.2,
+    "income": 1.15
+   },
+   "text": "+20% урон, +15% доход",
+   "crystals": 2200,
+   "req": 35
+  },
+  "robot": {
+   "tier": 3,
+   "name": "Киберкот",
+   "body": "#c8ccd8",
+   "dark": "#8a90a8",
+   "pat": "none",
+   "metal": true,
+   "eyes": [
+    "#6ee8ff",
+    "#6ee8ff"
+   ],
+   "aura": "110,230,255",
+   "tank": "#6a7088",
+   "liquid": "#6ee8ff",
+   "bonus": {
+    "rate": 1.35
+   },
+   "text": "+35% скорости",
+   "usd": "$3.99"
+  },
+  "dragon": {
+   "tier": 3,
+   "name": "Дракоша",
+   "body": "#7fd36a",
+   "dark": "#4a9a3c",
+   "pat": "none",
+   "hat": "horns",
+   "tail": "arrow",
+   "eyes": [
+    "#ffd24d",
+    "#ffd24d"
+   ],
+   "slit": true,
+   "aura": "140,230,110",
+   "tank": "#4a9a3c",
+   "liquid": "#ff9a3d",
+   "bonus": {
+    "dmg": 1.45
+   },
+   "text": "+45% урона",
+   "usd": "$4.99"
+  },
+  "dj": {
+   "tier": 1,
+   "name": "Диджей Мур",
+   "body": "#5d566e",
+   "dark": "#3f3a4f",
+   "pat": "none",
+   "hat": "headphones",
+   "hatC": "#ff5cc8",
+   "scarf": "#8a5ad6",
+   "bonus": {
+    "rate": 1.1,
+    "income": 1.1
+   },
+   "text": "+10% скорость и доход",
+   "crystals": 750
+  },
+  "cowboy": {
+   "tier": 1,
+   "name": "Шериф",
+   "body": "#f2a65a",
+   "dark": "#d9853a",
+   "pat": "tabby",
+   "hat": "beanie",
+   "hatC": "#8a5a36",
+   "scarf": "#e8304f",
+   "bonus": {
+    "dmg": 1.18
+   },
+   "text": "+18% урона",
+   "crystals": 900
+  },
+  "firefighter": {
+   "tier": 2,
+   "name": "Пожарный",
+   "body": "#f7d9a8",
+   "dark": "#e0b070",
+   "pat": "tabby",
+   "hat": "beanie",
+   "hatC": "#e8304f",
+   "tank": "#c0c4d0",
+   "liquid": "#7fd1ff",
+   "bonus": {
+    "income": 1.3,
+    "rate": 1.1
+   },
+   "text": "+30% доход, +10% скорость",
+   "crystals": 1400,
+   "req": 15
+  },
+  "tree": {
+   "tier": 4,
+   "name": "Ёлочка",
+   "body": "#f2a65a",
+   "dark": "#d9853a",
+   "pat": "tabby",
+   "hat": "santa",
+   "scarf": "#3fae5a",
+   "aura": "255,230,140",
+   "sparkle": "#fff3a6",
+   "tank": "#3fae5a",
+   "bonus": {
+    "dmg": 1.3,
+    "income": 1.3
+   },
+   "text": "+30% урон и доход",
+   "event": "newyear"
+  },
+  "cupid": {
+   "tier": 4,
+   "name": "Купидон",
+   "body": "#fffaf0",
+   "dark": "#e8dcc4",
+   "pat": "fluffy",
+   "wings": true,
+   "tail": "heart",
+   "aura": "255,150,200",
+   "sparkle": "#ffd6e8",
+   "tank": "#ff9fc4",
+   "liquid": "#ff5c9a",
+   "bonus": {
+    "dmg": 1.3,
+    "rate": 1.15
+   },
+   "text": "+30% урон, +15% скорость",
+   "event": "valentine"
+  },
+  "bunny": {
+   "tier": 4,
+   "name": "Зайка",
+   "body": "#f7e6c8",
+   "dark": "#e0c49a",
+   "pat": "none",
+   "hat": "flower",
+   "aura": "200,255,170",
+   "sparkle": "#fff6c0",
+   "tank": "#8ee08a",
+   "bonus": {
+    "income": 1.4,
+    "rate": 1.1
+   },
+   "text": "+40% доход, +10% скорость",
+   "event": "spring"
+  },
+  "beach": {
+   "tier": 4,
+   "name": "Пляжник",
+   "body": "#f2a65a",
+   "dark": "#d9853a",
+   "pat": "tabby",
+   "hat": "flower",
+   "aura": "255,220,120",
+   "tank": "#5fc8e0",
+   "liquid": "#7fd1ff",
+   "bonus": {
+    "dmg": 1.35,
+    "income": 1.2
+   },
+   "text": "+35% урон, +20% доход",
+   "event": "summer"
+  },
+  "phantom": {
+   "tier": 4,
+   "name": "Фантом",
+   "body": "#a8f0ff",
+   "dark": "#5fc8e0",
+   "pat": "none",
+   "ghost": true,
+   "eyes": [
+    "#ffffff",
+    "#ffffff"
+   ],
+   "aura": "120,240,255",
+   "sparkle": "#d6fbff",
+   "tank": "#5fc8e0",
+   "liquid": "#ffffff",
+   "bonus": {
+    "dmg": 1.6,
+    "rate": 1.2
+   },
+   "text": "+60% урон, +20% скорость",
+   "usd": "$12.99"
+  }
+ },
+ "crystalPacks": [
+  {
+   "amount": 100,
+   "price": "$0.99"
+  },
+  {
+   "amount": 550,
+   "price": "$4.99",
+   "extra": "+10%"
+  },
+  {
+   "amount": 1200,
+   "price": "$9.99",
+   "extra": "+20%"
+  },
+  {
+   "amount": 2600,
+   "price": "$19.99",
+   "extra": "+30%"
+  },
+  {
+   "amount": 7000,
+   "price": "$49.99",
+   "extra": "+40%"
+  }
+ ],
+ "daily": [
+  {
+   "label": "20 💎",
+   "icon": "gem",
+   "reward": {
+    "gems": 20
+   }
+  },
+  {
+   "label": "5 банок",
+   "icon": "jar",
+   "reward": {
+    "jars": 5
+   }
+  },
+  {
+   "label": "50 💎",
+   "icon": "gem",
+   "reward": {
+    "gems": 50
+   }
+  },
+  {
+   "label": "Насадка B",
+   "icon": "attach",
+   "reward": {
+    "attach": [
+     2
+    ]
+   }
+  },
+  {
+   "label": "100 💎",
+   "icon": "gem",
+   "reward": {
+    "gems": 100
+   }
+  },
+  {
+   "label": "Эпик-дух",
+   "icon": "ghost",
+   "reward": {
+    "ghost": {
+     "type": "@epic",
+     "stars": 1
+    }
+   }
+  },
+  {
+   "label": "300 💎 + корона",
+   "icon": "crown",
+   "reward": {
+    "gems": 300
+   }
+  }
+ ],
+ "wheel": [
+  {
+   "label": "50 💎",
+   "icon": "gem",
+   "val": "50",
+   "color": "#5fc8f0",
+   "w": 2,
+   "reward": {
+    "gems": 50
+   }
+  },
+  {
+   "label": "5 банок",
+   "icon": "jar",
+   "val": "5",
+   "color": "#f0b85a",
+   "w": 3,
+   "reward": {
+    "jars": 5
+   }
+  },
+  {
+   "label": "Полнолуние",
+   "icon": "moon",
+   "val": "x2",
+   "color": "#e8c840",
+   "w": 2,
+   "reward": {
+    "moonSec": 60
+   }
+  },
+  {
+   "label": "200 💎",
+   "icon": "gem",
+   "val": "200",
+   "color": "#4d7cff",
+   "w": 0.5,
+   "reward": {
+    "gems": 200
+   }
+  },
+  {
+   "label": "Насадка",
+   "icon": "attach",
+   "val": "D–S",
+   "color": "#a86bff",
+   "w": 1,
+   "reward": {
+    "attach": [
+     -1
+    ]
+   }
+  },
+  {
+   "label": "15 💎",
+   "icon": "gem",
+   "val": "15",
+   "color": "#7fd8e8",
+   "w": 3,
+   "reward": {
+    "gems": 15
+   }
+  },
+  {
+   "label": "Эктоплазма",
+   "icon": "ecto",
+   "val": "x60",
+   "color": "#5fc86a",
+   "w": 3,
+   "reward": {
+    "ectoRooms": 60
+   }
+  },
+  {
+   "label": "Эпик-дух",
+   "icon": "ghost",
+   "val": "ЭПИК",
+   "color": "#ff6b9a",
+   "w": 0.5,
+   "reward": {
+    "ghost": {
+     "type": "@epic",
+     "stars": 1
+    }
+   }
+  }
+ ],
+ "raidTime": 30,
+ "roomsPerHouse": 5,
+ "ghostsPerRoom": 22,
+ "maxAlive": 14,
+ "prestigeHouse": 10,
+ "circle": 200,
+ "unlocks": [
+  {
+   "house": 1,
+   "room": 2,
+   "id": "pull",
+   "icon": "🧲",
+   "name": "Прокачка «Тяга»",
+   "text": "Выше шанс поймать ослабленного призрака",
+   "stage": 1
+  },
+  {
+   "house": 1,
+   "room": 2,
+   "id": "squad",
+   "icon": "👻",
+   "name": "Отряд призраков",
+   "text": "Пойманные духи сражаются рядом с котом",
+   "stage": 1
+  },
+  {
+   "house": 1,
+   "room": 3,
+   "id": "collect",
+   "icon": "💚",
+   "name": "Прокачка «Сборник»",
+   "text": "Больше эктоплазмы с каждого призрака",
+   "stage": 2
+  },
+  {
+   "house": 1,
+   "room": 4,
+   "id": "quests",
+   "icon": "📜",
+   "name": "Задания",
+   "text": "Задания дня, пропуск и Путь открытий",
+   "stage": 3
+  },
+  {
+   "house": 2,
+   "id": "moon",
+   "icon": "🌕",
+   "name": "Полнолуние",
+   "text": "x2 урона и дохода на 60 секунд",
+   "stage": 5
+  },
+  {
+   "house": 2,
+   "id": "daily",
+   "icon": "🎁",
+   "name": "Награды за вход",
+   "text": "Подарок каждый день, неделя по кругу",
+   "stage": 5
+  },
+  {
+   "house": 2,
+   "room": 2,
+   "id": "turbo",
+   "icon": "⏩",
+   "name": "Турбо x2",
+   "text": "Пройденные комнаты идут в 2 раза быстрее",
+   "stage": 6
+  },
+  {
+   "house": 2,
+   "room": 3,
+   "id": "attach",
+   "icon": "🧹",
+   "name": "Насадки пылесоса",
+   "text": "Призыв насадок за кристаллы с боссов",
+   "stage": 7
+  },
+  {
+   "house": 3,
+   "id": "shop",
+   "icon": "🛒",
+   "name": "Магазин",
+   "text": "Скины, наборы и кристаллы",
+   "stage": 10
+  },
+  {
+   "house": 3,
+   "id": "wheel",
+   "icon": "🎡",
+   "name": "Колесо удачи",
+   "text": "Бесплатное вращение каждый день",
+   "stage": 10
+  },
+  {
+   "house": 3,
+   "room": 3,
+   "id": "auto",
+   "icon": "⚙",
+   "name": "Автопрокачка и автослияние",
+   "text": "Кнопки справа: качают и сливают сами",
+   "stage": 12
+  },
+  {
+   "house": 4,
+   "id": "bestiary",
+   "icon": "📖",
+   "name": "Бестиарий",
+   "text": "Вехи поимок дают кристаллы и +3% урона",
+   "stage": 15
+  },
+  {
+   "house": 5,
+   "id": "raid",
+   "icon": "🏚",
+   "name": "Рейды",
+   "text": "3 билета в день на Призрачный особняк",
+   "stage": 20
+  },
+  {
+   "house": 6,
+   "id": "expedition",
+   "icon": "🧭",
+   "name": "Походы духов",
+   "text": "Лишние духи уходят за наградами, пока тебя нет",
+   "stage": 25
+  },
+  {
+   "house": 10,
+   "id": "prestige",
+   "icon": "✨",
+   "name": "Освящение и Лунный алтарь",
+   "text": "Лунные камни и вечные таланты",
+   "stage": 45
+  },
+  {
+   "house": 15,
+   "id": "squad5",
+   "icon": "👻",
+   "name": "5-й слот отряда",
+   "text": "Ещё один дух бьётся рядом с котом",
+   "stage": 70
+  },
+  {
+   "house": 20,
+   "id": "elite",
+   "icon": "👑",
+   "name": "Элитные призраки",
+   "text": "Золотые призраки: x6 эктоплазмы и кристаллы",
+   "stage": 95
+  },
+  {
+   "house": 25,
+   "id": "slot4",
+   "icon": "🧹",
+   "name": "4-й слот насадок",
+   "text": "Ещё одна насадка на пылесосе",
+   "stage": 120
+  },
+  {
+   "house": 30,
+   "id": "ranks",
+   "icon": "💠",
+   "name": "Ранги SS и SSS",
+   "text": "Призыв и слияние до ранга SSS",
+   "stage": 145
+  },
+  {
+   "house": 40,
+   "id": "stars",
+   "icon": "⭐",
+   "name": "6 и 7 звёзд",
+   "text": "Духов можно сливать до 7★",
+   "stage": 195
+  },
+  {
+   "house": 51,
+   "id": "ice",
+   "icon": "❄",
+   "name": "Ледяной замок",
+   "text": "Новый район и 4 новых призрака",
+   "stage": 250
+  },
+  {
+   "house": 61,
+   "id": "lab",
+   "icon": "🧪",
+   "name": "Безумная лаборатория",
+   "text": "Новый район и 4 новых призрака",
+   "stage": 300
+  },
+  {
+   "house": 71,
+   "id": "palace",
+   "icon": "🌙",
+   "name": "Лунный дворец",
+   "text": "Новый район и 4 новых призрака",
+   "stage": 350
+  },
+  {
+   "house": 81,
+   "id": "d8",
+   "icon": "🎪",
+   "name": "Цирк-шапито",
+   "text": "Новый район и 4 новых призрака",
+   "stage": 400
+  },
+  {
+   "house": 91,
+   "id": "d9",
+   "icon": "🏫",
+   "name": "Заброшенная школа",
+   "text": "Новый район и 4 новых призрака",
+   "stage": 450
+  },
+  {
+   "house": 101,
+   "id": "d10",
+   "icon": "🚇",
+   "name": "Подземка",
+   "text": "Новый район и 4 новых призрака",
+   "stage": 500
+  },
+  {
+   "house": 111,
+   "id": "d11",
+   "icon": "🦜",
+   "name": "Пиратская бухта",
+   "text": "Новый район и 4 новых призрака",
+   "stage": 550
+  },
+  {
+   "house": 121,
+   "id": "d12",
+   "icon": "🌺",
+   "name": "Ботанический сад",
+   "text": "Новый район и 4 новых призрака",
+   "stage": 600
+  },
+  {
+   "house": 131,
+   "id": "d13",
+   "icon": "🏺",
+   "name": "Пустынная пирамида",
+   "text": "Новый район и 4 новых призрака",
+   "stage": 650
+  },
+  {
+   "house": 141,
+   "id": "d14",
+   "icon": "🕰",
+   "name": "Часовая башня",
+   "text": "Новый район и 4 новых призрака",
+   "stage": 700
+  },
+  {
+   "house": 151,
+   "id": "d15",
+   "icon": "🎭",
+   "name": "Кукольный театр",
+   "text": "Новый район и 4 новых призрака",
+   "stage": 750
+  },
+  {
+   "house": 161,
+   "id": "d16",
+   "icon": "🐙",
+   "name": "Затонувший город",
+   "text": "Новый район и 4 новых призрака",
+   "stage": 800
+  },
+  {
+   "house": 171,
+   "id": "d17",
+   "icon": "🌋",
+   "name": "Вулкан",
+   "text": "Новый район и 4 новых призрака",
+   "stage": 850
+  },
+  {
+   "house": 181,
+   "id": "d18",
+   "icon": "☁",
+   "name": "Облачное королевство",
+   "text": "Новый район и 4 новых призрака",
+   "stage": 900
+  },
+  {
+   "house": 191,
+   "id": "d19",
+   "icon": "🏰",
+   "name": "Тёмная цитадель",
+   "text": "Новый район и 4 новых призрака",
+   "stage": 950
+  },
+  {
+   "house": 201,
+   "id": "circle2",
+   "icon": "🔁",
+   "name": "Круг 2",
+   "text": "Город заново: сильнее призраки, x2 💎 с боссов",
+   "stage": 1000
+  }
+ ],
+ "altar": {
+  "might": {
+   "name": "Мощь луны",
+   "icon": "⚔",
+   "color": "#ff7a9c",
+   "max": 60,
+   "costs": [
+    2,
+    4,
+    6,
+    9,
+    14,
+    21,
+    34,
+    54,
+    86,
+    138,
+    220,
+    352,
+    563,
+    901,
+    1442,
+    2306,
+    3690,
+    5903,
+    9445,
+    15112,
+    24179,
+    38686,
+    61898,
+    99036,
+    158457,
+    253531,
+    405649,
+    649038,
+    1038460,
+    1661535,
+    2658456,
+    4253530,
+    6805648,
+    10889036,
+    17422458,
+    27875932,
+    44601491,
+    71362385,
+    114179816,
+    182687705,
+    292300328,
+    467680524,
+    748288839,
+    1197262142,
+    1915619427,
+    3064991082,
+    4903985731,
+    7846377170,
+    12554203471,
+    20086725554,
+    32138760886,
+    51422017417,
+    82275227867,
+    131640364586,
+    210624583338,
+    336999333340,
+    539198933344,
+    862718293349,
+    1380349269359,
+    2208558830973
+   ]
+  },
+  "harvest": {
+   "name": "Лунный урожай",
+   "icon": "🌿",
+   "color": "#8ee08a",
+   "max": 60,
+   "costs": [
+    2,
+    4,
+    6,
+    9,
+    14,
+    21,
+    34,
+    54,
+    86,
+    138,
+    220,
+    352,
+    563,
+    901,
+    1442,
+    2306,
+    3690,
+    5903,
+    9445,
+    15112,
+    24179,
+    38686,
+    61898,
+    99036,
+    158457,
+    253531,
+    405649,
+    649038,
+    1038460,
+    1661535,
+    2658456,
+    4253530,
+    6805648,
+    10889036,
+    17422458,
+    27875932,
+    44601491,
+    71362385,
+    114179816,
+    182687705,
+    292300328,
+    467680524,
+    748288839,
+    1197262142,
+    1915619427,
+    3064991082,
+    4903985731,
+    7846377170,
+    12554203471,
+    20086725554,
+    32138760886,
+    51422017417,
+    82275227867,
+    131640364586,
+    210624583338,
+    336999333340,
+    539198933344,
+    862718293349,
+    1380349269359,
+    2208558830973
+   ]
+  },
+  "memory": {
+   "name": "Лунная память",
+   "icon": "🧠",
+   "color": "#7fd1ff",
+   "max": 5,
+   "costs": [
+    6,
+    10,
+    16,
+    25,
+    40
+   ]
+  },
+  "night": {
+   "name": "Ночная смена",
+   "icon": "🌃",
+   "color": "#a88bff",
+   "max": 4,
+   "costs": [
+    4,
+    8,
+    13,
+    24
+   ]
+  },
+  "luck": {
+   "name": "Кошачья удача",
+   "icon": "🍀",
+   "color": "#ffc94d",
+   "max": 5,
+   "costs": [
+    5,
+    9,
+    15,
+    25,
+    42
+   ]
+  },
+  "hourglass": {
+   "name": "Песочные часы",
+   "icon": "⏳",
+   "color": "#ff9f5a",
+   "max": 4,
+   "costs": [
+    5,
+    9,
+    17,
+    30
+   ]
+  }
+ },
+ "dailyMissions": {
+  "kills": {
+   "goal": 250
+  },
+  "captures": {
+   "goal": 15
+  },
+  "rooms": {
+   "goal": 12
+  },
+  "bosses": {
+   "goal": 3
+  },
+  "upgrades": {
+   "goal": 30
+  },
+  "summons": {
+   "goal": 5
+  },
+  "merges": {
+   "goal": 3
+  },
+  "ads": {
+   "goal": 2
+  },
+  "spins": {
+   "goal": 2,
+   "need": "wheel"
+  },
+  "raids": {
+   "goal": 2,
+   "need": "raid"
+  },
+  "elites": {
+   "goal": 3,
+   "need": "elite"
+  }
+ },
+ "missionGems": 15,
+ "missionXp": 60,
+ "chestXp": 150,
+ "pass": {
+  "levels": 30,
+  "xp": 500,
+  "days": 28,
+  "price": "$4.99",
+  "skip": 100,
+  "free": [
+   {
+    "icon": "gem",
+    "val": "22",
+    "label": "22 💎",
+    "reward": {
+     "gems": 22
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "24",
+    "label": "24 💎",
+    "reward": {
+     "gems": 24
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "10",
+    "label": "10 банок",
+    "reward": {
+     "jars": 10
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "28",
+    "label": "28 💎",
+    "reward": {
+     "gems": 28
+    }
+   },
+   {
+    "icon": "attach",
+    "val": "B",
+    "label": "Насадка B",
+    "reward": {
+     "attach": [
+      2
+     ]
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "10",
+    "label": "10 банок",
+    "reward": {
+     "jars": 10
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "34",
+    "label": "34 💎",
+    "reward": {
+     "gems": 34
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "36",
+    "label": "36 💎",
+    "reward": {
+     "gems": 36
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "10",
+    "label": "10 банок",
+    "reward": {
+     "jars": 10
+    }
+   },
+   {
+    "icon": "stone",
+    "val": "2",
+    "label": "2 лунных камней",
+    "reward": {
+     "stones": 2
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "42",
+    "label": "42 💎",
+    "reward": {
+     "gems": 42
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "10",
+    "label": "10 банок",
+    "reward": {
+     "jars": 10
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "46",
+    "label": "46 💎",
+    "reward": {
+     "gems": 46
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "48",
+    "label": "48 💎",
+    "reward": {
+     "gems": 48
+    }
+   },
+   {
+    "icon": "attach",
+    "val": "A",
+    "label": "Насадка A",
+    "reward": {
+     "attach": [
+      3
+     ]
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "52",
+    "label": "52 💎",
+    "reward": {
+     "gems": 52
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "54",
+    "label": "54 💎",
+    "reward": {
+     "gems": 54
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "10",
+    "label": "10 банок",
+    "reward": {
+     "jars": 10
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "58",
+    "label": "58 💎",
+    "reward": {
+     "gems": 58
+    }
+   },
+   {
+    "icon": "stone",
+    "val": "4",
+    "label": "4 лунных камней",
+    "reward": {
+     "stones": 4
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "10",
+    "label": "10 банок",
+    "reward": {
+     "jars": 10
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "64",
+    "label": "64 💎",
+    "reward": {
+     "gems": 64
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "66",
+    "label": "66 💎",
+    "reward": {
+     "gems": 66
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "10",
+    "label": "10 банок",
+    "reward": {
+     "jars": 10
+    }
+   },
+   {
+    "icon": "attach",
+    "val": "A",
+    "label": "Насадка A",
+    "reward": {
+     "attach": [
+      3
+     ]
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "72",
+    "label": "72 💎",
+    "reward": {
+     "gems": 72
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "10",
+    "label": "10 банок",
+    "reward": {
+     "jars": 10
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "76",
+    "label": "76 💎",
+    "reward": {
+     "gems": 76
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "78",
+    "label": "78 💎",
+    "reward": {
+     "gems": 78
+    }
+   },
+   {
+    "icon": "stone",
+    "val": "6",
+    "label": "6 лунных камней",
+    "reward": {
+     "stones": 6
+    }
+   }
+  ],
+  "prem": [
+   {
+    "icon": "jar",
+    "val": "15",
+    "label": "15 банок",
+    "reward": {
+     "jars": 15
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "70",
+    "label": "70 💎",
+    "reward": {
+     "gems": 70
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "15",
+    "label": "15 банок",
+    "reward": {
+     "jars": 15
+    }
+   },
+   {
+    "icon": "stone",
+    "val": "2",
+    "label": "2 лунных камней",
+    "reward": {
+     "stones": 2
+    }
+   },
+   {
+    "icon": "ghost",
+    "val": "2★",
+    "label": "Эпик-дух 2★",
+    "reward": {
+     "ghost": {
+      "type": "@epic",
+      "stars": 2
+     }
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "90",
+    "label": "90 💎",
+    "reward": {
+     "gems": 90
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "15",
+    "label": "15 банок",
+    "reward": {
+     "jars": 15
+    }
+   },
+   {
+    "icon": "stone",
+    "val": "2",
+    "label": "2 лунных камней",
+    "reward": {
+     "stones": 2
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "15",
+    "label": "15 банок",
+    "reward": {
+     "jars": 15
+    }
+   },
+   {
+    "icon": "stone",
+    "val": "5",
+    "label": "5 лунных камней",
+    "reward": {
+     "stones": 5
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "15",
+    "label": "15 банок",
+    "reward": {
+     "jars": 15
+    }
+   },
+   {
+    "icon": "stone",
+    "val": "2",
+    "label": "2 лунных камней",
+    "reward": {
+     "stones": 2
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "15",
+    "label": "15 банок",
+    "reward": {
+     "jars": 15
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "130",
+    "label": "130 💎",
+    "reward": {
+     "gems": 130
+    }
+   },
+   {
+    "icon": "attach",
+    "val": "S",
+    "label": "Насадка S",
+    "reward": {
+     "attach": [
+      4
+     ]
+    }
+   },
+   {
+    "icon": "stone",
+    "val": "2",
+    "label": "2 лунных камней",
+    "reward": {
+     "stones": 2
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "15",
+    "label": "15 банок",
+    "reward": {
+     "jars": 15
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "150",
+    "label": "150 💎",
+    "reward": {
+     "gems": 150
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "15",
+    "label": "15 банок",
+    "reward": {
+     "jars": 15
+    }
+   },
+   {
+    "icon": "stone",
+    "val": "10",
+    "label": "10 лунных камней",
+    "reward": {
+     "stones": 10
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "15",
+    "label": "15 банок",
+    "reward": {
+     "jars": 15
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "170",
+    "label": "170 💎",
+    "reward": {
+     "gems": 170
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "15",
+    "label": "15 банок",
+    "reward": {
+     "jars": 15
+    }
+   },
+   {
+    "icon": "stone",
+    "val": "2",
+    "label": "2 лунных камней",
+    "reward": {
+     "stones": 2
+    }
+   },
+   {
+    "icon": "attach",
+    "val": "S",
+    "label": "Насадка S",
+    "reward": {
+     "attach": [
+      4
+     ]
+    }
+   },
+   {
+    "icon": "gem",
+    "val": "190",
+    "label": "190 💎",
+    "reward": {
+     "gems": 190
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "15",
+    "label": "15 банок",
+    "reward": {
+     "jars": 15
+    }
+   },
+   {
+    "icon": "stone",
+    "val": "2",
+    "label": "2 лунных камней",
+    "reward": {
+     "stones": 2
+    }
+   },
+   {
+    "icon": "jar",
+    "val": "15",
+    "label": "15 банок",
+    "reward": {
+     "jars": 15
+    }
+   },
+   {
+    "icon": "crown",
+    "val": "СКИН",
+    "label": "Скин «Кот-Жнец»",
+    "reward": {
+     "skin": "reaper"
+    }
+   }
+  ]
+ },
+ "floors": [
+  {
+   "base": "#d9a877",
+   "line": "#c49364",
+   "wall": "#7a5a48",
+   "style": "planks"
+  },
+  {
+   "base": "#b7a9cf",
+   "line": "#a597bf",
+   "wall": "#4e4466",
+   "style": "checker"
+  },
+  {
+   "base": "#9cc3cf",
+   "line": "#86afbd",
+   "wall": "#3f5f73",
+   "style": "deck"
+  },
+  {
+   "base": "#f2d4df",
+   "line": "#e4c0ce",
+   "wall": "#8a5a72",
+   "style": "tiles"
+  },
+  {
+   "base": "#9fcf92",
+   "line": "#8bbd7e",
+   "wall": "#4d6b4a",
+   "style": "grass"
+  },
+  {
+   "base": "#d6ecf7",
+   "line": "#bcdcec",
+   "wall": "#6f9fc0",
+   "style": "ice"
+  },
+  {
+   "base": "#b9c4cc",
+   "line": "#a3afb8",
+   "wall": "#4e5a66",
+   "style": "lab"
+  },
+  {
+   "base": "#e6dcf5",
+   "line": "#d3c4ec",
+   "wall": "#2a2350",
+   "style": "marble"
+  }
+ ],
+ "decor": [
+  [
+   "rug",
+   "bed",
+   "table",
+   "plant",
+   "box",
+   "lamp",
+   "sofa",
+   "yarn"
+  ],
+  [
+   "rug",
+   "table",
+   "armor",
+   "plant",
+   "lamp",
+   "shelf",
+   "chest"
+  ],
+  [
+   "barrel",
+   "box",
+   "rope",
+   "net",
+   "lamp",
+   "barrel",
+   "anchor",
+   "buoy"
+  ],
+  [
+   "rack",
+   "rug",
+   "box",
+   "plant",
+   "lamp",
+   "rack",
+   "table",
+   "mannequin"
+  ],
+  [
+   "grave",
+   "grave",
+   "tree",
+   "pumpkin",
+   "lamp",
+   "grave",
+   "bush",
+   "candles"
+  ],
+  [
+   "crystal",
+   "snowman",
+   "rug",
+   "lamp",
+   "chest",
+   "crystal",
+   "armor",
+   "snowman"
+  ],
+  [
+   "vat",
+   "flasks",
+   "box",
+   "lamp",
+   "barrel",
+   "vat",
+   "shelf",
+   "flasks"
+  ],
+  [
+   "pillar",
+   "mirror",
+   "rug",
+   "candles",
+   "chest",
+   "pillar",
+   "plant",
+   "mirror"
+  ],
+  [
+   "podium",
+   "ball",
+   "cannon",
+   "popcorn",
+   "hoop",
+   "lamp",
+   "ball",
+   "podium"
+  ],
+  [
+   "desk",
+   "globe",
+   "locker",
+   "books",
+   "board",
+   "plant",
+   "desk",
+   "desk"
+  ],
+  [
+   "bench",
+   "turnstile",
+   "bin",
+   "lamp",
+   "column",
+   "cart",
+   "bench",
+   "column"
+  ],
+  [
+   "chest",
+   "cannon",
+   "palm",
+   "barrel",
+   "flag",
+   "wheel",
+   "barrel",
+   "palm"
+  ],
+  [
+   "flowerbed",
+   "fountain",
+   "bench",
+   "pot",
+   "topiary",
+   "lamp",
+   "flowerbed",
+   "pot"
+  ],
+  [
+   "sarcophagus",
+   "statue",
+   "urn",
+   "torch",
+   "obelisk",
+   "gold",
+   "urn",
+   "torch"
+  ],
+  [
+   "clock",
+   "hourglass",
+   "gears",
+   "bell",
+   "lamp",
+   "crate",
+   "crate",
+   "gears"
+  ],
+  [
+   "seat",
+   "booth",
+   "trunk",
+   "spotlight",
+   "rack",
+   "candelabra",
+   "seat",
+   "seat"
+  ],
+  [
+   "column",
+   "coral",
+   "clam",
+   "statue",
+   "amphora",
+   "seaweed",
+   "coral",
+   "seaweed"
+  ],
+  [
+   "rock",
+   "crystal",
+   "vent",
+   "skull",
+   "obsidian",
+   "brazier",
+   "rock",
+   "crystal"
+  ],
+  [
+   "pillar",
+   "harp",
+   "rainbow",
+   "lamp",
+   "balloon",
+   "statue",
+   "pillar",
+   "harp"
+  ],
+  [
+   "throne",
+   "brazier",
+   "cage",
+   "gargoyle",
+   "banner",
+   "chest",
+   "gargoyle",
+   "brazier"
+  ]
+ ],
+ "bigDecor": [
+  "rug",
+  "net",
+  "bed",
+  "sofa",
+  "tree",
+  "palm",
+  "fountain",
+  "booth",
+  "throne",
+  "balloon",
+  "sarcophagus",
+  "skull"
+ ],
+ "solid": [
+  "bed",
+  "table",
+  "box",
+  "sofa",
+  "shelf",
+  "armor",
+  "barrel",
+  "rack",
+  "grave",
+  "tree",
+  "anchor",
+  "chest",
+  "mannequin",
+  "crystal",
+  "snowman",
+  "vat",
+  "flasks",
+  "pillar",
+  "mirror",
+  "podium",
+  "cannon",
+  "popcorn",
+  "desk",
+  "globe",
+  "locker",
+  "board",
+  "bench",
+  "turnstile",
+  "bin",
+  "column",
+  "cart",
+  "palm",
+  "wheel",
+  "flowerbed",
+  "fountain",
+  "pot",
+  "topiary",
+  "sarcophagus",
+  "statue",
+  "urn",
+  "obelisk",
+  "clock",
+  "hourglass",
+  "gears",
+  "bell",
+  "crate",
+  "seat",
+  "booth",
+  "trunk",
+  "clam",
+  "amphora",
+  "rock",
+  "skull",
+  "obsidian",
+  "brazier",
+  "harp",
+  "balloon",
+  "throne",
+  "cage",
+  "gargoyle"
+ ],
+ "ownArt": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19
+ ],
+ "ownEdge": [
+  [
+   "#e8b04a",
+   "#a8303c"
+  ],
+  [
+   "#8a5a3c",
+   "#6b6670"
+  ],
+  [
+   "#d8d0b8",
+   "#3f7a7a"
+  ],
+  [
+   "#8a5a36",
+   "#6b5a48"
+  ],
+  [
+   "#f2eee6",
+   "#8fb38a"
+  ],
+  [
+   "#e2c27a",
+   "#c49a5a"
+  ],
+  [
+   "#c9a24a",
+   "#7a3a32"
+  ],
+  [
+   "#e8b84a",
+   "#4a2f5e"
+  ],
+  [
+   "#7fb0b8",
+   "#3e5866"
+  ],
+  [
+   "#ff8a3a",
+   "#3a3036"
+  ],
+  [
+   "#f6e6a8",
+   "#d8d2ea"
+  ],
+  [
+   "#a070e0",
+   "#2e2640"
+  ]
+ ],
+ "uiSlice": {
+  "ui-bar-fill": [
+   22,
+   22,
+   22,
+   22,
+   384,
+   48
+  ],
+  "ui-bar-track": [
+   22,
+   22,
+   22,
+   22,
+   384,
+   48
+  ],
+  "ui-btn-blue": [
+   42,
+   42,
+   42,
+   42,
+   384,
+   120
+  ],
+  "ui-btn-gold": [
+   42,
+   42,
+   42,
+   42,
+   384,
+   120
+  ],
+  "ui-btn-green": [
+   42,
+   42,
+   42,
+   42,
+   384,
+   120
+  ],
+  "ui-btn-off": [
+   42,
+   42,
+   42,
+   42,
+   384,
+   120
+  ],
+  "ui-btn-pink": [
+   42,
+   42,
+   42,
+   42,
+   384,
+   120
+  ],
+  "ui-btn-red": [
+   42,
+   42,
+   42,
+   42,
+   384,
+   120
+  ],
+  "ui-btn-violet": [
+   42,
+   42,
+   42,
+   42,
+   384,
+   120
+  ],
+  "ui-card-common": [
+   42,
+   42,
+   42,
+   42,
+   576,
+   192
+  ],
+  "ui-card-epic": [
+   42,
+   42,
+   42,
+   42,
+   576,
+   192
+  ],
+  "ui-card-legend": [
+   42,
+   42,
+   42,
+   42,
+   576,
+   192
+  ],
+  "ui-card-mythic": [
+   42,
+   42,
+   42,
+   42,
+   576,
+   192
+  ],
+  "ui-card-rare": [
+   42,
+   42,
+   42,
+   42,
+   576,
+   192
+  ],
+  "ui-pill": [
+   45,
+   45,
+   45,
+   45,
+   384,
+   96
+  ],
+  "ui-ribbon": [
+   165,
+   0,
+   165,
+   0,
+   768,
+   192
+  ],
+  "ui-ribbon-violet": [
+   165,
+   0,
+   165,
+   0,
+   768,
+   192
+  ],
+  "ui-tabbar": [
+   60,
+   60,
+   60,
+   60,
+   768,
+   144
+  ],
+  "ui-window": [
+   90,
+   90,
+   90,
+   90,
+   768,
+   768
+  ]
+ },
+ "uiIcons": {
+  "ad": [
+   3,
+   3
+  ],
+  "attach": [
+   3,
+   6
+  ],
+  "bolt": [
+   3,
+   11
+  ],
+  "book": [
+   1,
+   8
+  ],
+  "boom": [
+   2,
+   15
+  ],
+  "brain": [
+   2,
+   3
+  ],
+  "calendar": [
+   3,
+   9
+  ],
+  "candy": [
+   2,
+   12
+  ],
+  "cart": [
+   1,
+   6
+  ],
+  "chest": [
+   3,
+   8
+  ],
+  "clover": [
+   2,
+   5
+  ],
+  "compass": [
+   3,
+   1
+  ],
+  "crown": [
+   3,
+   5
+  ],
+  "ecto": [
+   1,
+   0
+  ],
+  "flame": [
+   2,
+   10
+  ],
+  "flask": [
+   2,
+   1
+  ],
+  "fullmoon": [
+   1,
+   4
+  ],
+  "gear": [
+   1,
+   7
+  ],
+  "gem": [
+   1,
+   1
+  ],
+  "ghost": [
+   3,
+   10
+  ],
+  "gift": [
+   1,
+   5
+  ],
+  "hammer": [
+   3,
+   14
+  ],
+  "heart": [
+   3,
+   12
+  ],
+  "hourglass": [
+   2,
+   6
+  ],
+  "house": [
+   1,
+   10
+  ],
+  "jar": [
+   1,
+   2
+  ],
+  "leaf": [
+   2,
+   2
+  ],
+  "lock": [
+   3,
+   2
+  ],
+  "loop": [
+   1,
+   11
+  ],
+  "magnet": [
+   1,
+   13
+  ],
+  "moon": [
+   1,
+   3
+  ],
+  "night": [
+   2,
+   4
+  ],
+  "note": [
+   2,
+   8
+  ],
+  "pack": [
+   3,
+   15
+  ],
+  "phone": [
+   2,
+   14
+  ],
+  "pumpkin": [
+   2,
+   11
+  ],
+  "rank": [
+   1,
+   14
+  ],
+  "scroll": [
+   3,
+   4
+  ],
+  "shield": [
+   3,
+   13
+  ],
+  "skull": [
+   2,
+   7
+  ],
+  "snow": [
+   2,
+   0
+  ],
+  "speaker": [
+   2,
+   9
+  ],
+  "star": [
+   1,
+   15
+  ],
+  "swords": [
+   1,
+   12
+  ],
+  "ticket": [
+   3,
+   7
+  ],
+  "trophy": [
+   2,
+   13
+  ],
+  "turbo": [
+   3,
+   0
+  ],
+  "wheel": [
+   1,
+   9
+  ]
+ },
+ "extraBox": {
+  "attach-brush": [
+   0,
+   0.019,
+   0.931,
+   0.981
+  ],
+  "attach-frost": [
+   0,
+   0.019,
+   0.781,
+   0.981
+  ],
+  "attach-magnet": [
+   0,
+   0.031,
+   1,
+   0.969
+  ],
+  "attach-narrow": [
+   0,
+   0.263,
+   1,
+   0.738
+  ],
+  "attach-rocket": [
+   0,
+   0.019,
+   0.969,
+   0.981
+  ],
+  "attach-storm": [
+   0,
+   0.106,
+   1,
+   0.887
+  ],
+  "attach-turbo": [
+   0,
+   0.131,
+   1,
+   0.863
+  ],
+  "attach-wide": [
+   0,
+   0.019,
+   0.672,
+   0.981
+  ]
+ },
+ "aspect": {
+  "ghost-armor": 0.816,
+  "ghost-aurora": 0.891,
+  "ghost-candle": 0.535,
+  "ghost-carousel": 1.016,
+  "ghost-drowned": 0.836,
+  "ghost-fire": 0.688,
+  "ghost-flask": 0.918,
+  "ghost-franken": 0.74,
+  "ghost-frostqueen": 0.805,
+  "ghost-golden": 1.02,
+  "ghost-headless": 0.992,
+  "ghost-icicle": 0.438,
+  "ghost-jacko": 0.742,
+  "ghost-jelly": 0.965,
+  "ghost-lantern": 0.699,
+  "ghost-mannequin": 0.672,
+  "ghost-mansion": 0.987,
+  "ghost-mirror": 0.789,
+  "ghost-moonking": 0.789,
+  "ghost-moth": 1.008,
+  "ghost-ninelives": 1.139,
+  "ghost-portrait": 0.977,
+  "ghost-pumpkin": 0.953,
+  "ghost-sheet": 0.957,
+  "ghost-ship": 0.951,
+  "ghost-skelecat": 0.867,
+  "ghost-slime": 1.185,
+  "ghost-snowman": 0.777,
+  "ghost-sock": 0.941,
+  "ghost-spark": 0.902,
+  "ghost-starling": 0.766,
+  "ghost-toy": 0.867,
+  "ghost-tv": 0.73,
+  "ghost-washer": 0.99,
+  "ghost-wisp": 0.809,
+  "prop-d1-bed": 1.074,
+  "prop-d1-box": 0.944,
+  "prop-d1-lamp": 0.441,
+  "prop-d1-plant": 0.719,
+  "prop-d1-rug": 1.553,
+  "prop-d1-sofa": 1.155,
+  "prop-d1-table": 1.19,
+  "prop-d1-yarn": 0.994,
+  "prop-d2-armor": 0.591,
+  "prop-d2-chest": 0.938,
+  "prop-d2-lamp": 0.316,
+  "prop-d2-plant": 0.925,
+  "prop-d2-rug": 1.788,
+  "prop-d2-shelf": 0.675,
+  "prop-d2-table": 0.994,
+  "prop-d3-anchor": 0.928,
+  "prop-d3-barrel": 0.775,
+  "prop-d3-box": 0.912,
+  "prop-d3-buoy": 1.245,
+  "prop-d3-lamp": 0.516,
+  "prop-d3-net": 1.301,
+  "prop-d3-rope": 1.25,
+  "prop-d4-box": 1.067,
+  "prop-d4-lamp": 0.516,
+  "prop-d4-mannequin": 0.372,
+  "prop-d4-plant": 0.834,
+  "prop-d4-rack": 0.919,
+  "prop-d4-rug": 1.553,
+  "prop-d4-table": 1.151,
+  "prop-d5-bush": 1.356,
+  "prop-d5-candles": 0.884,
+  "prop-d5-grave": 0.75,
+  "prop-d5-lamp": 0.672,
+  "prop-d5-pumpkin": 0.997,
+  "prop-d5-tree": 0.931,
+  "prop-d6-armor": 0.544,
+  "prop-d6-chest": 1.019,
+  "prop-d6-crystal": 0.9,
+  "prop-d6-lamp": 0.669,
+  "prop-d6-rug": 1.73,
+  "prop-d6-snowman": 0.722,
+  "prop-d7-barrel": 0.616,
+  "prop-d7-box": 0.872,
+  "prop-d7-flasks": 0.956,
+  "prop-d7-lamp": 0.503,
+  "prop-d7-shelf": 1.236,
+  "prop-d7-vat": 0.894,
+  "prop-d8-candles": 0.678,
+  "prop-d8-chest": 0.947,
+  "prop-d8-mirror": 0.5,
+  "prop-d8-pillar": 0.544,
+  "prop-d8-plant": 0.641,
+  "prop-d8-rug": 1.749,
+  "ghost-egg": 0.73,
+  "ghost-gift": 0.766,
+  "ghost-heart": 0.941,
+  "ghost-sandcastle": 0.777,
+  "prop-ny-gifts": 1.107,
+  "prop-ny-snowman": 0.806,
+  "prop-ny-tree": 0.713,
+  "prop-sp-basket": 1.003,
+  "prop-sp-sakura": 0.841,
+  "prop-sp-tulips": 1.029,
+  "prop-su-board": 0.681,
+  "prop-su-castle": 0.928,
+  "prop-su-umbrella": 0.994,
+  "prop-val-balloons": 1.049,
+  "prop-val-choco": 0.863,
+  "prop-val-roses": 0.875,
+  "ghost-abyss": 1.08,
+  "ghost-angler": 0.949,
+  "ghost-ash": 0.648,
+  "ghost-balloon": 0.602,
+  "ghost-bell": 0.715,
+  "ghost-cabinboy": 0.785,
+  "ghost-cactus": 0.824,
+  "ghost-catbeard": 0.951,
+  "ghost-chalk": 0.859,
+  "ghost-clown": 0.77,
+  "ghost-conductor": 0.863,
+  "ghost-cuckoo": 0.711,
+  "ghost-darkknight": 1.169,
+  "ghost-firedragon": 0.865,
+  "ghost-firefly": 0.852,
+  "ghost-flytrap": 0.844,
+  "ghost-gear": 0.859,
+  "ghost-ghostking": 0.867,
+  "ghost-ghosttrain": 0.904,
+  "ghost-glovepuppet": 0.891,
+  "ghost-grumpcloud": 0.699,
+  "ghost-headmistress": 0.74,
+  "ghost-juggler": 0.672,
+  "ghost-kraken": 1.061,
+  "ghost-lavagolem": 1.094,
+  "ghost-mask": 1.196,
+  "ghost-mermaid": 0.91,
+  "ghost-mimic": 1.138,
+  "ghost-mummy": 0.891,
+  "ghost-parrot": 0.852,
+  "ghost-pearl": 0.582,
+  "ghost-pendulum": 0.863,
+  "ghost-pharaoh": 1.021,
+  "ghost-puppet": 0.742,
+  "ghost-puppeteer": 0.846,
+  "ghost-rainbow": 0.941,
+  "ghost-rat": 1.108,
+  "ghost-ringmaster": 0.914,
+  "ghost-rosequeen": 0.917,
+  "ghost-salamander": 1.085,
+  "ghost-sarcophagus": 0.699,
+  "ghost-scarab": 0.789,
+  "ghost-shade": 0.672,
+  "ghost-stormlord": 0.875,
+  "ghost-textbook": 1.208,
+  "ghost-thundercloud": 0.926,
+  "ghost-timekeeper": 0.734,
+  "ghost-tunnellight": 0.781,
+  "prop-d10-board": 0.7,
+  "prop-d10-books": 0.728,
+  "prop-d10-desk": 0.912,
+  "prop-d10-globe": 0.681,
+  "prop-d10-locker": 0.647,
+  "prop-d10-plant": 0.756,
+  "prop-d11-bench": 1.029,
+  "prop-d11-bin": 0.597,
+  "prop-d11-cart": 1.053,
+  "prop-d11-column": 0.588,
+  "prop-d11-lamp": 0.237,
+  "prop-d11-turnstile": 0.725,
+  "prop-d12-barrel": 0.756,
+  "prop-d12-cannon": 0.988,
+  "prop-d12-chest": 0.847,
+  "prop-d12-flag": 0.806,
+  "prop-d12-palm": 0.719,
+  "prop-d12-wheel": 0.781,
+  "prop-d13-bench": 0.988,
+  "prop-d13-flowerbed": 1.049,
+  "prop-d13-fountain": 0.953,
+  "prop-d13-lamp": 0.294,
+  "prop-d13-pot": 0.741,
+  "prop-d13-topiary": 0.675,
+  "prop-d14-gold": 1.19,
+  "prop-d14-obelisk": 0.5,
+  "prop-d14-sarcophagus": 0.784,
+  "prop-d14-statue": 0.791,
+  "prop-d14-torch": 0.537,
+  "prop-d14-urn": 0.6,
+  "prop-d15-bell": 0.738,
+  "prop-d15-clock": 0.388,
+  "prop-d15-crate": 0.909,
+  "prop-d15-gears": 1.143,
+  "prop-d15-hourglass": 0.516,
+  "prop-d15-lamp": 0.506,
+  "prop-d16-booth": 0.697,
+  "prop-d16-candelabra": 0.719,
+  "prop-d16-rack": 1.003,
+  "prop-d16-seat": 0.719,
+  "prop-d16-spotlight": 0.616,
+  "prop-d16-trunk": 0.891,
+  "prop-d17-amphora": 1.333,
+  "prop-d17-clam": 0.934,
+  "prop-d17-column": 0.569,
+  "prop-d17-coral": 0.878,
+  "prop-d17-seaweed": 0.522,
+  "prop-d17-statue": 0.794,
+  "prop-d18-brazier": 0.741,
+  "prop-d18-crystal": 0.806,
+  "prop-d18-obsidian": 0.525,
+  "prop-d18-rock": 1.056,
+  "prop-d18-skull": 1.127,
+  "prop-d18-vent": 0.681,
+  "prop-d19-balloon": 0.647,
+  "prop-d19-harp": 0.681,
+  "prop-d19-lamp": 0.478,
+  "prop-d19-pillar": 0.581,
+  "prop-d19-rainbow": 1.422,
+  "prop-d19-statue": 0.684,
+  "prop-d20-banner": 0.584,
+  "prop-d20-brazier": 0.647,
+  "prop-d20-cage": 0.731,
+  "prop-d20-chest": 1.016,
+  "prop-d20-gargoyle": 0.722,
+  "prop-d20-throne": 0.622,
+  "prop-d9-ball": 0.956,
+  "prop-d9-cannon": 0.903,
+  "prop-d9-hoop": 0.547,
+  "prop-d9-lamp": 0.478,
+  "prop-d9-podium": 1.042,
+  "prop-d9-popcorn": 0.597
+ }
+}

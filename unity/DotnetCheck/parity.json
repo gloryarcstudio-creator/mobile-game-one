@@ -1,0 +1,8526 @@
+{
+ "cases": [
+  {
+   "state": {
+    "house": 151,
+    "room": 1,
+    "maxHouse": 156,
+    "maxStage": 779,
+    "lvPower": 54,
+    "lvPull": 134,
+    "lvCollect": 2,
+    "stones": 858,
+    "altar": {
+     "might": 3,
+     "harvest": 4,
+     "luck": 2,
+     "hourglass": 2,
+     "night": 4,
+     "memory": 2
+    },
+    "skins": [
+     "ginger",
+     "chef",
+     "astro",
+     "jack",
+     "firefighter",
+     "cupid"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "slime",
+      "stars": 4
+     },
+     {
+      "id": 2,
+      "type": "ghostking",
+      "stars": 4
+     },
+     {
+      "id": 3,
+      "type": "scarab",
+      "stars": 1
+     },
+     {
+      "id": 4,
+      "type": "ash",
+      "stars": 4
+     },
+     {
+      "id": 5,
+      "type": "pearl",
+      "stars": 4
+     },
+     {
+      "id": 6,
+      "type": "franken",
+      "stars": 4
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "wide",
+      "rank": 3
+     },
+     {
+      "id": 101,
+      "kind": "wide",
+      "rank": 1
+     },
+     {
+      "id": 102,
+      "kind": "rocket",
+      "rank": 5
+     },
+     {
+      "id": 103,
+      "kind": "rocket",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 0,
+     "sock": 3
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 14454294.063702669,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 205.6,
+    "pullOver": 92.16666666666667,
+    "doubleCatch": 0.2754351991140266,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 93.37148437500001,
+    "hp0": 1.4414592689996846e+67,
+    "hp3": 1.7297511227996215e+68,
+    "reward0": 1.2463916177165785e+48,
+    "reward2": 7.478349706299471e+48,
+    "stonesFor": 891,
+    "attachMult": 5.3623140000000005,
+    "setMult": 1,
+    "squad0": 38477330.79757652,
+    "range": 400,
+    "mainKind": "rocket",
+    "skinDmg": 1.75,
+    "skinIncome": 1.9500000000000002,
+    "cost": [
+     377633,
+     4285342276947,
+     14
+    ],
+    "bossTime": 40,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 196,
+    "room": 4,
+    "maxHouse": 214,
+    "maxStage": 1069,
+    "lvPower": 273,
+    "lvPull": 27,
+    "lvCollect": 171,
+    "stones": 638,
+    "altar": {
+     "might": 3,
+     "harvest": 6,
+     "luck": 3,
+     "hourglass": 3,
+     "night": 3,
+     "memory": 2
+    },
+    "skins": [
+     "ginger",
+     "black",
+     "chef",
+     "vampire",
+     "devil",
+     "jack",
+     "robot",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "cactus",
+      "stars": 4
+     },
+     {
+      "id": 2,
+      "type": "sock",
+      "stars": 3
+     },
+     {
+      "id": 3,
+      "type": "ringmaster",
+      "stars": 3
+     },
+     {
+      "id": 4,
+      "type": "scarab",
+      "stars": 2
+     },
+     {
+      "id": 5,
+      "type": "headmistress",
+      "stars": 5
+     },
+     {
+      "id": 6,
+      "type": "skelecat",
+      "stars": 3
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "storm",
+      "rank": 3
+     },
+     {
+      "id": 101,
+      "kind": "narrow",
+      "rank": 3
+     },
+     {
+      "id": 102,
+      "kind": "magnet",
+      "rank": 2
+     },
+     {
+      "id": 103,
+      "kind": "rocket",
+      "rank": 4
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 1,
+     "sock": 2
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 313004267692367740000,
+    "fireRate": 7.752000000000001,
+    "captureChance": 0.8019999999999999,
+    "pullPower": 80.2,
+    "pullOver": 0,
+    "doubleCatch": 0,
+    "catch1": 0.7057599999999999,
+    "catchBoss": 0.3609,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 53685104.93019709,
+    "hp0": 9.259472667352364e+83,
+    "hp3": 1.1111367200822836e+85,
+    "reward0": 4.9476806876379713e+67,
+    "reward2": 2.9686084125827824e+68,
+    "stonesFor": 1330,
+    "attachMult": 5.21362,
+    "setMult": 1,
+    "squad0": 1.8330781933135832e+21,
+    "range": 517.9119999999999,
+    "mainKind": "rocket",
+    "skinDmg": 2.65,
+    "skinIncome": 1.6500000000000001,
+    "cost": [
+     3.0893985866735407e+24,
+     2463,
+     5759071371906969
+    ],
+    "bossTime": 45,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 57,
+    "room": 2,
+    "maxHouse": 65,
+    "maxStage": 324,
+    "lvPower": 174,
+    "lvPull": 119,
+    "lvCollect": 94,
+    "stones": 2798,
+    "altar": {
+     "might": 5,
+     "harvest": 5,
+     "luck": 2,
+     "hourglass": 3,
+     "night": 3,
+     "memory": 3
+    },
+    "skins": [
+     "ginger",
+     "ginger",
+     "white",
+     "wizard",
+     "devil",
+     "angel",
+     "cupid",
+     "beach",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "spark",
+      "stars": 1
+     },
+     {
+      "id": 2,
+      "type": "ghosttrain",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "gear",
+      "stars": 3
+     },
+     {
+      "id": 4,
+      "type": "pearl",
+      "stars": 5
+     },
+     {
+      "id": 5,
+      "type": "flask",
+      "stars": 3
+     },
+     {
+      "id": 6,
+      "type": "bell",
+      "stars": 1
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "storm",
+      "rank": 2
+     },
+     {
+      "id": 101,
+      "kind": "narrow",
+      "rank": 3
+     },
+     {
+      "id": 102,
+      "kind": "brush",
+      "rank": 0
+     },
+     {
+      "id": 103,
+      "kind": "wide",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 1,
+     "sock": 3
+    },
+    "boostPrest": 2,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 1242312804812437.2,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 187.6,
+    "pullOver": 77.16666666666666,
+    "doubleCatch": 0.24130042102980895,
+    "catch1": 0.9459624999999999,
+    "catchBoss": 0.7024062499999999,
+    "critChance": 0.14,
+    "critMult": 3.25,
+    "incomeMult": 401607.49668784183,
+    "hp0": 3.520025898962135e+29,
+    "hp3": 4.224031078754562e+30,
+    "reward0": 1.8279105597591176e+23,
+    "reward2": 1.0967463358554705e+24,
+    "stonesFor": 384,
+    "attachMult": 2.7606,
+    "setMult": 1,
+    "squad0": 1552891006015546.5,
+    "range": 517.9119999999999,
+    "mainKind": "narrow",
+    "skinDmg": 2.95,
+    "skinIncome": 1.7999999999999998,
+    "cost": [
+     8714665193778772,
+     217064126692,
+     1290165721
+    ],
+    "bossTime": 45,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 93,
+    "room": 1,
+    "maxHouse": 93,
+    "maxStage": 464,
+    "lvPower": 101,
+    "lvPull": 157,
+    "lvCollect": 150,
+    "stones": 1910,
+    "altar": {
+     "might": 5,
+     "harvest": 5,
+     "luck": 0,
+     "hourglass": 1,
+     "night": 3,
+     "memory": 5
+    },
+    "skins": [
+     "ginger",
+     "spotty",
+     "black",
+     "vampire",
+     "devil",
+     "angel",
+     "dragon",
+     "tree",
+     "cupid",
+     "bunny",
+     "beach"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "moonking",
+      "stars": 5
+     },
+     {
+      "id": 2,
+      "type": "abyss",
+      "stars": 1
+     },
+     {
+      "id": 3,
+      "type": "balloon",
+      "stars": 2
+     },
+     {
+      "id": 4,
+      "type": "toy",
+      "stars": 5
+     },
+     {
+      "id": 5,
+      "type": "frostqueen",
+      "stars": 5
+     },
+     {
+      "id": 6,
+      "type": "cuckoo",
+      "stars": 5
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "rocket",
+      "rank": 2
+     },
+     {
+      "id": 101,
+      "kind": "magnet",
+      "rank": 5
+     },
+     {
+      "id": 102,
+      "kind": "turbo",
+      "rank": 4
+     },
+     {
+      "id": 103,
+      "kind": "frost",
+      "rank": 3
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 1
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 86268945528.9706,
+    "fireRate": 22.02252,
+    "captureChance": 0.95,
+    "pullPower": 227.2,
+    "pullOver": 110.16666666666669,
+    "doubleCatch": 0.31213684505519523,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 65817648.05436898,
+    "hp0": 6.032270038292963e+45,
+    "hp3": 7.238724045951555e+46,
+    "reward0": 2.1948705585814307e+36,
+    "reward2": 1.3169223351488584e+37,
+    "stonesFor": 419,
+    "attachMult": 7.070733999999999,
+    "setMult": 1,
+    "squad0": 7073156336342.091,
+    "range": 400,
+    "mainKind": "magnet",
+    "skinDmg": 3.15,
+    "skinIncome": 2.38,
+    "cost": [
+     4324969682,
+     415204088112873,
+     88469997823086
+    ],
+    "bossTime": 35,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 74,
+    "room": 3,
+    "maxHouse": 86,
+    "maxStage": 429,
+    "lvPower": 393,
+    "lvPull": 158,
+    "lvCollect": 234,
+    "stones": 1139,
+    "altar": {
+     "might": 1,
+     "harvest": 11,
+     "luck": 2,
+     "hourglass": 2,
+     "night": 0,
+     "memory": 5
+    },
+    "skins": [
+     "ginger",
+     "white",
+     "siam",
+     "chef",
+     "astro",
+     "robot",
+     "bunny",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "jelly",
+      "stars": 3
+     },
+     {
+      "id": 2,
+      "type": "cabinboy",
+      "stars": 4
+     },
+     {
+      "id": 3,
+      "type": "balloon",
+      "stars": 1
+     },
+     {
+      "id": 4,
+      "type": "ghostking",
+      "stars": 4
+     },
+     {
+      "id": 5,
+      "type": "puppeteer",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "carousel",
+      "stars": 4
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "storm",
+      "rank": 2
+     },
+     {
+      "id": 101,
+      "kind": "brush",
+      "rank": 5
+     },
+     {
+      "id": 102,
+      "kind": "magnet",
+      "rank": 2
+     },
+     {
+      "id": 103,
+      "kind": "magnet",
+      "rank": 3
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 0,
+     "sock": 0
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 4.274329916041865e+27,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 234.4,
+    "pullOver": 116.1666666666667,
+    "doubleCatch": 0.32342412080796273,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.6,
+    "critMult": 6.549642499999999,
+    "incomeMult": 42681979270.696724,
+    "hp0": 1.508039575810363e+38,
+    "hp3": 1.8096474909724357e+39,
+    "reward0": 3.224125597637482e+33,
+    "reward2": 1.934475358582489e+34,
+    "stonesFor": 292,
+    "attachMult": 4.9957139999999995,
+    "setMult": 1,
+    "squad0": 1.1378266236503448e+28,
+    "range": 400,
+    "mainKind": "brush",
+    "skinDmg": 1.9,
+    "skinIncome": 1.95,
+    "cost": [
+     7.129410550725723e+34,
+     506548987497705,
+     1.5886264652156106e+21
+    ],
+    "bossTime": 40,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 199,
+    "room": 3,
+    "maxHouse": 211,
+    "maxStage": 1054,
+    "lvPower": 215,
+    "lvPull": 7,
+    "lvCollect": 169,
+    "stones": 2636,
+    "altar": {
+     "might": 3,
+     "harvest": 1,
+     "luck": 2,
+     "hourglass": 3,
+     "night": 2,
+     "memory": 2
+    },
+    "skins": [
+     "ginger",
+     "tabby",
+     "peach",
+     "black",
+     "ninja",
+     "chef",
+     "vampire",
+     "jack",
+     "samurai",
+     "knight",
+     "cowboy",
+     "firefighter",
+     "tree"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "mummy",
+      "stars": 2
+     },
+     {
+      "id": 2,
+      "type": "mannequin",
+      "stars": 1
+     },
+     {
+      "id": 3,
+      "type": "catbeard",
+      "stars": 3
+     },
+     {
+      "id": 4,
+      "type": "mummy",
+      "stars": 1
+     },
+     {
+      "id": 5,
+      "type": "aurora",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "headless",
+      "stars": 1
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "narrow",
+      "rank": 1
+     },
+     {
+      "id": 101,
+      "kind": "rocket",
+      "rank": 0
+     },
+     {
+      "id": 102,
+      "kind": "brush",
+      "rank": 5
+     },
+     {
+      "id": 103,
+      "kind": "narrow",
+      "rank": 4
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 1,
+     "sock": 1
+    },
+    "boostPrest": 2,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 336034292497828860,
+    "fireRate": 5.073600000000001,
+    "captureChance": 0.532,
+    "pullPower": 53.2,
+    "pullOver": 0,
+    "doubleCatch": 0,
+    "catch1": 0.46816,
+    "catchBoss": 0.23940000000000003,
+    "critChance": 0.6,
+    "critMult": 6.549642499999999,
+    "incomeMult": 66442838.94108505,
+    "hp0": 9.968806332633635e+84,
+    "hp3": 1.1962567599160362e+86,
+    "reward0": 4.332771666089714e+68,
+    "reward2": 2.599662999653829e+69,
+    "stonesFor": 2722,
+    "attachMult": 4.379714,
+    "setMult": 1,
+    "squad0": 221782633048567070,
+    "range": 440.8,
+    "mainKind": "brush",
+    "skinDmg": 2.8599999999999994,
+    "skinIncome": 2.4000000000000004,
+    "cost": [
+     30269396650235298000,
+     46,
+     3869303528558835
+    ],
+    "bossTime": 45,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 73,
+    "room": 1,
+    "maxHouse": 91,
+    "maxStage": 454,
+    "lvPower": 64,
+    "lvPull": 2,
+    "lvCollect": 114,
+    "stones": 1153,
+    "altar": {
+     "might": 6,
+     "harvest": 9,
+     "luck": 4,
+     "hourglass": 2,
+     "night": 3,
+     "memory": 3
+    },
+    "skins": [
+     "ginger",
+     "tabby",
+     "peach",
+     "white",
+     "siam",
+     "chef",
+     "devil",
+     "santa",
+     "firefighter",
+     "beach"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "textbook",
+      "stars": 5
+     },
+     {
+      "id": 2,
+      "type": "bell",
+      "stars": 3
+     },
+     {
+      "id": 3,
+      "type": "angler",
+      "stars": 5
+     },
+     {
+      "id": 4,
+      "type": "bell",
+      "stars": 2
+     },
+     {
+      "id": 5,
+      "type": "juggler",
+      "stars": 5
+     },
+     {
+      "id": 6,
+      "type": "cabinboy",
+      "stars": 5
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "storm",
+      "rank": 5
+     },
+     {
+      "id": 101,
+      "kind": "narrow",
+      "rank": 3
+     },
+     {
+      "id": 102,
+      "kind": "magnet",
+      "rank": 1
+     },
+     {
+      "id": 103,
+      "kind": "brush",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 1,
+     "sock": 2
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 194435534.83840773,
+    "fireRate": 3.5496000000000003,
+    "captureChance": 0.532,
+    "pullPower": 53.2,
+    "pullOver": 0,
+    "doubleCatch": 0,
+    "catch1": 0.46816,
+    "catchBoss": 0.23940000000000003,
+    "critChance": 0.14,
+    "critMult": 3.25,
+    "incomeMult": 2885916.8098990745,
+    "hp0": 2.9910172872822187e+37,
+    "hp3": 3.589220744738663e+38,
+    "reward0": 8.195327746317308e+28,
+    "reward2": 4.9171966477903844e+29,
+    "stonesFor": 286,
+    "attachMult": 5.362314,
+    "setMult": 1,
+    "squad0": 3006147582.841,
+    "range": 517.9119999999999,
+    "mainKind": "storm",
+    "skinDmg": 2.23,
+    "skinIncome": 2.3,
+    "cost": [
+     2758476,
+     17,
+     68840198238
+    ],
+    "bossTime": 40,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 2,
+    "room": 4,
+    "maxHouse": 7,
+    "maxStage": 34,
+    "lvPower": 67,
+    "lvPull": 32,
+    "lvCollect": 59,
+    "stones": 1047,
+    "altar": {
+     "might": 7,
+     "harvest": 10,
+     "luck": 4,
+     "hourglass": 0,
+     "night": 4,
+     "memory": 5
+    },
+    "skins": [
+     "ginger",
+     "peach",
+     "pirate",
+     "astro",
+     "vampire",
+     "jack",
+     "detective",
+     "dragon",
+     "cupid"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "kraken",
+      "stars": 1
+     },
+     {
+      "id": 2,
+      "type": "catbeard",
+      "stars": 1
+     },
+     {
+      "id": 3,
+      "type": "moth",
+      "stars": 2
+     },
+     {
+      "id": 4,
+      "type": "portrait",
+      "stars": 1
+     },
+     {
+      "id": 5,
+      "type": "spark",
+      "stars": 5
+     },
+     {
+      "id": 6,
+      "type": "mimic",
+      "stars": 5
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "brush",
+      "rank": 5
+     },
+     {
+      "id": 101,
+      "kind": "narrow",
+      "rank": 4
+     },
+     {
+      "id": 102,
+      "kind": "brush",
+      "rank": 2
+     },
+     {
+      "id": 103,
+      "kind": "turbo",
+      "rank": 4
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 2,
+     "sock": 0
+    },
+    "boostPrest": 2,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 572812378.8290637,
+    "fireRate": 12.130004015999997,
+    "captureChance": 0.892,
+    "pullPower": 89.19999999999999,
+    "pullOver": 0,
+    "doubleCatch": 0,
+    "catch1": 0.78496,
+    "catchBoss": 0.40140000000000003,
+    "critChance": 0.6,
+    "critMult": 7.272142499999999,
+    "incomeMult": 27494.528076402108,
+    "hp0": 139.76133544666783,
+    "hp3": 1677.136025360014,
+    "reward0": 336425.55992174457,
+    "reward2": 2018553.3595304675,
+    "stonesFor": 0,
+    "attachMult": 7.758554,
+    "setMult": 1,
+    "squad0": 2004843325.901723,
+    "range": 600.4504,
+    "mainKind": "brush",
+    "skinDmg": 2.7,
+    "skinIncome": 1.55,
+    "cost": [
+     5008974,
+     6657,
+     1224761
+    ],
+    "bossTime": 30,
+    "slots": [
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 138,
+    "room": 5,
+    "maxHouse": 143,
+    "maxStage": 714,
+    "lvPower": 313,
+    "lvPull": 150,
+    "lvCollect": 20,
+    "stones": 818,
+    "altar": {
+     "might": 7,
+     "harvest": 5,
+     "luck": 2,
+     "hourglass": 0,
+     "night": 3,
+     "memory": 5
+    },
+    "skins": [
+     "ginger",
+     "siam",
+     "ninja",
+     "samurai",
+     "beach"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "balloon",
+      "stars": 3
+     },
+     {
+      "id": 2,
+      "type": "balloon",
+      "stars": 2
+     },
+     {
+      "id": 3,
+      "type": "snowman",
+      "stars": 5
+     },
+     {
+      "id": 4,
+      "type": "cuckoo",
+      "stars": 2
+     },
+     {
+      "id": 5,
+      "type": "jelly",
+      "stars": 4
+     },
+     {
+      "id": 6,
+      "type": "pearl",
+      "stars": 3
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "magnet",
+      "rank": 0
+     },
+     {
+      "id": 101,
+      "kind": "turbo",
+      "rank": 2
+     },
+     {
+      "id": 102,
+      "kind": "storm",
+      "rank": 5
+     },
+     {
+      "id": 103,
+      "kind": "rocket",
+      "rank": 1
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 1,
+     "sock": 0
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 1.605495792022395e+23,
+    "fireRate": 15.468,
+    "captureChance": 0.95,
+    "pullPower": 224.79999999999998,
+    "pullOver": 108.16666666666669,
+    "doubleCatch": 0.3082729677161284,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 301.80405551129274,
+    "hp0": 4.59180042616135e+62,
+    "hp3": 5.51016051139362e+63,
+    "reward0": 7.990925216271303e+44,
+    "reward2": 4.7945551297627815e+45,
+    "stonesFor": 775,
+    "attachMult": 4.617713999999999,
+    "setMult": 1,
+    "squad0": 5.12859575803634e+23,
+    "range": 400,
+    "mainKind": "storm",
+    "skinDmg": 1.95,
+    "skinIncome": 1.2,
+    "cost": [
+     8.795634427838905e+27,
+     103214997460267,
+     524
+    ],
+    "bossTime": 30,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 84,
+    "room": 5,
+    "maxHouse": 84,
+    "maxStage": 419,
+    "lvPower": 1,
+    "lvPull": 95,
+    "lvCollect": 148,
+    "stones": 119,
+    "altar": {
+     "might": 10,
+     "harvest": 8,
+     "luck": 3,
+     "hourglass": 4,
+     "night": 3,
+     "memory": 4
+    },
+    "skins": [
+     "ginger",
+     "ninja",
+     "wizard",
+     "chef",
+     "astro",
+     "knight",
+     "dj",
+     "cowboy"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "skelecat",
+      "stars": 3
+     },
+     {
+      "id": 2,
+      "type": "rainbow",
+      "stars": 1
+     },
+     {
+      "id": 3,
+      "type": "pharaoh",
+      "stars": 5
+     },
+     {
+      "id": 4,
+      "type": "drowned",
+      "stars": 4
+     },
+     {
+      "id": 5,
+      "type": "thundercloud",
+      "stars": 4
+     },
+     {
+      "id": 6,
+      "type": "mask",
+      "stars": 2
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "turbo",
+      "rank": 2
+     },
+     {
+      "id": 101,
+      "kind": "turbo",
+      "rank": 2
+     },
+     {
+      "id": 102,
+      "kind": "rocket",
+      "rank": 0
+     },
+     {
+      "id": 103,
+      "kind": "storm",
+      "rank": 1
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 0,
+     "sock": 3
+    },
+    "boostPrest": 2,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 3861.244995146989,
+    "fireRate": 18.405792,
+    "captureChance": 0.95,
+    "pullPower": 161.8,
+    "pullOver": 55.66666666666668,
+    "doubleCatch": 0.1860196354385402,
+    "catch1": 0.9153249999999999,
+    "catchBoss": 0.6258125,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 2640029.887985952,
+    "hp0": 5.728335032372719e+42,
+    "hp3": 6.874002038847263e+43,
+    "reward0": 2.8580113098698273e+32,
+    "reward2": 1.7148067859218963e+33,
+    "stonesFor": 714,
+    "attachMult": 2.6959999999999997,
+    "setMult": 1,
+    "squad0": 4672.106444127858,
+    "range": 400,
+    "mainKind": "turbo",
+    "skinDmg": 2.03,
+    "skinIncome": 1.6,
+    "cost": [
+     10,
+     1836335876,
+     59439665293662
+    ],
+    "bossTime": 50,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 26,
+    "room": 4,
+    "maxHouse": 39,
+    "maxStage": 194,
+    "lvPower": 262,
+    "lvPull": 149,
+    "lvCollect": 266,
+    "stones": 1556,
+    "altar": {
+     "might": 1,
+     "harvest": 0,
+     "luck": 2,
+     "hourglass": 4,
+     "night": 0,
+     "memory": 3
+    },
+    "skins": [
+     "ginger",
+     "tabby",
+     "pirate",
+     "wizard",
+     "astro",
+     "devil",
+     "santa",
+     "jack",
+     "knight",
+     "dj",
+     "tree"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "tunnellight",
+      "stars": 2
+     },
+     {
+      "id": 2,
+      "type": "toy",
+      "stars": 2
+     },
+     {
+      "id": 3,
+      "type": "cuckoo",
+      "stars": 1
+     },
+     {
+      "id": 4,
+      "type": "pumpkin",
+      "stars": 3
+     },
+     {
+      "id": 5,
+      "type": "snowman",
+      "stars": 3
+     },
+     {
+      "id": 6,
+      "type": "sarcophagus",
+      "stars": 3
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "wide",
+      "rank": 1
+     },
+     {
+      "id": 101,
+      "kind": "frost",
+      "rank": 3
+     },
+     {
+      "id": 102,
+      "kind": "brush",
+      "rank": 1
+     },
+     {
+      "id": 103,
+      "kind": "turbo",
+      "rank": 1
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 0,
+     "sock": 0
+    },
+    "boostPrest": 2,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 56160272572057485000,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 223.6,
+    "pullOver": 107.16666666666669,
+    "doubleCatch": 0.30632162358098053,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.168,
+    "critMult": 3.425,
+    "incomeMult": 50873711342.786995,
+    "hp0": 154829052430063.44,
+    "hp3": 1857948629160761.2,
+    "reward0": 11964015804412862000,
+    "reward2": 71784094826477175000,
+    "stonesFor": 102,
+    "attachMult": 2.6626000000000003,
+    "setMult": 1,
+    "squad0": 154440749573158100000,
+    "range": 400,
+    "mainKind": "frost",
+    "skinDmg": 3.08,
+    "skinIncome": 2.2,
+    "cost": [
+     3.4666963731455524e+23,
+     84602456934645,
+     9.215870741347198e+23
+    ],
+    "bossTime": 50,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 49,
+    "room": 5,
+    "maxHouse": 64,
+    "maxStage": 319,
+    "lvPower": 369,
+    "lvPull": 66,
+    "lvCollect": 59,
+    "stones": 443,
+    "altar": {
+     "might": 10,
+     "harvest": 2,
+     "luck": 1,
+     "hourglass": 0,
+     "night": 2,
+     "memory": 1
+    },
+    "skins": [
+     "ginger",
+     "ginger",
+     "spotty",
+     "white",
+     "angel",
+     "reaper",
+     "firefighter",
+     "beach"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "pendulum",
+      "stars": 1
+     },
+     {
+      "id": 2,
+      "type": "sheet",
+      "stars": 1
+     },
+     {
+      "id": 3,
+      "type": "candle",
+      "stars": 3
+     },
+     {
+      "id": 4,
+      "type": "juggler",
+      "stars": 4
+     },
+     {
+      "id": 5,
+      "type": "lavagolem",
+      "stars": 3
+     },
+     {
+      "id": 6,
+      "type": "sarcophagus",
+      "stars": 2
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "narrow",
+      "rank": 4
+     },
+     {
+      "id": 101,
+      "kind": "wide",
+      "rank": 1
+     },
+     {
+      "id": 102,
+      "kind": "narrow",
+      "rank": 4
+     },
+     {
+      "id": 103,
+      "kind": "storm",
+      "rank": 1
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 2
+    },
+    "boostPrest": 2,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 4.6628317038211935e+26,
+    "fireRate": 7.590000000000001,
+    "captureChance": 0.95,
+    "pullPower": 121,
+    "pullOver": 21.666666666666686,
+    "doubleCatch": 0.0806982032596939,
+    "catch1": 0.8668750000000001,
+    "catchBoss": 0.5046875000000001,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 3316.8546468323107,
+    "hp0": 6.8051184588649515e+25,
+    "hp3": 8.166142150637942e+26,
+    "reward0": 8571552265872098000,
+    "reward2": 51429313595232580000,
+    "stonesFor": 300,
+    "attachMult": 4.68084,
+    "setMult": 1,
+    "squad0": 5.8285396297764916e+26,
+    "range": 640,
+    "mainKind": "narrow",
+    "skinDmg": 1.85,
+    "skinIncome": 2.4800000000000004,
+    "cost": [
+     6.03139384280714e+32,
+     5748003,
+     1224761
+    ],
+    "bossTime": 30,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 104,
+    "room": 1,
+    "maxHouse": 115,
+    "maxStage": 574,
+    "lvPower": 112,
+    "lvPull": 189,
+    "lvCollect": 44,
+    "stones": 1702,
+    "altar": {
+     "might": 9,
+     "harvest": 9,
+     "luck": 0,
+     "hourglass": 2,
+     "night": 1,
+     "memory": 3
+    },
+    "skins": [
+     "ginger",
+     "ginger",
+     "spotty",
+     "tabby",
+     "peach",
+     "astro",
+     "vampire",
+     "santa",
+     "reaper",
+     "samurai",
+     "detective"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "timekeeper",
+      "stars": 4
+     },
+     {
+      "id": 2,
+      "type": "sock",
+      "stars": 3
+     },
+     {
+      "id": 3,
+      "type": "mermaid",
+      "stars": 3
+     },
+     {
+      "id": 4,
+      "type": "balloon",
+      "stars": 5
+     },
+     {
+      "id": 5,
+      "type": "aurora",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "toy",
+      "stars": 1
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "rocket",
+      "rank": 0
+     },
+     {
+      "id": 101,
+      "kind": "rocket",
+      "rank": 3
+     },
+     {
+      "id": 102,
+      "kind": "storm",
+      "rank": 3
+     },
+     {
+      "id": 103,
+      "kind": "brush",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 3
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 344264673887.4641,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 265.6,
+    "pullOver": 142.16666666666669,
+    "doubleCatch": 0.3674391578550525,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 12717.323029037323,
+    "hp0": 6.838959687791879e+49,
+    "hp3": 8.206751625350256e+50,
+    "reward0": 9.243649642182651e+35,
+    "reward2": 5.546189785309591e+36,
+    "stonesFor": 500,
+    "attachMult": 3.1651999999999996,
+    "setMult": 1,
+    "squad0": 12830055866438.018,
+    "range": 400,
+    "mainKind": "rocket",
+    "skinDmg": 2.63,
+    "skinIncome": 1.78,
+    "cost": [
+     38542617485,
+     240866389369123230,
+     62037
+    ],
+    "bossTime": 40,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 87,
+    "room": 2,
+    "maxHouse": 104,
+    "maxStage": 519,
+    "lvPower": 268,
+    "lvPull": 107,
+    "lvCollect": 156,
+    "stones": 1214,
+    "altar": {
+     "might": 0,
+     "harvest": 6,
+     "luck": 5,
+     "hourglass": 4,
+     "night": 2,
+     "memory": 1
+    },
+    "skins": [
+     "ginger",
+     "black",
+     "white",
+     "siam",
+     "ninja",
+     "golden",
+     "cowboy",
+     "firefighter",
+     "beach"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "cactus",
+      "stars": 3
+     },
+     {
+      "id": 2,
+      "type": "darkknight",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "clown",
+      "stars": 1
+     },
+     {
+      "id": 4,
+      "type": "moonking",
+      "stars": 4
+     },
+     {
+      "id": 5,
+      "type": "washer",
+      "stars": 4
+     },
+     {
+      "id": 6,
+      "type": "skelecat",
+      "stars": 5
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "storm",
+      "rank": 3
+     },
+     {
+      "id": 101,
+      "kind": "narrow",
+      "rank": 4
+     },
+     {
+      "id": 102,
+      "kind": "storm",
+      "rank": 0
+     },
+     {
+      "id": 103,
+      "kind": "frost",
+      "rank": 3
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 2,
+     "sock": 2
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 101907179447498980000,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 182.2,
+    "pullOver": 72.66666666666667,
+    "doubleCatch": 0.2303763925229491,
+    "catch1": 0.93955,
+    "catchBoss": 0.686375,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 32161917.1582556,
+    "hp0": 4.3918612856150293e+43,
+    "hp3": 5.270233542738035e+44,
+    "reward0": 1.862820946405344e+34,
+    "reward2": 1.1176925678432064e+35,
+    "stonesFor": 378,
+    "attachMult": 3.85302,
+    "setMult": 1,
+    "squad0": 271276911689242350000,
+    "range": 600.4504,
+    "mainKind": "narrow",
+    "skinDmg": 2.38,
+    "skinIncome": 2.2,
+    "cost": [
+     1.1430751676184307e+24,
+     19965035520,
+     291712474083985
+    ],
+    "bossTime": 50,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 213,
+    "room": 2,
+    "maxHouse": 214,
+    "maxStage": 1069,
+    "lvPower": 57,
+    "lvPull": 119,
+    "lvCollect": 289,
+    "stones": 2199,
+    "altar": {
+     "might": 11,
+     "harvest": 5,
+     "luck": 2,
+     "hourglass": 0,
+     "night": 2,
+     "memory": 0
+    },
+    "skins": [
+     "ginger",
+     "peach",
+     "black",
+     "pirate",
+     "devil",
+     "samurai",
+     "dj",
+     "cowboy",
+     "firefighter",
+     "tree",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "moth",
+      "stars": 2
+     },
+     {
+      "id": 2,
+      "type": "stormlord",
+      "stars": 3
+     },
+     {
+      "id": 3,
+      "type": "skelecat",
+      "stars": 2
+     },
+     {
+      "id": 4,
+      "type": "mask",
+      "stars": 3
+     },
+     {
+      "id": 5,
+      "type": "parrot",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "conductor",
+      "stars": 5
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "frost",
+      "rank": 4
+     },
+     {
+      "id": 101,
+      "kind": "brush",
+      "rank": 3
+     },
+     {
+      "id": 102,
+      "kind": "rocket",
+      "rank": 1
+     },
+     {
+      "id": 103,
+      "kind": "turbo",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 0,
+     "sock": 2
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 387802224.3023131,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 187.6,
+    "pullOver": 77.16666666666666,
+    "doubleCatch": 0.24130042102980895,
+    "catch1": 0.9459624999999999,
+    "catchBoss": 0.7024062499999999,
+    "critChance": 0.29652,
+    "critMult": 4.22825,
+    "incomeMult": 1044440253453.4813,
+    "hp0": 1.2167723515444273e+90,
+    "hp3": 1.4601268218533129e+91,
+    "reward0": 1.0503939411259646e+77,
+    "reward2": 6.302363646755788e+77,
+    "stonesFor": 1510,
+    "attachMult": 3.9930199999999996,
+    "setMult": 1,
+    "squad0": 213291223.3662722,
+    "range": 400,
+    "mainKind": "frost",
+    "skinDmg": 2.83,
+    "skinIncome": 1.8000000000000003,
+    "cost": [
+     685725,
+     217064126692,
+     8.929198556464104e+25
+    ],
+    "bossTime": 30,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 182,
+    "room": 5,
+    "maxHouse": 187,
+    "maxStage": 934,
+    "lvPower": 364,
+    "lvPull": 163,
+    "lvCollect": 203,
+    "stones": 982,
+    "altar": {
+     "might": 1,
+     "harvest": 10,
+     "luck": 5,
+     "hourglass": 0,
+     "night": 2,
+     "memory": 5
+    },
+    "skins": [
+     "ginger",
+     "tabby",
+     "peach",
+     "wizard",
+     "santa",
+     "reaper",
+     "beach"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "sarcophagus",
+      "stars": 1
+     },
+     {
+      "id": 2,
+      "type": "bell",
+      "stars": 2
+     },
+     {
+      "id": 3,
+      "type": "wisp",
+      "stars": 2
+     },
+     {
+      "id": 4,
+      "type": "moth",
+      "stars": 4
+     },
+     {
+      "id": 5,
+      "type": "stormlord",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "darkknight",
+      "stars": 5
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "storm",
+      "rank": 2
+     },
+     {
+      "id": 101,
+      "kind": "turbo",
+      "rank": 4
+     },
+     {
+      "id": 102,
+      "kind": "brush",
+      "rank": 3
+     },
+     {
+      "id": 103,
+      "kind": "storm",
+      "rank": 3
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 0
+    },
+    "boostPrest": 2,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 9.529746320798737e+25,
+    "fireRate": 22.02252,
+    "captureChance": 0.95,
+    "pullPower": 249.4,
+    "pullOver": 128.66666666666666,
+    "doubleCatch": 0.3455379071281716,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.29652,
+    "critMult": 4.22825,
+    "incomeMult": 1898656848.3085833,
+    "hp0": 7.586126496545396e+78,
+    "hp3": 9.103351795854476e+79,
+    "reward0": 1.1346014985858825e+65,
+    "reward2": 6.807608991515294e+65,
+    "stonesFor": 2374,
+    "attachMult": 5.21362,
+    "setMult": 1,
+    "squad0": 1.1912182900998421e+26,
+    "range": 400,
+    "mainKind": "turbo",
+    "skinDmg": 2.48,
+    "skinIncome": 1.75,
+    "cost": [
+     2.231611213127053e+32,
+     1369054083570742,
+     3340927431073881000
+    ],
+    "bossTime": 30,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 33,
+    "room": 1,
+    "maxHouse": 45,
+    "maxStage": 224,
+    "lvPower": 388,
+    "lvPull": 54,
+    "lvCollect": 129,
+    "stones": 1826,
+    "altar": {
+     "might": 3,
+     "harvest": 7,
+     "luck": 0,
+     "hourglass": 2,
+     "night": 1,
+     "memory": 5
+    },
+    "skins": [
+     "ginger",
+     "spotty",
+     "siam",
+     "pirate",
+     "angel",
+     "samurai",
+     "dj",
+     "cowboy",
+     "bunny"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "flask",
+      "stars": 5
+     },
+     {
+      "id": 2,
+      "type": "conductor",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "moth",
+      "stars": 1
+     },
+     {
+      "id": 4,
+      "type": "conductor",
+      "stars": 2
+     },
+     {
+      "id": 5,
+      "type": "shade",
+      "stars": 5
+     },
+     {
+      "id": 6,
+      "type": "timekeeper",
+      "stars": 3
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "narrow",
+      "rank": 0
+     },
+     {
+      "id": 101,
+      "kind": "narrow",
+      "rank": 0
+     },
+     {
+      "id": 102,
+      "kind": "narrow",
+      "rank": 2
+     },
+     {
+      "id": 103,
+      "kind": "rocket",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 1,
+     "sock": 2
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 2.018171290504108e+27,
+    "fireRate": 8.034,
+    "captureChance": 0.95,
+    "pullPower": 103.6,
+    "pullOver": 7.166666666666673,
+    "doubleCatch": 0.02799262912700695,
+    "catch1": 0.8462125,
+    "catchBoss": 0.45303125000000005,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 7062150.330427118,
+    "hp0": 252179569868140640,
+    "hp3": 3026154838417687600,
+    "reward0": 145429129970553380,
+    "reward2": 872574779823320200,
+    "stonesFor": 78,
+    "attachMult": 1.978,
+    "setMult": 1,
+    "squad0": 2.600228036055818e+28,
+    "range": 517.36,
+    "mainKind": "narrow",
+    "skinDmg": 1.68,
+    "skinIncome": 2.08,
+    "cost": [
+     2.637876574244893e+34,
+     528687,
+     1359062947717
+    ],
+    "bossTime": 40,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 218,
+    "room": 3,
+    "maxHouse": 226,
+    "maxStage": 1129,
+    "lvPower": 174,
+    "lvPull": 114,
+    "lvCollect": 5,
+    "stones": 526,
+    "altar": {
+     "might": 2,
+     "harvest": 0,
+     "luck": 5,
+     "hourglass": 4,
+     "night": 3,
+     "memory": 3
+    },
+    "skins": [
+     "ginger",
+     "white",
+     "siam",
+     "pirate",
+     "ninja",
+     "chef",
+     "vampire",
+     "devil",
+     "angel",
+     "reaper",
+     "detective",
+     "robot",
+     "dragon",
+     "cowboy",
+     "cupid",
+     "beach"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "tv",
+      "stars": 3
+     },
+     {
+      "id": 2,
+      "type": "rat",
+      "stars": 4
+     },
+     {
+      "id": 3,
+      "type": "slime",
+      "stars": 4
+     },
+     {
+      "id": 4,
+      "type": "cactus",
+      "stars": 4
+     },
+     {
+      "id": 5,
+      "type": "headmistress",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "chalk",
+      "stars": 1
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "rocket",
+      "rank": 5
+     },
+     {
+      "id": 101,
+      "kind": "magnet",
+      "rank": 1
+     },
+     {
+      "id": 102,
+      "kind": "rocket",
+      "rank": 0
+     },
+     {
+      "id": 103,
+      "kind": "wide",
+      "rank": 3
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 0,
+     "sock": 0
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 291988899777110.75,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 190.6,
+    "pullOver": 79.66666666666669,
+    "doubleCatch": 0.2472292035849842,
+    "catch1": 0.9495250000000001,
+    "catchBoss": 0.7113125,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 49.5104788758528,
+    "hp0": 1.0043531402205285e+92,
+    "hp3": 1.2052237682646342e+93,
+    "reward0": 1.8849923093183019e+68,
+    "reward2": 1.130995385590981e+69,
+    "stonesFor": 1565,
+    "attachMult": 5.362314,
+    "setMult": 1,
+    "squad0": 1766532843651520.2,
+    "range": 400,
+    "mainKind": "rocket",
+    "skinDmg": 4.029999999999999,
+    "skinIncome": 2.6999999999999993,
+    "cost": [
+     8714665193778772,
+     80313564612,
+     26
+    ],
+    "bossTime": 50,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 44,
+    "room": 5,
+    "maxHouse": 47,
+    "maxStage": 234,
+    "lvPower": 61,
+    "lvPull": 135,
+    "lvCollect": 145,
+    "stones": 2967,
+    "altar": {
+     "might": 6,
+     "harvest": 4,
+     "luck": 0,
+     "hourglass": 2,
+     "night": 1,
+     "memory": 3
+    },
+    "skins": [
+     "ginger",
+     "ginger",
+     "black",
+     "reaper",
+     "samurai",
+     "dj",
+     "bunny"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "bell",
+      "stars": 4
+     },
+     {
+      "id": 2,
+      "type": "ship",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "washer",
+      "stars": 5
+     },
+     {
+      "id": 4,
+      "type": "abyss",
+      "stars": 2
+     },
+     {
+      "id": 5,
+      "type": "pearl",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "mask",
+      "stars": 1
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "narrow",
+      "rank": 4
+     },
+     {
+      "id": 101,
+      "kind": "storm",
+      "rank": 3
+     },
+     {
+      "id": 102,
+      "kind": "storm",
+      "rank": 5
+     },
+     {
+      "id": 103,
+      "kind": "brush",
+      "rank": 1
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 0
+    },
+    "boostPrest": 2,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 325532824.725776,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 200.79999999999998,
+    "pullOver": 88.16666666666667,
+    "doubleCatch": 0.26666370427872277,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.168,
+    "critMult": 3.425,
+    "incomeMult": 17240055.242091898,
+    "hp0": 2.1065514056309936e+23,
+    "hp3": 2.527861686757192e+24,
+    "reward0": 1.353398472121945e+21,
+    "reward2": 8.120390832731669e+21,
+    "stonesFor": 252,
+    "attachMult": 6.832733999999999,
+    "setMult": 1,
+    "squad0": 4332841897.10008,
+    "range": 600.4504,
+    "mainKind": "storm",
+    "skinDmg": 1.75,
+    "skinIncome": 1.8,
+    "cost": [
+     1519112,
+     5228117577875,
+     32733833059629
+    ],
+    "bossTime": 40,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 41,
+    "room": 5,
+    "maxHouse": 44,
+    "maxStage": 219,
+    "lvPower": 398,
+    "lvPull": 114,
+    "lvCollect": 223,
+    "stones": 70,
+    "altar": {
+     "might": 9,
+     "harvest": 8,
+     "luck": 4,
+     "hourglass": 2,
+     "night": 1,
+     "memory": 1
+    },
+    "skins": [
+     "ginger",
+     "spotty",
+     "peach",
+     "reaper",
+     "jack"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "balloon",
+      "stars": 5
+     },
+     {
+      "id": 2,
+      "type": "pendulum",
+      "stars": 1
+     },
+     {
+      "id": 3,
+      "type": "angler",
+      "stars": 1
+     },
+     {
+      "id": 4,
+      "type": "drowned",
+      "stars": 4
+     },
+     {
+      "id": 5,
+      "type": "pharaoh",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "juggler",
+      "stars": 1
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "storm",
+      "rank": 1
+     },
+     {
+      "id": 101,
+      "kind": "rocket",
+      "rank": 4
+     },
+     {
+      "id": 102,
+      "kind": "rocket",
+      "rank": 2
+     },
+     {
+      "id": 103,
+      "kind": "brush",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 1,
+     "sock": 3
+    },
+    "boostPrest": 2,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 3.0327670120747347e+27,
+    "fireRate": 10.3668,
+    "captureChance": 0.95,
+    "pullPower": 187.6,
+    "pullOver": 77.1666666666667,
+    "doubleCatch": 0.2413004210298091,
+    "catch1": 0.9459624999999999,
+    "catchBoss": 0.7024062500000001,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 632228902.1625015,
+    "hp0": 6.57678863634147e+21,
+    "hp3": 7.892146363609765e+22,
+    "reward0": 6.09949344715137e+21,
+    "reward2": 3.6596960682908215e+22,
+    "stonesFor": 224,
+    "attachMult": 3.5884199999999997,
+    "setMult": 1,
+    "squad0": 3.907441280493187e+28,
+    "range": 400,
+    "mainKind": "rocket",
+    "skinDmg": 1.8,
+    "skinIncome": 1.6800000000000002,
+    "cost": [
+     1.9268716094250618e+35,
+     80313564612,
+     178264003518428380000
+    ],
+    "bossTime": 40,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 218,
+    "room": 4,
+    "maxHouse": 227,
+    "maxStage": 1134,
+    "lvPower": 100,
+    "lvPull": 75,
+    "lvCollect": 276,
+    "stones": 811,
+    "altar": {
+     "might": 3,
+     "harvest": 3,
+     "luck": 4,
+     "hourglass": 1,
+     "night": 0,
+     "memory": 4
+    },
+    "skins": [
+     "ginger",
+     "ginger",
+     "bunny",
+     "beach",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "pendulum",
+      "stars": 2
+     },
+     {
+      "id": 2,
+      "type": "puppet",
+      "stars": 3
+     },
+     {
+      "id": 3,
+      "type": "snowman",
+      "stars": 1
+     },
+     {
+      "id": 4,
+      "type": "flask",
+      "stars": 1
+     },
+     {
+      "id": 5,
+      "type": "ringmaster",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "snowman",
+      "stars": 4
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "rocket",
+      "rank": 4
+     },
+     {
+      "id": 101,
+      "kind": "rocket",
+      "rank": 0
+     },
+     {
+      "id": 102,
+      "kind": "frost",
+      "rank": 5
+     },
+     {
+      "id": 103,
+      "kind": "turbo",
+      "rank": 2
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 1,
+     "sock": 3
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 10334422105.432064,
+    "fireRate": 9.671999999999999,
+    "captureChance": 0.95,
+    "pullPower": 140.8,
+    "pullOver": 38.166666666666664,
+    "doubleCatch": 0.13479172395921432,
+    "catch1": 0.8903875,
+    "catchBoss": 0.56346875,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 83640366604.66022,
+    "hp0": 1.1901584711613263e+92,
+    "hp3": 1.4281901653935916e+93,
+    "reward0": 3.6620664773357437e+77,
+    "reward2": 2.197239886401446e+78,
+    "stonesFor": 1565,
+    "attachMult": 5.710134,
+    "setMult": 1,
+    "squad0": 28419660789.93818,
+    "range": 400,
+    "mainKind": "frost",
+    "skinDmg": 1.9500000000000002,
+    "skinIncome": 1.5999999999999999,
+    "cost": [
+     3545057116,
+     34415612,
+     6.731853893776771e+24
+    ],
+    "bossTime": 35,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 2,
+    "room": 1,
+    "maxHouse": 19,
+    "maxStage": 94,
+    "lvPower": 126,
+    "lvPull": 50,
+    "lvCollect": 229,
+    "stones": 1076,
+    "altar": {
+     "might": 4,
+     "harvest": 1,
+     "luck": 5,
+     "hourglass": 1,
+     "night": 0,
+     "memory": 4
+    },
+    "skins": [
+     "ginger",
+     "spotty",
+     "tabby",
+     "peach",
+     "siam",
+     "chef",
+     "astro",
+     "jack",
+     "dj",
+     "cowboy",
+     "firefighter",
+     "tree",
+     "cupid"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "puppet",
+      "stars": 2
+     },
+     {
+      "id": 2,
+      "type": "mummy",
+      "stars": 1
+     },
+     {
+      "id": 3,
+      "type": "firefly",
+      "stars": 2
+     },
+     {
+      "id": 4,
+      "type": "snowman",
+      "stars": 2
+     },
+     {
+      "id": 5,
+      "type": "toy",
+      "stars": 4
+     },
+     {
+      "id": 6,
+      "type": "aurora",
+      "stars": 3
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "storm",
+      "rank": 2
+     },
+     {
+      "id": 101,
+      "kind": "storm",
+      "rank": 2
+     },
+     {
+      "id": 102,
+      "kind": "brush",
+      "rank": 4
+     },
+     {
+      "id": 103,
+      "kind": "wide",
+      "rank": 4
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 0
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 530646003342.92444,
+    "fireRate": 9.266399999999999,
+    "captureChance": 0.95,
+    "pullPower": 113.8,
+    "pullOver": 15.666666666666663,
+    "doubleCatch": 0.05950509489522368,
+    "catch1": 0.8583249999999999,
+    "catchBoss": 0.48331250000000003,
+    "critChance": 0.4340839999999999,
+    "critMult": 5.088025,
+    "incomeMult": 2855623345.718697,
+    "hp0": 69.86753262719999,
+    "hp3": 838.4103915264,
+    "reward0": 22974714164.816387,
+    "reward2": 137848284988.89832,
+    "stonesFor": 0,
+    "attachMult": 3.8264199999999997,
+    "setMult": 1,
+    "squad0": 291855301838.60846,
+    "range": 400,
+    "mainKind": "brush",
+    "skinDmg": 2.46,
+    "skinIncome": 2.4300000000000006,
+    "cost": [
+     623704438053,
+     238649,
+     587790604567043240000
+    ],
+    "bossTime": 35,
+    "slots": [
+     3,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 127,
+    "room": 4,
+    "maxHouse": 128,
+    "maxStage": 639,
+    "lvPower": 279,
+    "lvPull": 35,
+    "lvCollect": 181,
+    "stones": 2896,
+    "altar": {
+     "might": 11,
+     "harvest": 4,
+     "luck": 2,
+     "hourglass": 1,
+     "night": 0,
+     "memory": 5
+    },
+    "skins": [
+     "ginger",
+     "tabby",
+     "chef",
+     "santa",
+     "firefighter",
+     "cupid"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "starling",
+      "stars": 5
+     },
+     {
+      "id": 2,
+      "type": "chalk",
+      "stars": 3
+     },
+     {
+      "id": 3,
+      "type": "sheet",
+      "stars": 3
+     },
+     {
+      "id": 4,
+      "type": "salamander",
+      "stars": 5
+     },
+     {
+      "id": 5,
+      "type": "candle",
+      "stars": 1
+     },
+     {
+      "id": 6,
+      "type": "ship",
+      "stars": 1
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "wide",
+      "rank": 1
+     },
+     {
+      "id": 101,
+      "kind": "storm",
+      "rank": 4
+     },
+     {
+      "id": 102,
+      "kind": "narrow",
+      "rank": 1
+     },
+     {
+      "id": 103,
+      "kind": "magnet",
+      "rank": 3
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 0,
+     "sock": 1
+    },
+    "boostPrest": 2,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 9.238103170399745e+21,
+    "fireRate": 6.3,
+    "captureChance": 0.8680000000000001,
+    "pullPower": 86.8,
+    "pullOver": 0,
+    "doubleCatch": 0,
+    "catch1": 0.7638400000000001,
+    "catchBoss": 0.39060000000000006,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 423152973.16093224,
+    "hp0": 3.417868776190085e+58,
+    "hp3": 4.101442531428102e+59,
+    "reward0": 4.469823061068851e+47,
+    "reward2": 2.6818938366413106e+48,
+    "stonesFor": 1364,
+    "attachMult": 4.333019999999999,
+    "setMult": 1,
+    "squad0": 2.7051013703564547e+23,
+    "range": 440.8,
+    "mainKind": "storm",
+    "skinDmg": 1.6300000000000001,
+    "skinIncome": 1.9000000000000001,
+    "cost": [
+     1.0186686191088966e+25,
+     12088,
+     42067893666923200
+    ],
+    "bossTime": 35,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 174,
+    "room": 5,
+    "maxHouse": 176,
+    "maxStage": 879,
+    "lvPower": 102,
+    "lvPull": 99,
+    "lvCollect": 115,
+    "stones": 1139,
+    "altar": {
+     "might": 11,
+     "harvest": 6,
+     "luck": 5,
+     "hourglass": 1,
+     "night": 4,
+     "memory": 4
+    },
+    "skins": [
+     "ginger",
+     "peach",
+     "black",
+     "ninja",
+     "wizard",
+     "devil",
+     "golden",
+     "jack",
+     "robot",
+     "cupid"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "carousel",
+      "stars": 2
+     },
+     {
+      "id": 2,
+      "type": "mannequin",
+      "stars": 4
+     },
+     {
+      "id": 3,
+      "type": "angler",
+      "stars": 1
+     },
+     {
+      "id": 4,
+      "type": "mummy",
+      "stars": 1
+     },
+     {
+      "id": 5,
+      "type": "salamander",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "ringmaster",
+      "stars": 5
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "rocket",
+      "rank": 0
+     },
+     {
+      "id": 101,
+      "kind": "magnet",
+      "rank": 2
+     },
+     {
+      "id": 102,
+      "kind": "brush",
+      "rank": 5
+     },
+     {
+      "id": 103,
+      "kind": "wide",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 1,
+     "sock": 0
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 129996293502.86948,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 172.6,
+    "pullOver": 64.66666666666667,
+    "doubleCatch": 0.21012797505573957,
+    "catch1": 0.9281499999999999,
+    "catchBoss": 0.657875,
+    "critChance": 0.6,
+    "critMult": 6.549642499999999,
+    "incomeMult": 1359895.3109758552,
+    "hp0": 8.536622293889557e+75,
+    "hp3": 1.0243946752667469e+77,
+    "reward0": 3.033812489677613e+59,
+    "reward2": 1.8202874938065675e+60,
+    "stonesFor": 1108,
+    "attachMult": 4.617713999999999,
+    "setMult": 1,
+    "squad0": 1201165751966.514,
+    "range": 400,
+    "mainKind": "brush",
+    "skinDmg": 3,
+    "skinIncome": 1.8,
+    "cost": [
+     5276463012,
+     4068098330,
+     83985041851
+    ],
+    "bossTime": 35,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 224,
+    "room": 4,
+    "maxHouse": 229,
+    "maxStage": 1144,
+    "lvPower": 291,
+    "lvPull": 169,
+    "lvCollect": 139,
+    "stones": 1664,
+    "altar": {
+     "might": 4,
+     "harvest": 0,
+     "luck": 0,
+     "hourglass": 2,
+     "night": 4,
+     "memory": 1
+    },
+    "skins": [
+     "ginger",
+     "spotty",
+     "black",
+     "chef",
+     "angel",
+     "knight",
+     "dj",
+     "firefighter",
+     "beach"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "cactus",
+      "stars": 1
+     },
+     {
+      "id": 2,
+      "type": "cuckoo",
+      "stars": 4
+     },
+     {
+      "id": 3,
+      "type": "aurora",
+      "stars": 5
+     },
+     {
+      "id": 4,
+      "type": "ghosttrain",
+      "stars": 2
+     },
+     {
+      "id": 5,
+      "type": "stormlord",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "fire",
+      "stars": 4
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "rocket",
+      "rank": 3
+     },
+     {
+      "id": 101,
+      "kind": "wide",
+      "rank": 0
+     },
+     {
+      "id": 102,
+      "kind": "turbo",
+      "rank": 4
+     },
+     {
+      "id": 103,
+      "kind": "narrow",
+      "rank": 2
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 0,
+     "sock": 0
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 5.651467761470096e+21,
+    "fireRate": 22.02252,
+    "captureChance": 0.95,
+    "pullPower": 241.6,
+    "pullOver": 122.16666666666666,
+    "doubleCatch": 0.3342688161480217,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 3623587.696708727,
+    "hp0": 1.93711454691378e+94,
+    "hp3": 2.3245374562965362e+95,
+    "reward0": 1.0504715214777879e+75,
+    "reward2": 6.302829128866727e+75,
+    "stonesFor": 1631,
+    "attachMult": 4.43102,
+    "setMult": 1,
+    "squad0": 3.1083072688085533e+21,
+    "range": 469.36,
+    "mainKind": "turbo",
+    "skinDmg": 1.55,
+    "skinIncome": 2.58,
+    "cost": [
+     1.107518260953431e+26,
+     4514187449985308,
+     9927453903438
+    ],
+    "bossTime": 40,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 80,
+    "room": 1,
+    "maxHouse": 84,
+    "maxStage": 419,
+    "lvPower": 58,
+    "lvPull": 66,
+    "lvCollect": 251,
+    "stones": 2102,
+    "altar": {
+     "might": 1,
+     "harvest": 9,
+     "luck": 4,
+     "hourglass": 2,
+     "night": 2,
+     "memory": 3
+    },
+    "skins": [
+     "ginger",
+     "ninja",
+     "wizard",
+     "detective",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "candle",
+      "stars": 3
+     },
+     {
+      "id": 2,
+      "type": "sheet",
+      "stars": 3
+     },
+     {
+      "id": 3,
+      "type": "mimic",
+      "stars": 3
+     },
+     {
+      "id": 4,
+      "type": "sock",
+      "stars": 2
+     },
+     {
+      "id": 5,
+      "type": "textbook",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "slime",
+      "stars": 4
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "storm",
+      "rank": 5
+     },
+     {
+      "id": 101,
+      "kind": "wide",
+      "rank": 1
+     },
+     {
+      "id": 102,
+      "kind": "magnet",
+      "rank": 1
+     },
+     {
+      "id": 103,
+      "kind": "brush",
+      "rank": 5
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 1
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 41607319.12517377,
+    "fireRate": 8.97,
+    "captureChance": 0.95,
+    "pullPower": 130,
+    "pullOver": 29.166666666666693,
+    "doubleCatch": 0.10602485074453183,
+    "catch1": 0.8775625,
+    "catchBoss": 0.5314062500000002,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 97923054876.29175,
+    "hp0": 9.745138196527204e+40,
+    "hp3": 1.1694165835832645e+42,
+    "reward0": 3.703325491277238e+35,
+    "reward2": 2.221995294766343e+36,
+    "stonesFor": 331,
+    "attachMult": 4.519714,
+    "setMult": 1,
+    "squad0": 251724280.70730135,
+    "range": 400,
+    "mainKind": "storm",
+    "skinDmg": 2.1500000000000004,
+    "skinIncome": 1.15,
+    "cost": [
+     836585,
+     5748003,
+     4.6680867125743185e+22
+    ],
+    "bossTime": 40,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 53,
+    "room": 5,
+    "maxHouse": 72,
+    "maxStage": 359,
+    "lvPower": 108,
+    "lvPull": 196,
+    "lvCollect": 68,
+    "stones": 1762,
+    "altar": {
+     "might": 7,
+     "harvest": 5,
+     "luck": 1,
+     "hourglass": 0,
+     "night": 1,
+     "memory": 0
+    },
+    "skins": [
+     "ginger",
+     "siam",
+     "pirate",
+     "vampire",
+     "golden",
+     "knight",
+     "robot",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "bell",
+      "stars": 5
+     },
+     {
+      "id": 2,
+      "type": "puppeteer",
+      "stars": 3
+     },
+     {
+      "id": 3,
+      "type": "drowned",
+      "stars": 2
+     },
+     {
+      "id": 4,
+      "type": "clown",
+      "stars": 5
+     },
+     {
+      "id": 5,
+      "type": "lavagolem",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "ash",
+      "stars": 5
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "rocket",
+      "rank": 0
+     },
+     {
+      "id": 101,
+      "kind": "frost",
+      "rank": 1
+     },
+     {
+      "id": 102,
+      "kind": "rocket",
+      "rank": 0
+     },
+     {
+      "id": 103,
+      "kind": "rocket",
+      "rank": 2
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 3
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 105271339673.5092,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 277,
+    "pullOver": 151.66666666666663,
+    "doubleCatch": 0.3817112900641628,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 33586.745259673335,
+    "hp0": 6.922239032139155e+27,
+    "hp3": 8.306686838566986e+28,
+    "reward0": 1.4205540578386675e+21,
+    "reward2": 8.523324347032004e+21,
+    "stonesFor": 171,
+    "attachMult": 2.318,
+    "setMult": 1,
+    "squad0": 3082555368319.6978,
+    "range": 400,
+    "mainKind": "rocket",
+    "skinDmg": 2.9,
+    "skinIncome": 1.75,
+    "cost": [
+     17398102382,
+     968935833123912400,
+     7333138
+    ],
+    "bossTime": 30,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 61,
+    "room": 4,
+    "maxHouse": 72,
+    "maxStage": 359,
+    "lvPower": 285,
+    "lvPull": 44,
+    "lvCollect": 248,
+    "stones": 2612,
+    "altar": {
+     "might": 4,
+     "harvest": 8,
+     "luck": 3,
+     "hourglass": 2,
+     "night": 3,
+     "memory": 2
+    },
+    "skins": [
+     "ginger",
+     "ginger",
+     "peach",
+     "black",
+     "siam",
+     "ninja",
+     "angel",
+     "detective",
+     "dj",
+     "cowboy"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "skelecat",
+      "stars": 3
+     },
+     {
+      "id": 2,
+      "type": "parrot",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "fire",
+      "stars": 4
+     },
+     {
+      "id": 4,
+      "type": "grumpcloud",
+      "stars": 4
+     },
+     {
+      "id": 5,
+      "type": "washer",
+      "stars": 1
+     },
+     {
+      "id": 6,
+      "type": "portrait",
+      "stars": 3
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "rocket",
+      "rank": 4
+     },
+     {
+      "id": 101,
+      "kind": "wide",
+      "rank": 4
+     },
+     {
+      "id": 102,
+      "kind": "turbo",
+      "rank": 3
+     },
+     {
+      "id": 103,
+      "kind": "wide",
+      "rank": 5
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 2,
+     "sock": 2
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 5.237814033354827e+21,
+    "fireRate": 11.733250139999999,
+    "captureChance": 0.95,
+    "pullPower": 100.6,
+    "pullOver": 4.6666666666666705,
+    "doubleCatch": 0.018379284268738916,
+    "catch1": 0.84265,
+    "catchBoss": 0.444125,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 94334315032.92017,
+    "hp0": 5.684573045509999e+31,
+    "hp3": 6.821487654612e+32,
+    "reward0": 9.293414736953704e+29,
+    "reward2": 5.576048842172223e+30,
+    "stonesFor": 215,
+    "attachMult": 5.32344,
+    "setMult": 1,
+    "squad0": 6.337754980359342e+21,
+    "range": 400,
+    "mainKind": "rocket",
+    "skinDmg": 1.5799999999999998,
+    "skinIncome": 1.65,
+    "cost": [
+     3.3588600708027693e+25,
+     72377,
+     2.570747503411254e+22
+    ],
+    "bossTime": 40,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 30,
+    "room": 3,
+    "maxHouse": 45,
+    "maxStage": 224,
+    "lvPower": 11,
+    "lvPull": 196,
+    "lvCollect": 234,
+    "stones": 2292,
+    "altar": {
+     "might": 10,
+     "harvest": 4,
+     "luck": 1,
+     "hourglass": 4,
+     "night": 0,
+     "memory": 5
+    },
+    "skins": [
+     "ginger",
+     "spotty",
+     "white",
+     "siam",
+     "pirate",
+     "chef",
+     "angel",
+     "santa",
+     "firefighter",
+     "tree",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "catbeard",
+      "stars": 1
+     },
+     {
+      "id": 2,
+      "type": "cactus",
+      "stars": 4
+     },
+     {
+      "id": 3,
+      "type": "clown",
+      "stars": 4
+     },
+     {
+      "id": 4,
+      "type": "spark",
+      "stars": 2
+     },
+     {
+      "id": 5,
+      "type": "headless",
+      "stars": 3
+     },
+     {
+      "id": 6,
+      "type": "tv",
+      "stars": 3
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "wide",
+      "rank": 1
+     },
+     {
+      "id": 101,
+      "kind": "narrow",
+      "rank": 5
+     },
+     {
+      "id": 102,
+      "kind": "narrow",
+      "rank": 1
+     },
+     {
+      "id": 103,
+      "kind": "narrow",
+      "rank": 1
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 2,
+     "sock": 2
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 568952.9366122439,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 277,
+    "pullOver": 151.66666666666663,
+    "doubleCatch": 0.3817112900641628,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 20902981248.66973,
+    "hp0": 12499504956768104,
+    "hp3": 149994059481217250,
+    "reward0": 69960153593610486000,
+    "reward2": 419760921561662950000,
+    "stonesFor": 66,
+    "attachMult": 4.859713999999999,
+    "setMult": 1,
+    "squad0": 1991335.2781428536,
+    "range": 640,
+    "mainKind": "narrow",
+    "skinDmg": 2.4000000000000004,
+    "skinIncome": 2.9799999999999995,
+    "cost": [
+     73,
+     968935833123912400,
+     1.5886264652156106e+21
+    ],
+    "bossTime": 50,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 229,
+    "room": 4,
+    "maxHouse": 247,
+    "maxStage": 1234,
+    "lvPower": 279,
+    "lvPull": 154,
+    "lvCollect": 296,
+    "stones": 2348,
+    "altar": {
+     "might": 0,
+     "harvest": 6,
+     "luck": 5,
+     "hourglass": 1,
+     "night": 2,
+     "memory": 3
+    },
+    "skins": [
+     "ginger",
+     "spotty",
+     "tabby",
+     "white",
+     "chef",
+     "jack",
+     "robot"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "firefly",
+      "stars": 4
+     },
+     {
+      "id": 2,
+      "type": "ringmaster",
+      "stars": 3
+     },
+     {
+      "id": 3,
+      "type": "aurora",
+      "stars": 2
+     },
+     {
+      "id": 4,
+      "type": "jelly",
+      "stars": 4
+     },
+     {
+      "id": 5,
+      "type": "moonking",
+      "stars": 4
+     },
+     {
+      "id": 6,
+      "type": "tv",
+      "stars": 1
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "brush",
+      "rank": 4
+     },
+     {
+      "id": 101,
+      "kind": "narrow",
+      "rank": 3
+     },
+     {
+      "id": 102,
+      "kind": "turbo",
+      "rank": 2
+     },
+     {
+      "id": 103,
+      "kind": "frost",
+      "rank": 5
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 0,
+     "sock": 2
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 916222118396548100000,
+    "fireRate": 15.468,
+    "captureChance": 0.95,
+    "pullPower": 238.6,
+    "pullOver": 119.66666666666667,
+    "doubleCatch": 0.32980285007827315,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.4340839999999999,
+    "critMult": 5.088025,
+    "incomeMult": 2558022912195.693,
+    "hp0": 1.349317214694795e+96,
+    "hp3": 1.6191806576337539e+97,
+    "reward0": 2.441158316488678e+82,
+    "reward2": 1.4646949898932065e+83,
+    "stonesFor": 1687,
+    "attachMult": 7.070734,
+    "setMult": 1,
+    "squad0": 1.2194916395858059e+22,
+    "range": 517.9119999999999,
+    "mainKind": "frost",
+    "skinDmg": 1.3800000000000001,
+    "skinIncome": 1.9300000000000002,
+    "cost": [
+     1.0186686191088966e+25,
+     228655750984043,
+     3.5919583737262865e+26
+    ],
+    "bossTime": 35,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 138,
+    "room": 4,
+    "maxHouse": 157,
+    "maxStage": 784,
+    "lvPower": 330,
+    "lvPull": 110,
+    "lvCollect": 99,
+    "stones": 274,
+    "altar": {
+     "might": 11,
+     "harvest": 5,
+     "luck": 3,
+     "hourglass": 1,
+     "night": 3,
+     "memory": 0
+    },
+    "skins": [
+     "ginger",
+     "ginger",
+     "spotty",
+     "tabby",
+     "white",
+     "ninja",
+     "chef",
+     "vampire",
+     "golden",
+     "reaper",
+     "jack",
+     "knight",
+     "tree",
+     "cupid"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "rosequeen",
+      "stars": 1
+     },
+     {
+      "id": 2,
+      "type": "wisp",
+      "stars": 2
+     },
+     {
+      "id": 3,
+      "type": "frostqueen",
+      "stars": 4
+     },
+     {
+      "id": 4,
+      "type": "grumpcloud",
+      "stars": 3
+     },
+     {
+      "id": 5,
+      "type": "sheet",
+      "stars": 1
+     },
+     {
+      "id": 6,
+      "type": "flask",
+      "stars": 3
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "storm",
+      "rank": 2
+     },
+     {
+      "id": 101,
+      "kind": "turbo",
+      "rank": 0
+     },
+     {
+      "id": 102,
+      "kind": "storm",
+      "rank": 5
+     },
+     {
+      "id": 103,
+      "kind": "brush",
+      "rank": 4
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 0,
+     "sock": 3
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 2.995568914074758e+24,
+    "fireRate": 13.1175,
+    "captureChance": 0.95,
+    "pullPower": 179.79999999999998,
+    "pullOver": 70.66666666666669,
+    "doubleCatch": 0.2254150758126235,
+    "catch1": 0.9367,
+    "catchBoss": 0.67925,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 118598.78192758063,
+    "hp0": 3.8749370684905906e+62,
+    "hp3": 4.649924482188709e+63,
+    "reward0": 2.730576719845374e+47,
+    "reward2": 1.638346031907224e+48,
+    "stonesFor": 775,
+    "attachMult": 4.617713999999999,
+    "setMult": 1,
+    "squad0": 1.0484491199261654e+25,
+    "range": 400,
+    "mainKind": "storm",
+    "skinDmg": 3.7299999999999995,
+    "skinIncome": 3.1799999999999997,
+    "cost": [
+     2.58454615356565e+29,
+     36253469819,
+     3486941426
+    ],
+    "bossTime": 35,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 35,
+    "room": 1,
+    "maxHouse": 35,
+    "maxStage": 174,
+    "lvPower": 284,
+    "lvPull": 32,
+    "lvCollect": 69,
+    "stones": 261,
+    "altar": {
+     "might": 9,
+     "harvest": 0,
+     "luck": 5,
+     "hourglass": 0,
+     "night": 0,
+     "memory": 4
+    },
+    "skins": [
+     "ginger",
+     "vampire",
+     "reaper",
+     "samurai",
+     "knight",
+     "dj"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "fire",
+      "stars": 4
+     },
+     {
+      "id": 2,
+      "type": "puppeteer",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "sock",
+      "stars": 4
+     },
+     {
+      "id": 4,
+      "type": "puppet",
+      "stars": 3
+     },
+     {
+      "id": 5,
+      "type": "firedragon",
+      "stars": 3
+     },
+     {
+      "id": 6,
+      "type": "shade",
+      "stars": 2
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "wide",
+      "rank": 5
+     },
+     {
+      "id": 101,
+      "kind": "wide",
+      "rank": 3
+     },
+     {
+      "id": 102,
+      "kind": "wide",
+      "rank": 3
+     },
+     {
+      "id": 103,
+      "kind": "wide",
+      "rank": 5
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 0
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 2.2924791020081895e+21,
+    "fireRate": 5.832,
+    "captureChance": 0.922,
+    "pullPower": 92.19999999999999,
+    "pullOver": 0,
+    "doubleCatch": 0,
+    "catch1": 0.8113600000000001,
+    "catchBoss": 0.41490000000000005,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 1806.9138882864402,
+    "hp0": 2543404004934167000,
+    "hp3": 30520848059210007000,
+    "reward0": 150532511468719.53,
+    "reward2": 903195068812317.1,
+    "stonesFor": 86,
+    "attachMult": 5.804913999999999,
+    "setMult": 1,
+    "squad0": 3.661547621727481e+22,
+    "range": 400,
+    "mainKind": "wide",
+    "skinDmg": 2.3,
+    "skinIncome": 1.55,
+    "cost": [
+     2.7531639924612865e+25,
+     6657,
+     8946429
+    ],
+    "bossTime": 30,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 223,
+    "room": 1,
+    "maxHouse": 242,
+    "maxStage": 1209,
+    "lvPower": 55,
+    "lvPull": 24,
+    "lvCollect": 269,
+    "stones": 255,
+    "altar": {
+     "might": 9,
+     "harvest": 11,
+     "luck": 0,
+     "hourglass": 1,
+     "night": 1,
+     "memory": 5
+    },
+    "skins": [
+     "ginger",
+     "ginger",
+     "santa",
+     "jack",
+     "dragon",
+     "cupid"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "chalk",
+      "stars": 5
+     },
+     {
+      "id": 2,
+      "type": "headless",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "shade",
+      "stars": 4
+     },
+     {
+      "id": 4,
+      "type": "firefly",
+      "stars": 3
+     },
+     {
+      "id": 5,
+      "type": "starling",
+      "stars": 1
+     },
+     {
+      "id": 6,
+      "type": "moth",
+      "stars": 1
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "storm",
+      "rank": 0
+     },
+     {
+      "id": 101,
+      "kind": "narrow",
+      "rank": 3
+     },
+     {
+      "id": 102,
+      "kind": "magnet",
+      "rank": 5
+     },
+     {
+      "id": 103,
+      "kind": "rocket",
+      "rank": 4
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 0
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 24447496.354192123,
+    "fireRate": 5.037,
+    "captureChance": 0.676,
+    "pullPower": 67.6,
+    "pullOver": 0,
+    "doubleCatch": 0,
+    "catch1": 0.5948800000000001,
+    "catchBoss": 0.3042,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 241561573086.49988,
+    "hp0": 4.982054794242466e+93,
+    "hp3": 5.97846575309096e+94,
+    "reward0": 2.289236348266247e+79,
+    "reward2": 1.3735418089597482e+80,
+    "stonesFor": 1620,
+    "attachMult": 5.022314,
+    "setMult": 1,
+    "squad0": 143174317.64869082,
+    "range": 517.9119999999999,
+    "mainKind": "magnet",
+    "skinDmg": 2.3,
+    "skinIncome": 1.55,
+    "cost": [
+     460713,
+     1356,
+     1.6734620453933825e+24
+    ],
+    "bossTime": 35,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 76,
+    "room": 3,
+    "maxHouse": 80,
+    "maxStage": 399,
+    "lvPower": 103,
+    "lvPull": 195,
+    "lvCollect": 142,
+    "stones": 383,
+    "altar": {
+     "might": 0,
+     "harvest": 8,
+     "luck": 3,
+     "hourglass": 4,
+     "night": 4,
+     "memory": 2
+    },
+    "skins": [
+     "ginger",
+     "ginger",
+     "peach",
+     "vampire",
+     "golden",
+     "detective",
+     "dj",
+     "cupid"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "icicle",
+      "stars": 5
+     },
+     {
+      "id": 2,
+      "type": "wisp",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "gear",
+      "stars": 2
+     },
+     {
+      "id": 4,
+      "type": "lantern",
+      "stars": 1
+     },
+     {
+      "id": 5,
+      "type": "juggler",
+      "stars": 5
+     },
+     {
+      "id": 6,
+      "type": "stormlord",
+      "stars": 3
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "magnet",
+      "rank": 0
+     },
+     {
+      "id": 101,
+      "kind": "rocket",
+      "rank": 5
+     },
+     {
+      "id": 102,
+      "kind": "frost",
+      "rank": 4
+     },
+     {
+      "id": 103,
+      "kind": "frost",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 1
+    },
+    "boostPrest": 2,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 4402929889.816648,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 281.79999999999995,
+    "pullOver": 155.66666666666663,
+    "doubleCatch": 0.3874553938907931,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 5128357.041425451,
+    "hp0": 1.5209613922019258e+39,
+    "hp3": 1.8251536706423108e+40,
+    "reward0": 1.5671986837202407e+30,
+    "reward2": 9.403192102321444e+30,
+    "stonesFor": 610,
+    "attachMult": 5.710134,
+    "setMult": 1,
+    "squad0": 56727700934.78891,
+    "range": 400,
+    "mainKind": "rocket",
+    "skinDmg": 2.2,
+    "skinIncome": 1.75,
+    "cost": [
+     6437284875,
+     794209699281895400,
+     18026747315650
+    ],
+    "bossTime": 50,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 117,
+    "room": 4,
+    "maxHouse": 125,
+    "maxStage": 624,
+    "lvPower": 54,
+    "lvPull": 182,
+    "lvCollect": 47,
+    "stones": 2701,
+    "altar": {
+     "might": 1,
+     "harvest": 1,
+     "luck": 4,
+     "hourglass": 3,
+     "night": 0,
+     "memory": 2
+    },
+    "skins": [
+     "ginger",
+     "ginger",
+     "knight"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "darkknight",
+      "stars": 2
+     },
+     {
+      "id": 2,
+      "type": "angler",
+      "stars": 1
+     },
+     {
+      "id": 3,
+      "type": "moonking",
+      "stars": 3
+     },
+     {
+      "id": 4,
+      "type": "mermaid",
+      "stars": 3
+     },
+     {
+      "id": 5,
+      "type": "stormlord",
+      "stars": 5
+     },
+     {
+      "id": 6,
+      "type": "headmistress",
+      "stars": 5
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "turbo",
+      "rank": 5
+     },
+     {
+      "id": 101,
+      "kind": "wide",
+      "rank": 3
+     },
+     {
+      "id": 102,
+      "kind": "narrow",
+      "rank": 5
+     },
+     {
+      "id": 103,
+      "kind": "turbo",
+      "rank": 1
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 1,
+     "sock": 3
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 28862709.70261489,
+    "fireRate": 24,
+    "captureChance": 0.95,
+    "pullPower": 269.2,
+    "pullOver": 145.16666666666669,
+    "doubleCatch": 0.3720441710664208,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 2726.5985022672344,
+    "hp0": 7.044300390440704e+54,
+    "hp3": 8.453160468528845e+55,
+    "reward0": 2.657798850772889e+39,
+    "reward2": 1.5946793104637334e+40,
+    "stonesFor": 600,
+    "attachMult": 7.662027999999999,
+    "setMult": 1,
+    "squad0": 34923878.74016402,
+    "range": 640,
+    "mainKind": "turbo",
+    "skinDmg": 1.2,
+    "skinIncome": 1.15,
+    "cost": [
+     377633,
+     59876635319254020,
+     112650
+    ],
+    "bossTime": 45,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 181,
+    "room": 1,
+    "maxHouse": 193,
+    "maxStage": 964,
+    "lvPower": 155,
+    "lvPull": 22,
+    "lvCollect": 243,
+    "stones": 1938,
+    "altar": {
+     "might": 10,
+     "harvest": 10,
+     "luck": 0,
+     "hourglass": 1,
+     "night": 1,
+     "memory": 2
+    },
+    "skins": [
+     "ginger",
+     "black",
+     "devil",
+     "golden",
+     "cowboy"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "puppeteer",
+      "stars": 3
+     },
+     {
+      "id": 2,
+      "type": "kraken",
+      "stars": 1
+     },
+     {
+      "id": 3,
+      "type": "spark",
+      "stars": 2
+     },
+     {
+      "id": 4,
+      "type": "lantern",
+      "stars": 1
+     },
+     {
+      "id": 5,
+      "type": "rosequeen",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "mirror",
+      "stars": 2
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "turbo",
+      "rank": 1
+     },
+     {
+      "id": 101,
+      "kind": "narrow",
+      "rank": 4
+     },
+     {
+      "id": 102,
+      "kind": "storm",
+      "rank": 1
+     },
+     {
+      "id": 103,
+      "kind": "magnet",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 1
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 158391126089925.7,
+    "fireRate": 5.731829999999999,
+    "captureChance": 0.652,
+    "pullPower": 65.2,
+    "pullOver": 0,
+    "doubleCatch": 0,
+    "catch1": 0.57376,
+    "catchBoss": 0.2934,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 68106191108.02226,
+    "hp0": 1.6464741896830233e+78,
+    "hp3": 1.975769027619628e+79,
+    "reward0": 1.1569188635061972e+66,
+    "reward2": 6.941513181037184e+66,
+    "stonesFor": 1177,
+    "attachMult": 3.3504199999999997,
+    "setMult": 1,
+    "squad0": 2683145675963341.5,
+    "range": 600.4504,
+    "mainKind": "narrow",
+    "skinDmg": 2.08,
+    "skinIncome": 1.5,
+    "cost": [
+     199257154428952,
+     911,
+     9.51174654524111e+21
+    ],
+    "bossTime": 35,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 222,
+    "room": 1,
+    "maxHouse": 241,
+    "maxStage": 1204,
+    "lvPower": 364,
+    "lvPull": 73,
+    "lvCollect": 196,
+    "stones": 1375,
+    "altar": {
+     "might": 11,
+     "harvest": 8,
+     "luck": 2,
+     "hourglass": 1,
+     "night": 1,
+     "memory": 3
+    },
+    "skins": [
+     "ginger",
+     "black",
+     "siam",
+     "santa",
+     "reaper",
+     "samurai",
+     "detective"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "ghosttrain",
+      "stars": 2
+     },
+     {
+      "id": 2,
+      "type": "juggler",
+      "stars": 3
+     },
+     {
+      "id": 3,
+      "type": "glovepuppet",
+      "stars": 5
+     },
+     {
+      "id": 4,
+      "type": "puppet",
+      "stars": 1
+     },
+     {
+      "id": 5,
+      "type": "grumpcloud",
+      "stars": 5
+     },
+     {
+      "id": 6,
+      "type": "headmistress",
+      "stars": 2
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "wide",
+      "rank": 1
+     },
+     {
+      "id": 101,
+      "kind": "rocket",
+      "rank": 5
+     },
+     {
+      "id": 102,
+      "kind": "storm",
+      "rank": 5
+     },
+     {
+      "id": 103,
+      "kind": "frost",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 2,
+     "sock": 0
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 1.4760522767051567e+27,
+    "fireRate": 9.15,
+    "captureChance": 0.95,
+    "pullPower": 132.39999999999998,
+    "pullOver": 31.166666666666675,
+    "doubleCatch": 0.11256747166768681,
+    "catch1": 0.8804124999999999,
+    "catchBoss": 0.53853125,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 951056253.2050886,
+    "hp0": 2.132145057650959e+93,
+    "hp3": 2.5585740691811506e+94,
+    "reward0": 4.4810499755909105e+76,
+    "reward2": 2.688629985354546e+77,
+    "stonesFor": 1609,
+    "attachMult": 7.219428,
+    "setMult": 1,
+    "squad0": 1.1365602530629707e+28,
+    "range": 400,
+    "mainKind": "rocket",
+    "skinDmg": 2.2,
+    "skinIncome": 1.7,
+    "cost": [
+     2.231611213127053e+32,
+     23122556,
+     830516428391925000
+    ],
+    "bossTime": 35,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 193,
+    "room": 5,
+    "maxHouse": 195,
+    "maxStage": 974,
+    "lvPower": 368,
+    "lvPull": 72,
+    "lvCollect": 11,
+    "stones": 2261,
+    "altar": {
+     "might": 0,
+     "harvest": 3,
+     "luck": 1,
+     "hourglass": 4,
+     "night": 2,
+     "memory": 1
+    },
+    "skins": [
+     "ginger",
+     "peach",
+     "pirate",
+     "astro",
+     "devil",
+     "reaper",
+     "robot",
+     "beach"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "fire",
+      "stars": 4
+     },
+     {
+      "id": 2,
+      "type": "stormlord",
+      "stars": 4
+     },
+     {
+      "id": 3,
+      "type": "lavagolem",
+      "stars": 3
+     },
+     {
+      "id": 4,
+      "type": "pharaoh",
+      "stars": 3
+     },
+     {
+      "id": 5,
+      "type": "mask",
+      "stars": 4
+     },
+     {
+      "id": 6,
+      "type": "sock",
+      "stars": 3
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "storm",
+      "rank": 0
+     },
+     {
+      "id": 101,
+      "kind": "brush",
+      "rank": 2
+     },
+     {
+      "id": 102,
+      "kind": "rocket",
+      "rank": 1
+     },
+     {
+      "id": 103,
+      "kind": "magnet",
+      "rank": 4
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 0,
+     "sock": 3
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 2.2234497902425843e+26,
+    "fireRate": 11.3256,
+    "captureChance": 0.95,
+    "pullPower": 128.2,
+    "pullOver": 27.66666666666667,
+    "doubleCatch": 0.10106031795908751,
+    "catch1": 0.8754249999999999,
+    "catchBoss": 0.5260625000000001,
+    "critChance": 0.2156,
+    "critMult": 3.7225,
+    "incomeMult": 572.2730374968862,
+    "hp0": 8.60061187032757e+82,
+    "hp3": 1.0320734244393083e+84,
+    "reward0": 7.453862496214702e+61,
+    "reward2": 4.472317497728821e+62,
+    "stonesFor": 1299,
+    "attachMult": 3.78842,
+    "setMult": 1,
+    "squad0": 2.9594116708128805e+27,
+    "range": 400,
+    "mainKind": "magnet",
+    "skinDmg": 2.5,
+    "skinIncome": 1.6,
+    "cost": [
+     4.9437654449238854e+32,
+     18952914,
+     87
+    ],
+    "bossTime": 50,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 26,
+    "room": 5,
+    "maxHouse": 36,
+    "maxStage": 179,
+    "lvPower": 235,
+    "lvPull": 52,
+    "lvCollect": 290,
+    "stones": 1721,
+    "altar": {
+     "might": 11,
+     "harvest": 10,
+     "luck": 4,
+     "hourglass": 3,
+     "night": 4,
+     "memory": 1
+    },
+    "skins": [
+     "ginger",
+     "ginger",
+     "devil",
+     "golden",
+     "reaper",
+     "robot",
+     "dj",
+     "cupid",
+     "beach",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "thundercloud",
+      "stars": 5
+     },
+     {
+      "id": 2,
+      "type": "grumpcloud",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "sheet",
+      "stars": 2
+     },
+     {
+      "id": 4,
+      "type": "mummy",
+      "stars": 3
+     },
+     {
+      "id": 5,
+      "type": "ash",
+      "stars": 1
+     },
+     {
+      "id": 6,
+      "type": "firefly",
+      "stars": 5
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "rocket",
+      "rank": 5
+     },
+     {
+      "id": 101,
+      "kind": "rocket",
+      "rank": 0
+     },
+     {
+      "id": 102,
+      "kind": "turbo",
+      "rank": 3
+     },
+     {
+      "id": 103,
+      "kind": "wide",
+      "rank": 4
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 2
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 45464019633506460000,
+    "fireRate": 16.2671004,
+    "captureChance": 0.95,
+    "pullPower": 113.19999999999999,
+    "pullOver": 15.16666666666668,
+    "doubleCatch": 0.05770043912289788,
+    "catch1": 0.8576125,
+    "catchBoss": 0.48153125,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 3162520267215.2593,
+    "hp0": 195084606061879.9,
+    "hp3": 2341015272742559,
+    "reward0": 855292599636914100000,
+    "reward2": 5.131755597821486e+21,
+    "stonesFor": 51,
+    "attachMult": 6.692734,
+    "setMult": 1,
+    "squad0": 1.5975329074900042e+21,
+    "range": 400,
+    "mainKind": "rocket",
+    "skinDmg": 3.6500000000000004,
+    "skinIncome": 2.1,
+    "cost": [
+     1.6151035729692042e+21,
+     355205,
+     1.0893622238886207e+26
+    ],
+    "bossTime": 45,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 105,
+    "room": 3,
+    "maxHouse": 114,
+    "maxStage": 569,
+    "lvPower": 112,
+    "lvPull": 14,
+    "lvCollect": 7,
+    "stones": 1274,
+    "altar": {
+     "might": 7,
+     "harvest": 7,
+     "luck": 0,
+     "hourglass": 0,
+     "night": 4,
+     "memory": 1
+    },
+    "skins": [
+     "ginger",
+     "black",
+     "santa",
+     "golden",
+     "firefighter",
+     "cupid"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "conductor",
+      "stars": 4
+     },
+     {
+      "id": 2,
+      "type": "snowman",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "ghostking",
+      "stars": 1
+     },
+     {
+      "id": 4,
+      "type": "salamander",
+      "stars": 5
+     },
+     {
+      "id": 5,
+      "type": "spark",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "lavagolem",
+      "stars": 4
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "rocket",
+      "rank": 3
+     },
+     {
+      "id": 101,
+      "kind": "magnet",
+      "rank": 0
+     },
+     {
+      "id": 102,
+      "kind": "rocket",
+      "rank": 0
+     },
+     {
+      "id": 103,
+      "kind": "brush",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 0
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 97268486134.28055,
+    "fireRate": 5.292,
+    "captureChance": 0.556,
+    "pullPower": 55.6,
+    "pullOver": 0,
+    "doubleCatch": 0,
+    "catch1": 0.48928000000000005,
+    "catchBoss": 0.25020000000000003,
+    "critChance": 0.14,
+    "critMult": 3.25,
+    "incomeMult": 451.8321720188205,
+    "hp0": 2.243977490760529e+50,
+    "hp3": 2.6927729889126348e+51,
+    "reward0": 8.73594330522369e+34,
+    "reward2": 5.241565983134213e+35,
+    "stonesFor": 507,
+    "attachMult": 2.5826,
+    "setMult": 1,
+    "squad0": 569643162196.8009,
+    "range": 400,
+    "mainKind": "rocket",
+    "skinDmg": 2.05,
+    "skinIncome": 2.05,
+    "cost": [
+     38542617485,
+     185,
+     39
+    ],
+    "bossTime": 30,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 217,
+    "room": 5,
+    "maxHouse": 224,
+    "maxStage": 1119,
+    "lvPower": 153,
+    "lvPull": 101,
+    "lvCollect": 142,
+    "stones": 896,
+    "altar": {
+     "might": 11,
+     "harvest": 2,
+     "luck": 2,
+     "hourglass": 4,
+     "night": 3,
+     "memory": 5
+    },
+    "skins": [
+     "ginger",
+     "spotty",
+     "siam",
+     "astro",
+     "angel",
+     "samurai",
+     "knight",
+     "cowboy"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "frostqueen",
+      "stars": 5
+     },
+     {
+      "id": 2,
+      "type": "sheet",
+      "stars": 3
+     },
+     {
+      "id": 3,
+      "type": "snowman",
+      "stars": 3
+     },
+     {
+      "id": 4,
+      "type": "cactus",
+      "stars": 1
+     },
+     {
+      "id": 5,
+      "type": "armor",
+      "stars": 4
+     },
+     {
+      "id": 6,
+      "type": "sheet",
+      "stars": 4
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "magnet",
+      "rank": 2
+     },
+     {
+      "id": 101,
+      "kind": "frost",
+      "rank": 0
+     },
+     {
+      "id": 102,
+      "kind": "frost",
+      "rank": 1
+     },
+     {
+      "id": 103,
+      "kind": "brush",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 1,
+     "sock": 0
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 41348077363657.09,
+    "fireRate": 11.25,
+    "captureChance": 0.95,
+    "pullPower": 166,
+    "pullOver": 59.16666666666668,
+    "doubleCatch": 0.19556735404826206,
+    "catch1": 0.9203125,
+    "catchBoss": 0.63828125,
+    "critChance": 0.14,
+    "critMult": 3.25,
+    "incomeMult": 3205761.4602581277,
+    "hp0": 6.03575205249275e+91,
+    "hp3": 7.2429024629913e+92,
+    "reward0": 8.025094185374897e+72,
+    "reward2": 4.815056511224938e+73,
+    "stonesFor": 1554,
+    "attachMult": 2.318,
+    "setMult": 1,
+    "squad0": 4068134788578360.5,
+    "range": 400,
+    "mainKind": "magnet",
+    "skinDmg": 1.9299999999999997,
+    "skinIncome": 1.63,
+    "cost": [
+     133873390505880,
+     6054957555,
+     18026747315650
+    ],
+    "bossTime": 50,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 158,
+    "room": 4,
+    "maxHouse": 165,
+    "maxStage": 824,
+    "lvPower": 183,
+    "lvPull": 147,
+    "lvCollect": 179,
+    "stones": 2911,
+    "altar": {
+     "might": 6,
+     "harvest": 11,
+     "luck": 3,
+     "hourglass": 0,
+     "night": 2,
+     "memory": 2
+    },
+    "skins": [
+     "ginger",
+     "ginger",
+     "peach",
+     "black",
+     "white",
+     "pirate",
+     "vampire",
+     "devil",
+     "knight",
+     "cowboy",
+     "tree"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "conductor",
+      "stars": 4
+     },
+     {
+      "id": 2,
+      "type": "headless",
+      "stars": 4
+     },
+     {
+      "id": 3,
+      "type": "tv",
+      "stars": 4
+     },
+     {
+      "id": 4,
+      "type": "sarcophagus",
+      "stars": 3
+     },
+     {
+      "id": 5,
+      "type": "mask",
+      "stars": 4
+     },
+     {
+      "id": 6,
+      "type": "franken",
+      "stars": 1
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "brush",
+      "rank": 4
+     },
+     {
+      "id": 101,
+      "kind": "frost",
+      "rank": 0
+     },
+     {
+      "id": 102,
+      "kind": "wide",
+      "rank": 5
+     },
+     {
+      "id": 103,
+      "kind": "rocket",
+      "rank": 2
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 1
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 11099749480987940,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 224.2,
+    "pullOver": 107.66666666666667,
+    "doubleCatch": 0.3072989217671614,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.4340839999999999,
+    "critMult": 5.088025,
+    "incomeMult": 1073853585.3994007,
+    "hp0": 9.122202070460875e+69,
+    "hp3": 1.094664248455305e+71,
+    "reward0": 2.903375859302341e+57,
+    "reward2": 1.7420255155814046e+58,
+    "stonesFor": 955,
+    "attachMult": 6.288134,
+    "setMult": 1,
+    "squad0": 65004572860457790,
+    "range": 400,
+    "mainKind": "wide",
+    "skinDmg": 2.5299999999999994,
+    "skinIncome": 1.75,
+    "cost": [
+     52178210778207070,
+     56841209980277,
+     28263836110536950
+    ],
+    "bossTime": 30,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 103,
+    "room": 5,
+    "maxHouse": 103,
+    "maxStage": 514,
+    "lvPower": 264,
+    "lvPull": 6,
+    "lvCollect": 256,
+    "stones": 142,
+    "altar": {
+     "might": 10,
+     "harvest": 1,
+     "luck": 5,
+     "hourglass": 0,
+     "night": 3,
+     "memory": 2
+    },
+    "skins": [
+     "ginger",
+     "siam",
+     "pirate",
+     "angel",
+     "santa",
+     "samurai",
+     "detective",
+     "cupid",
+     "bunny",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "timekeeper",
+      "stars": 2
+     },
+     {
+      "id": 2,
+      "type": "puppet",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "bell",
+      "stars": 4
+     },
+     {
+      "id": 4,
+      "type": "spark",
+      "stars": 4
+     },
+     {
+      "id": 5,
+      "type": "thundercloud",
+      "stars": 3
+     },
+     {
+      "id": 6,
+      "type": "sock",
+      "stars": 3
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "turbo",
+      "rank": 1
+     },
+     {
+      "id": 101,
+      "kind": "wide",
+      "rank": 1
+     },
+     {
+      "id": 102,
+      "kind": "wide",
+      "rank": 2
+     },
+     {
+      "id": 103,
+      "kind": "turbo",
+      "rank": 1
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 1,
+     "sock": 3
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 47361220580368630000,
+    "fireRate": 5.98455,
+    "captureChance": 0.61,
+    "pullPower": 61,
+    "pullOver": 0,
+    "doubleCatch": 0,
+    "catch1": 0.5367999999999999,
+    "catchBoss": 0.2745,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 3681516256.761783,
+    "hp0": 5.771273998136606e+49,
+    "hp3": 6.925528797763927e+50,
+    "reward0": 2.3268942994428097e+41,
+    "reward2": 1.396136579665686e+42,
+    "stonesFor": 492,
+    "attachMult": 2.258,
+    "setMult": 1,
+    "squad0": 364681398468838500000,
+    "range": 400,
+    "mainKind": "wide",
+    "skinDmg": 2.7,
+    "skinIncome": 2.3,
+    "cost": [
+     5.15983088178984e+23,
+     37,
+     1.2616476064600063e+23
+    ],
+    "bossTime": 30,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 210,
+    "room": 3,
+    "maxHouse": 226,
+    "maxStage": 1129,
+    "lvPower": 366,
+    "lvPull": 45,
+    "lvCollect": 248,
+    "stones": 1959,
+    "altar": {
+     "might": 1,
+     "harvest": 1,
+     "luck": 3,
+     "hourglass": 0,
+     "night": 1,
+     "memory": 1
+    },
+    "skins": [
+     "ginger",
+     "tabby",
+     "peach",
+     "pirate",
+     "vampire",
+     "devil",
+     "reaper",
+     "knight",
+     "firefighter",
+     "beach"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "washer",
+      "stars": 2
+     },
+     {
+      "id": 2,
+      "type": "carousel",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "jelly",
+      "stars": 2
+     },
+     {
+      "id": 4,
+      "type": "textbook",
+      "stars": 4
+     },
+     {
+      "id": 5,
+      "type": "toy",
+      "stars": 1
+     },
+     {
+      "id": 6,
+      "type": "grumpcloud",
+      "stars": 1
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "rocket",
+      "rank": 1
+     },
+     {
+      "id": 101,
+      "kind": "narrow",
+      "rank": 0
+     },
+     {
+      "id": 102,
+      "kind": "rocket",
+      "rank": 0
+     },
+     {
+      "id": 103,
+      "kind": "narrow",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 1,
+     "sock": 2
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 9.982275480808189e+25,
+    "fireRate": 6.542400000000001,
+    "captureChance": 0.95,
+    "pullPower": 101.8,
+    "pullOver": 5.666666666666671,
+    "doubleCatch": 0.022243859476357652,
+    "catch1": 0.844075,
+    "catchBoss": 0.4476875,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 18549893124.022327,
+    "hp0": 1.1301925180985205e+89,
+    "hp3": 1.3562310217182247e+90,
+    "reward0": 2.6365757499431554e+74,
+    "reward2": 1.5819454499658933e+75,
+    "stonesFor": 1478,
+    "attachMult": 1.74,
+    "setMult": 1,
+    "squad0": 7.686352120222305e+26,
+    "range": 424,
+    "mainKind": "rocket",
+    "skinDmg": 2.98,
+    "skinIncome": 2.05,
+    "cost": [
+     3.321530129618305e+32,
+     88299,
+     2.570747503411254e+22
+    ],
+    "bossTime": 30,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 197,
+    "room": 2,
+    "maxHouse": 198,
+    "maxStage": 989,
+    "lvPower": 375,
+    "lvPull": 122,
+    "lvCollect": 2,
+    "stones": 629,
+    "altar": {
+     "might": 6,
+     "harvest": 1,
+     "luck": 1,
+     "hourglass": 1,
+     "night": 1,
+     "memory": 0
+    },
+    "skins": [
+     "ginger",
+     "black",
+     "pirate",
+     "astro",
+     "reaper",
+     "samurai",
+     "knight",
+     "firefighter",
+     "bunny",
+     "beach"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "firedragon",
+      "stars": 2
+     },
+     {
+      "id": 2,
+      "type": "stormlord",
+      "stars": 3
+     },
+     {
+      "id": 3,
+      "type": "fire",
+      "stars": 1
+     },
+     {
+      "id": 4,
+      "type": "ghosttrain",
+      "stars": 3
+     },
+     {
+      "id": 5,
+      "type": "lavagolem",
+      "stars": 5
+     },
+     {
+      "id": 6,
+      "type": "spark",
+      "stars": 1
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "storm",
+      "rank": 1
+     },
+     {
+      "id": 101,
+      "kind": "frost",
+      "rank": 5
+     },
+     {
+      "id": 102,
+      "kind": "frost",
+      "rank": 1
+     },
+     {
+      "id": 103,
+      "kind": "rocket",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 1,
+     "sock": 2
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 8.157356306583881e+26,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 188.2,
+    "pullOver": 77.66666666666666,
+    "doubleCatch": 0.24249409572995517,
+    "catch1": 0.9466749999999999,
+    "catchBoss": 0.7041875,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 44.915850000000006,
+    "hp0": 1.5407823862480755e+84,
+    "hp3": 1.8489388634976906e+85,
+    "reward0": 6.295656163020638e+61,
+    "reward2": 3.7773936978123823e+62,
+    "stonesFor": 1340,
+    "attachMult": 4.719714,
+    "setMult": 1,
+    "squad0": 7.537397227283507e+27,
+    "range": 400,
+    "mainKind": "frost",
+    "skinDmg": 2.5500000000000003,
+    "skinIncome": 2.45,
+    "cost": [
+     1.9887338796803468e+33,
+     394155460327,
+     14
+    ],
+    "bossTime": 35,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 112,
+    "room": 4,
+    "maxHouse": 120,
+    "maxStage": 599,
+    "lvPower": 108,
+    "lvPull": 103,
+    "lvCollect": 127,
+    "stones": 2457,
+    "altar": {
+     "might": 0,
+     "harvest": 10,
+     "luck": 5,
+     "hourglass": 0,
+     "night": 0,
+     "memory": 2
+    },
+    "skins": [
+     "ginger",
+     "vampire",
+     "detective",
+     "knight",
+     "tree",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "textbook",
+      "stars": 1
+     },
+     {
+      "id": 2,
+      "type": "spark",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "moonking",
+      "stars": 1
+     },
+     {
+      "id": 4,
+      "type": "pharaoh",
+      "stars": 5
+     },
+     {
+      "id": 5,
+      "type": "balloon",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "toy",
+      "stars": 2
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "frost",
+      "rank": 4
+     },
+     {
+      "id": 101,
+      "kind": "wide",
+      "rank": 5
+     },
+     {
+      "id": 102,
+      "kind": "magnet",
+      "rank": 3
+     },
+     {
+      "id": 103,
+      "kind": "brush",
+      "rank": 4
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 3
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 74099376796.90038,
+    "fireRate": 10.944,
+    "captureChance": 0.95,
+    "pullPower": 177.39999999999998,
+    "pullOver": 68.66666666666667,
+    "doubleCatch": 0.2203871652403197,
+    "catch1": 0.93385,
+    "catchBoss": 0.672125,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 18128532.586833604,
+    "hp0": 1.011297907604302e+53,
+    "hp3": 1.2135574891251624e+54,
+    "reward0": 5.368062457525954e+41,
+    "reward2": 3.220837474515572e+42,
+    "stonesFor": 561,
+    "attachMult": 6.492734,
+    "setMult": 1,
+    "squad0": 40754657238.29521,
+    "range": 400,
+    "mainKind": "wide",
+    "skinDmg": 2.5,
+    "skinIncome": 1.5999999999999999,
+    "cost": [
+     17398102382,
+     9012198825,
+     913103297310
+    ],
+    "bossTime": 30,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 84,
+    "room": 5,
+    "maxHouse": 90,
+    "maxStage": 449,
+    "lvPower": 347,
+    "lvPull": 148,
+    "lvCollect": 184,
+    "stones": 2882,
+    "altar": {
+     "might": 6,
+     "harvest": 3,
+     "luck": 0,
+     "hourglass": 4,
+     "night": 1,
+     "memory": 2
+    },
+    "skins": [
+     "ginger",
+     "spotty",
+     "devil",
+     "reaper",
+     "cowboy",
+     "firefighter",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "fire",
+      "stars": 4
+     },
+     {
+      "id": 2,
+      "type": "thundercloud",
+      "stars": 1
+     },
+     {
+      "id": 3,
+      "type": "wisp",
+      "stars": 4
+     },
+     {
+      "id": 4,
+      "type": "chalk",
+      "stars": 2
+     },
+     {
+      "id": 5,
+      "type": "grumpcloud",
+      "stars": 1
+     },
+     {
+      "id": 6,
+      "type": "stormlord",
+      "stars": 3
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "turbo",
+      "rank": 2
+     },
+     {
+      "id": 101,
+      "kind": "rocket",
+      "rank": 1
+     },
+     {
+      "id": 102,
+      "kind": "brush",
+      "rank": 1
+     },
+     {
+      "id": 103,
+      "kind": "narrow",
+      "rank": 2
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 1
+    },
+    "boostPrest": 2,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 3.764064069686931e+25,
+    "fireRate": 15.468,
+    "captureChance": 0.95,
+    "pullPower": 216.4,
+    "pullOver": 101.16666666666669,
+    "doubleCatch": 0.2943363816757567,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.168,
+    "critMult": 3.425,
+    "incomeMult": 251640498.29338753,
+    "hp0": 5.728335032372719e+42,
+    "hp3": 6.874002038847263e+43,
+    "reward0": 2.7241789701572024e+34,
+    "reward2": 1.6345073820943214e+35,
+    "stonesFor": 714,
+    "attachMult": 2.258,
+    "setMult": 1,
+    "squad0": 5.009969276753307e+26,
+    "range": 400,
+    "mainKind": "turbo",
+    "skinDmg": 2.68,
+    "skinIncome": 1.6800000000000002,
+    "cost": [
+     7.594538943965919e+30,
+     69346276175939,
+     76388900579295140
+    ],
+    "bossTime": 50,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 55,
+    "room": 4,
+    "maxHouse": 64,
+    "maxStage": 319,
+    "lvPower": 375,
+    "lvPull": 24,
+    "lvCollect": 132,
+    "stones": 614,
+    "altar": {
+     "might": 10,
+     "harvest": 2,
+     "luck": 3,
+     "hourglass": 0,
+     "night": 0,
+     "memory": 1
+    },
+    "skins": [
+     "ginger",
+     "siam",
+     "ninja",
+     "wizard",
+     "santa",
+     "jack",
+     "detective",
+     "dragon"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "toy",
+      "stars": 4
+     },
+     {
+      "id": 2,
+      "type": "sarcophagus",
+      "stars": 1
+     },
+     {
+      "id": 3,
+      "type": "bell",
+      "stars": 2
+     },
+     {
+      "id": 4,
+      "type": "timekeeper",
+      "stars": 2
+     },
+     {
+      "id": 5,
+      "type": "scarab",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "parrot",
+      "stars": 1
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "rocket",
+      "rank": 4
+     },
+     {
+      "id": 101,
+      "kind": "turbo",
+      "rank": 5
+     },
+     {
+      "id": 102,
+      "kind": "narrow",
+      "rank": 0
+     },
+     {
+      "id": 103,
+      "kind": "narrow",
+      "rank": 2
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 2,
+     "sock": 0
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 2.4236372232150115e+27,
+    "fireRate": 9.636000000000001,
+    "captureChance": 0.766,
+    "pullPower": 76.6,
+    "pullOver": 0,
+    "doubleCatch": 0,
+    "catch1": 0.67408,
+    "catchBoss": 0.3447,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 843293.9628444694,
+    "hp0": 5.540915127182502e+28,
+    "hp3": 6.649098152619002e+29,
+    "reward0": 1.2547274494516071e+23,
+    "reward2": 7.528364696709644e+23,
+    "stonesFor": 182,
+    "attachMult": 5.710134,
+    "setMult": 1,
+    "squad0": 1.41937890340364e+28,
+    "range": 424,
+    "mainKind": "turbo",
+    "skinDmg": 2.7,
+    "skinIncome": 1.7,
+    "cost": [
+     1.9887338796803468e+33,
+     1356,
+     2467851735486
+    ],
+    "bossTime": 30,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 216,
+    "room": 1,
+    "maxHouse": 226,
+    "maxStage": 1129,
+    "lvPower": 66,
+    "lvPull": 111,
+    "lvCollect": 190,
+    "stones": 1130,
+    "altar": {
+     "might": 9,
+     "harvest": 1,
+     "luck": 3,
+     "hourglass": 3,
+     "night": 2,
+     "memory": 1
+    },
+    "skins": [
+     "ginger",
+     "black",
+     "white",
+     "pirate",
+     "wizard",
+     "chef",
+     "astro",
+     "devil",
+     "detective"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "pharaoh",
+      "stars": 3
+     },
+     {
+      "id": 2,
+      "type": "drowned",
+      "stars": 4
+     },
+     {
+      "id": 3,
+      "type": "abyss",
+      "stars": 1
+     },
+     {
+      "id": 4,
+      "type": "darkknight",
+      "stars": 3
+     },
+     {
+      "id": 5,
+      "type": "mimic",
+      "stars": 3
+     },
+     {
+      "id": 6,
+      "type": "armor",
+      "stars": 1
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "turbo",
+      "rank": 5
+     },
+     {
+      "id": 101,
+      "kind": "rocket",
+      "rank": 1
+     },
+     {
+      "id": 102,
+      "kind": "narrow",
+      "rank": 4
+     },
+     {
+      "id": 103,
+      "kind": "storm",
+      "rank": 2
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 0
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 529369602.72985166,
+    "fireRate": 24,
+    "captureChance": 0.95,
+    "pullPower": 181,
+    "pullOver": 71.66666666666669,
+    "doubleCatch": 0.22790400299834493,
+    "catch1": 0.938125,
+    "catchBoss": 0.6828124999999999,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 110200688.56404757,
+    "hp0": 1.309984743107187e+91,
+    "hp3": 1.5719816917286244e+92,
+    "reward0": 7.84192491286515e+73,
+    "reward2": 4.705154947719091e+74,
+    "stonesFor": 1543,
+    "attachMult": 6.428134,
+    "setMult": 1,
+    "squad0": 8967521070.243689,
+    "range": 600.4504,
+    "mainKind": "turbo",
+    "skinDmg": 2,
+    "skinIncome": 1.8,
+    "cost": [
+     4105716,
+     44229233180,
+     251877424311711680
+    ],
+    "bossTime": 45,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 176,
+    "room": 4,
+    "maxHouse": 184,
+    "maxStage": 919,
+    "lvPower": 354,
+    "lvPull": 13,
+    "lvCollect": 248,
+    "stones": 2215,
+    "altar": {
+     "might": 10,
+     "harvest": 1,
+     "luck": 1,
+     "hourglass": 4,
+     "night": 4,
+     "memory": 2
+    },
+    "skins": [
+     "ginger",
+     "ginger",
+     "tabby",
+     "peach",
+     "white",
+     "ninja",
+     "knight",
+     "robot",
+     "tree",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "tunnellight",
+      "stars": 5
+     },
+     {
+      "id": 2,
+      "type": "salamander",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "cactus",
+      "stars": 1
+     },
+     {
+      "id": 4,
+      "type": "clown",
+      "stars": 2
+     },
+     {
+      "id": 5,
+      "type": "armor",
+      "stars": 3
+     },
+     {
+      "id": 6,
+      "type": "ninelives",
+      "stars": 5
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "wide",
+      "rank": 5
+     },
+     {
+      "id": 101,
+      "kind": "storm",
+      "rank": 4
+     },
+     {
+      "id": 102,
+      "kind": "magnet",
+      "rank": 3
+     },
+     {
+      "id": 103,
+      "kind": "narrow",
+      "rank": 1
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 2,
+     "sock": 0
+    },
+    "boostPrest": 2,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 4.788093724293277e+26,
+    "fireRate": 6.3612,
+    "captureChance": 0.5740000000000001,
+    "pullPower": 57.4,
+    "pullOver": 0,
+    "doubleCatch": 0,
+    "catch1": 0.50512,
+    "catchBoss": 0.25830000000000003,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 25102951231.73821,
+    "hp0": 3.933246994120399e+76,
+    "hp3": 4.719896392944479e+77,
+    "reward0": 1.9701015113299633e+64,
+    "reward2": 1.182060906797978e+65,
+    "stonesFor": 2254,
+    "attachMult": 6.832733999999999,
+    "setMult": 1,
+    "squad0": 1.402049604347558e+28,
+    "range": 440.8,
+    "mainKind": "wide",
+    "skinDmg": 2.38,
+    "skinIncome": 1.65,
+    "cost": [
+     3.0550634059560164e+31,
+     152,
+     2.570747503411254e+22
+    ],
+    "bossTime": 50,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 126,
+    "room": 2,
+    "maxHouse": 145,
+    "maxStage": 724,
+    "lvPower": 113,
+    "lvPull": 137,
+    "lvCollect": 112,
+    "stones": 1736,
+    "altar": {
+     "might": 2,
+     "harvest": 10,
+     "luck": 4,
+     "hourglass": 2,
+     "night": 0,
+     "memory": 1
+    },
+    "skins": [
+     "ginger",
+     "black",
+     "pirate",
+     "chef",
+     "vampire",
+     "devil",
+     "reaper",
+     "robot",
+     "dragon",
+     "firefighter"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "balloon",
+      "stars": 4
+     },
+     {
+      "id": 2,
+      "type": "firefly",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "slime",
+      "stars": 1
+     },
+     {
+      "id": 4,
+      "type": "pearl",
+      "stars": 1
+     },
+     {
+      "id": 5,
+      "type": "grumpcloud",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "pumpkin",
+      "stars": 3
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "rocket",
+      "rank": 3
+     },
+     {
+      "id": 101,
+      "kind": "narrow",
+      "rank": 5
+     },
+     {
+      "id": 102,
+      "kind": "storm",
+      "rank": 4
+     },
+     {
+      "id": 103,
+      "kind": "magnet",
+      "rank": 2
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 1,
+     "sock": 1
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 166097910394.1713,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 215.2,
+    "pullOver": 100.16666666666669,
+    "doubleCatch": 0.29229181657571934,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 3497859.0119296405,
+    "hp0": 1.0416622659884354e+58,
+    "hp3": 1.2499947191861225e+59,
+    "reward0": 1.3890259299216365e+45,
+    "reward2": 8.334155579529819e+45,
+    "stonesFor": 673,
+    "attachMult": 6.492734,
+    "setMult": 1,
+    "squad0": 972735802432.4252,
+    "range": 640,
+    "mainKind": "narrow",
+    "skinDmg": 2.8,
+    "skinIncome": 2.0500000000000003,
+    "cost": [
+     47021993332,
+     7781530202910,
+     46251140982
+    ],
+    "bossTime": 40,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 135,
+    "room": 3,
+    "maxHouse": 144,
+    "maxStage": 719,
+    "lvPower": 46,
+    "lvPull": 168,
+    "lvCollect": 228,
+    "stones": 573,
+    "altar": {
+     "might": 8,
+     "harvest": 11,
+     "luck": 0,
+     "hourglass": 2,
+     "night": 1,
+     "memory": 3
+    },
+    "skins": [
+     "ginger",
+     "ginger",
+     "tabby",
+     "ninja",
+     "samurai",
+     "robot",
+     "dj"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "headmistress",
+      "stars": 4
+     },
+     {
+      "id": 2,
+      "type": "pharaoh",
+      "stars": 3
+     },
+     {
+      "id": 3,
+      "type": "pendulum",
+      "stars": 4
+     },
+     {
+      "id": 4,
+      "type": "firedragon",
+      "stars": 4
+     },
+     {
+      "id": 5,
+      "type": "textbook",
+      "stars": 4
+     },
+     {
+      "id": 6,
+      "type": "mannequin",
+      "stars": 2
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "wide",
+      "rank": 3
+     },
+     {
+      "id": 101,
+      "kind": "narrow",
+      "rank": 1
+     },
+     {
+      "id": 102,
+      "kind": "frost",
+      "rank": 2
+     },
+     {
+      "id": 103,
+      "kind": "frost",
+      "rank": 2
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 0,
+     "sock": 3
+    },
+    "boostPrest": 2,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 5523699.43606599,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 240.4,
+    "pullOver": 121.16666666666666,
+    "doubleCatch": 0.3324913566404953,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 6167559758.142469,
+    "hp0": 2.5631324451719165e+61,
+    "hp3": 3.0757589342063e+62,
+    "reward0": 1.5174768523828733e+51,
+    "reward2": 9.104861114297239e+51,
+    "stonesFor": 1498,
+    "attachMult": 3.4785999999999997,
+    "setMult": 1,
+    "squad0": 205857230.5833074,
+    "range": 440.8,
+    "mainKind": "frost",
+    "skinDmg": 1.53,
+    "skinIncome": 1.1,
+    "cost": [
+     76947,
+     3700153647528940,
+     481795577513969840000
+    ],
+    "bossTime": 40,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 75,
+    "room": 2,
+    "maxHouse": 91,
+    "maxStage": 454,
+    "lvPower": 148,
+    "lvPull": 67,
+    "lvCollect": 74,
+    "stones": 1105,
+    "altar": {
+     "might": 2,
+     "harvest": 6,
+     "luck": 0,
+     "hourglass": 0,
+     "night": 0,
+     "memory": 2
+    },
+    "skins": [
+     "ginger",
+     "siam",
+     "wizard",
+     "golden",
+     "reaper",
+     "samurai",
+     "dj",
+     "firefighter"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "mermaid",
+      "stars": 1
+     },
+     {
+      "id": 2,
+      "type": "parrot",
+      "stars": 1
+     },
+     {
+      "id": 3,
+      "type": "portrait",
+      "stars": 3
+     },
+     {
+      "id": 4,
+      "type": "chalk",
+      "stars": 5
+     },
+     {
+      "id": 5,
+      "type": "fire",
+      "stars": 3
+     },
+     {
+      "id": 6,
+      "type": "carousel",
+      "stars": 2
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "storm",
+      "rank": 2
+     },
+     {
+      "id": 101,
+      "kind": "storm",
+      "rank": 1
+     },
+     {
+      "id": 102,
+      "kind": "wide",
+      "rank": 1
+     },
+     {
+      "id": 103,
+      "kind": "rocket",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 2,
+     "sock": 1
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 4886965627980.854,
+    "fireRate": 9.048000000000002,
+    "captureChance": 0.95,
+    "pullPower": 119.2,
+    "pullOver": 20.166666666666686,
+    "doubleCatch": 0.07547913343534511,
+    "catch1": 0.8647374999999999,
+    "catchBoss": 0.4993437500000001,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 53386.185272386145,
+    "hp0": 3.800974179871551e+38,
+    "hp3": 4.561169015845861e+39,
+    "reward0": 7.053223597419518e+27,
+    "reward2": 4.231934158451711e+28,
+    "stonesFor": 299,
+    "attachMult": 2.258,
+    "setMult": 1,
+    "squad0": 1221741406995.2134,
+    "range": 400,
+    "mainKind": "storm",
+    "skinDmg": 2.7,
+    "skinIncome": 2.2,
+    "cost": [
+     49533054411385,
+     7012564,
+     24179587
+    ],
+    "bossTime": 30,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 196,
+    "room": 2,
+    "maxHouse": 201,
+    "maxStage": 1004,
+    "lvPower": 50,
+    "lvPull": 38,
+    "lvCollect": 42,
+    "stones": 1201,
+    "altar": {
+     "might": 8,
+     "harvest": 2,
+     "luck": 1,
+     "hourglass": 4,
+     "night": 0,
+     "memory": 4
+    },
+    "skins": [
+     "ginger",
+     "spotty",
+     "pirate",
+     "chef",
+     "jack",
+     "detective",
+     "robot",
+     "dj",
+     "firefighter",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "frostqueen",
+      "stars": 1
+     },
+     {
+      "id": 2,
+      "type": "flytrap",
+      "stars": 1
+     },
+     {
+      "id": 3,
+      "type": "stormlord",
+      "stars": 2
+     },
+     {
+      "id": 4,
+      "type": "candle",
+      "stars": 4
+     },
+     {
+      "id": 5,
+      "type": "mannequin",
+      "stars": 3
+     },
+     {
+      "id": 6,
+      "type": "frostqueen",
+      "stars": 5
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "wide",
+      "rank": 1
+     },
+     {
+      "id": 101,
+      "kind": "turbo",
+      "rank": 3
+     },
+     {
+      "id": 102,
+      "kind": "narrow",
+      "rank": 5
+     },
+     {
+      "id": 103,
+      "kind": "magnet",
+      "rank": 3
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 0,
+     "sock": 3
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 47082131.702803925,
+    "fireRate": 13.6230255,
+    "captureChance": 0.8740000000000001,
+    "pullPower": 87.4,
+    "pullOver": 0,
+    "doubleCatch": 0,
+    "catch1": 0.7691200000000001,
+    "catchBoss": 0.39330000000000004,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 3255.5418400900153,
+    "hp0": 6.594009270132894e+83,
+    "hp3": 7.912811124159473e+84,
+    "reward0": 2.268691572129967e+63,
+    "reward2": 1.3612149432779804e+64,
+    "stonesFor": 1330,
+    "attachMult": 6.144914,
+    "setMult": 1,
+    "squad0": 164787460.95981374,
+    "range": 640,
+    "mainKind": "narrow",
+    "skinDmg": 2.0500000000000003,
+    "skinIncome": 2.38,
+    "cost": [
+     170463,
+     21950,
+     41680
+    ],
+    "bossTime": 50,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 206,
+    "room": 2,
+    "maxHouse": 218,
+    "maxStage": 1089,
+    "lvPower": 396,
+    "lvPull": 185,
+    "lvCollect": 241,
+    "stones": 2976,
+    "altar": {
+     "might": 10,
+     "harvest": 2,
+     "luck": 4,
+     "hourglass": 2,
+     "night": 3,
+     "memory": 5
+    },
+    "skins": [
+     "ginger",
+     "pirate",
+     "ninja",
+     "wizard",
+     "chef",
+     "vampire",
+     "devil",
+     "reaper",
+     "jack",
+     "samurai",
+     "robot",
+     "cowboy",
+     "firefighter",
+     "tree",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "headless",
+      "stars": 2
+     },
+     {
+      "id": 2,
+      "type": "carousel",
+      "stars": 3
+     },
+     {
+      "id": 3,
+      "type": "ghosttrain",
+      "stars": 3
+     },
+     {
+      "id": 4,
+      "type": "drowned",
+      "stars": 3
+     },
+     {
+      "id": 5,
+      "type": "drowned",
+      "stars": 5
+     },
+     {
+      "id": 6,
+      "type": "lantern",
+      "stars": 2
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "rocket",
+      "rank": 3
+     },
+     {
+      "id": 101,
+      "kind": "magnet",
+      "rank": 3
+     },
+     {
+      "id": 102,
+      "kind": "storm",
+      "rank": 0
+     },
+     {
+      "id": 103,
+      "kind": "wide",
+      "rank": 1
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 0,
+     "sock": 0
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 1.87041533364642e+29,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 272.79999999999995,
+    "pullOver": 148.16666666666669,
+    "doubleCatch": 0.37655799890676395,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 39285397700.957565,
+    "hp0": 3.1993891721141107e+87,
+    "hp3": 3.839267006536933e+88,
+    "reward0": 2.9667117259331105e+73,
+    "reward2": 1.7800270355598662e+74,
+    "stonesFor": 1435,
+    "attachMult": 3.1652,
+    "setMult": 1,
+    "squad0": 1.4402198069077434e+30,
+    "range": 400,
+    "mainKind": "rocket",
+    "skinDmg": 4.48,
+    "skinIncome": 2.6500000000000004,
+    "cost": [
+     1.2945925889714203e+35,
+     108726868491196770,
+     6.390584886617247e+21
+    ],
+    "bossTime": 40,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 81,
+    "room": 3,
+    "maxHouse": 82,
+    "maxStage": 409,
+    "lvPower": 264,
+    "lvPull": 109,
+    "lvCollect": 178,
+    "stones": 2144,
+    "altar": {
+     "might": 0,
+     "harvest": 4,
+     "luck": 4,
+     "hourglass": 3,
+     "night": 3,
+     "memory": 3
+    },
+    "skins": [
+     "ginger",
+     "spotty",
+     "tabby",
+     "peach",
+     "wizard",
+     "jack",
+     "samurai",
+     "detective",
+     "knight",
+     "dragon",
+     "cowboy"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "abyss",
+      "stars": 3
+     },
+     {
+      "id": 2,
+      "type": "pendulum",
+      "stars": 4
+     },
+     {
+      "id": 3,
+      "type": "flask",
+      "stars": 4
+     },
+     {
+      "id": 4,
+      "type": "fire",
+      "stars": 1
+     },
+     {
+      "id": 5,
+      "type": "juggler",
+      "stars": 1
+     },
+     {
+      "id": 6,
+      "type": "thundercloud",
+      "stars": 2
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "rocket",
+      "rank": 0
+     },
+     {
+      "id": 101,
+      "kind": "magnet",
+      "rank": 5
+     },
+     {
+      "id": 102,
+      "kind": "rocket",
+      "rank": 4
+     },
+     {
+      "id": 103,
+      "kind": "narrow",
+      "rank": 2
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     null
+    ],
+    "bestClaimed": {
+     "sheet": 2,
+     "sock": 2
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 178784521433146300000,
+    "fireRate": 10.996800000000002,
+    "captureChance": 0.95,
+    "pullPower": 181.6,
+    "pullOver": 72.16666666666669,
+    "doubleCatch": 0.22914225808334318,
+    "catch1": 0.9388375,
+    "catchBoss": 0.68459375,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 358930510.1545545,
+    "hp0": 3.1975434504159597e+41,
+    "hp3": 3.837052140499152e+42,
+    "reward0": 3.6107896564290836e+33,
+    "reward2": 2.1664737938574503e+34,
+    "stonesFor": 337,
+    "attachMult": 5.710134,
+    "setMult": 1,
+    "squad0": 1.0816463546705353e+21,
+    "range": 400,
+    "mainKind": "magnet",
+    "skinDmg": 2.8099999999999996,
+    "skinIncome": 1.68,
+    "cost": [
+     5.15983088178984e+23,
+     29715958868,
+     23167078779128650
+    ],
+    "bossTime": 45,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 146,
+    "room": 2,
+    "maxHouse": 150,
+    "maxStage": 749,
+    "lvPower": 87,
+    "lvPull": 90,
+    "lvCollect": 139,
+    "stones": 810,
+    "altar": {
+     "might": 9,
+     "harvest": 3,
+     "luck": 0,
+     "hourglass": 3,
+     "night": 4,
+     "memory": 5
+    },
+    "skins": [
+     "ginger",
+     "devil",
+     "santa",
+     "reaper",
+     "samurai",
+     "knight",
+     "tree",
+     "bunny",
+     "beach",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "pumpkin",
+      "stars": 2
+     },
+     {
+      "id": 2,
+      "type": "mummy",
+      "stars": 1
+     },
+     {
+      "id": 3,
+      "type": "wisp",
+      "stars": 3
+     },
+     {
+      "id": 4,
+      "type": "sarcophagus",
+      "stars": 4
+     },
+     {
+      "id": 5,
+      "type": "mummy",
+      "stars": 5
+     },
+     {
+      "id": 6,
+      "type": "puppeteer",
+      "stars": 5
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "narrow",
+      "rank": 0
+     },
+     {
+      "id": 101,
+      "kind": "magnet",
+      "rank": 1
+     },
+     {
+      "id": 102,
+      "kind": "turbo",
+      "rank": 1
+     },
+     {
+      "id": 103,
+      "kind": "magnet",
+      "rank": 2
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 3,
+     "sock": 0
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 5293240054.556303,
+    "fireRate": 13.660919999999999,
+    "captureChance": 0.95,
+    "pullPower": 146.8,
+    "pullOver": 43.166666666666664,
+    "doubleCatch": 0.15004306533587472,
+    "catch1": 0.8975124999999999,
+    "catchBoss": 0.58128125,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 5221140.534102917,
+    "hp0": 2.452234323181433e+65,
+    "hp3": 2.94268118781772e+66,
+    "reward0": 2.434767359939894e+51,
+    "reward2": 1.4608604159639365e+52,
+    "stonesFor": 846,
+    "attachMult": 2.458,
+    "setMult": 1,
+    "squad0": 7685784559.215753,
+    "range": 424,
+    "mainKind": "magnet",
+    "skinDmg": 3.8499999999999996,
+    "skinIncome": 2.5999999999999996,
+    "cost": [
+     267267061,
+     679442901,
+     9927453903438
+    ],
+    "bossTime": 45,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 207,
+    "room": 5,
+    "maxHouse": 214,
+    "maxStage": 1069,
+    "lvPower": 293,
+    "lvPull": 200,
+    "lvCollect": 22,
+    "stones": 714,
+    "altar": {
+     "might": 3,
+     "harvest": 8,
+     "luck": 0,
+     "hourglass": 2,
+     "night": 3,
+     "memory": 3
+    },
+    "skins": [
+     "ginger",
+     "tabby",
+     "black",
+     "white",
+     "wizard",
+     "devil",
+     "golden",
+     "robot",
+     "dragon",
+     "dj",
+     "cowboy",
+     "bunny",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "rosequeen",
+      "stars": 4
+     },
+     {
+      "id": 2,
+      "type": "puppet",
+      "stars": 4
+     },
+     {
+      "id": 3,
+      "type": "lavagolem",
+      "stars": 5
+     },
+     {
+      "id": 4,
+      "type": "sock",
+      "stars": 1
+     },
+     {
+      "id": 5,
+      "type": "starling",
+      "stars": 4
+     },
+     {
+      "id": 6,
+      "type": "mummy",
+      "stars": 1
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "magnet",
+      "rank": 3
+     },
+     {
+      "id": 101,
+      "kind": "frost",
+      "rank": 5
+     },
+     {
+      "id": 102,
+      "kind": "wide",
+      "rank": 5
+     },
+     {
+      "id": 103,
+      "kind": "storm",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 1,
+     "sock": 2
+    },
+    "boostPrest": 0,
+    "starter": false,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 1.1413890114537524e+22,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 278.79999999999995,
+    "pullOver": 153.16666666666666,
+    "doubleCatch": 0.3838832990187041,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 1504.1461007705195,
+    "hp0": 1.2439813616066496e+88,
+    "hp3": 1.4927776339279794e+89,
+    "reward0": 3.474696999020119e+66,
+    "reward2": 2.084818199412071e+67,
+    "stonesFor": 1446,
+    "attachMult": 7.862028,
+    "setMult": 1,
+    "squad0": 4.253728567885846e+23,
+    "range": 400,
+    "mainKind": "frost",
+    "skinDmg": 3.5100000000000002,
+    "skinIncome": 2.2,
+    "cost": [
+     1.6484301796030866e+26,
+     2146517037541795800,
+     781
+    ],
+    "bossTime": 40,
+    "slots": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 155,
+    "room": 5,
+    "maxHouse": 171,
+    "maxStage": 854,
+    "lvPower": 56,
+    "lvPull": 127,
+    "lvCollect": 131,
+    "stones": 524,
+    "altar": {
+     "might": 1,
+     "harvest": 10,
+     "luck": 3,
+     "hourglass": 3,
+     "night": 4,
+     "memory": 5
+    },
+    "skins": [
+     "ginger",
+     "peach",
+     "black",
+     "ninja",
+     "devil",
+     "angel",
+     "santa",
+     "reaper",
+     "dj",
+     "phantom"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "spark",
+      "stars": 2
+     },
+     {
+      "id": 2,
+      "type": "clown",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "pharaoh",
+      "stars": 2
+     },
+     {
+      "id": 4,
+      "type": "headmistress",
+      "stars": 1
+     },
+     {
+      "id": 5,
+      "type": "lantern",
+      "stars": 2
+     },
+     {
+      "id": 6,
+      "type": "carousel",
+      "stars": 5
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "narrow",
+      "rank": 2
+     },
+     {
+      "id": 101,
+      "kind": "wide",
+      "rank": 4
+     },
+     {
+      "id": 102,
+      "kind": "brush",
+      "rank": 3
+     },
+     {
+      "id": 103,
+      "kind": "storm",
+      "rank": 2
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 2,
+     "sock": 0
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 11144089.747824555,
+    "fireRate": 12,
+    "captureChance": 0.95,
+    "pullPower": 200.2,
+    "pullOver": 87.66666666666666,
+    "doubleCatch": 0.26555072936532825,
+    "catch1": 0.95,
+    "catchBoss": 0.7124999999999999,
+    "critChance": 0.29652,
+    "critMult": 4.22825,
+    "incomeMult": 4851590.003112206,
+    "hp0": 8.47310880751984e+68,
+    "hp3": 1.0167730569023809e+70,
+    "reward0": 1.853841147837338e+54,
+    "reward2": 1.112304688702403e+55,
+    "stonesFor": 927,
+    "attachMult": 4.80902,
+    "setMult": 1,
+    "squad0": 30646246.80651753,
+    "range": 469.36,
+    "mainKind": "wide",
+    "skinDmg": 2.9499999999999997,
+    "skinIncome": 2.05,
+    "cost": [
+     562070,
+     1065287180195,
+     2022829291382
+    ],
+    "bossTime": 45,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  },
+  {
+   "state": {
+    "house": 153,
+    "room": 5,
+    "maxHouse": 172,
+    "maxStage": 859,
+    "lvPower": 129,
+    "lvPull": 66,
+    "lvCollect": 283,
+    "stones": 1672,
+    "altar": {
+     "might": 2,
+     "harvest": 1,
+     "luck": 2,
+     "hourglass": 2,
+     "night": 0,
+     "memory": 5
+    },
+    "skins": [
+     "ginger",
+     "spotty",
+     "black",
+     "ninja",
+     "santa",
+     "reaper",
+     "samurai",
+     "dragon",
+     "dj"
+    ],
+    "inventory": [
+     {
+      "id": 1,
+      "type": "franken",
+      "stars": 4
+     },
+     {
+      "id": 2,
+      "type": "ash",
+      "stars": 5
+     },
+     {
+      "id": 3,
+      "type": "salamander",
+      "stars": 4
+     },
+     {
+      "id": 4,
+      "type": "mask",
+      "stars": 1
+     },
+     {
+      "id": 5,
+      "type": "pearl",
+      "stars": 1
+     },
+     {
+      "id": 6,
+      "type": "mermaid",
+      "stars": 4
+     }
+    ],
+    "squad": [
+     1,
+     2,
+     3,
+     4,
+     null
+    ],
+    "attach": [
+     {
+      "id": 100,
+      "kind": "wide",
+      "rank": 0
+     },
+     {
+      "id": 101,
+      "kind": "storm",
+      "rank": 3
+     },
+     {
+      "id": 102,
+      "kind": "wide",
+      "rank": 2
+     },
+     {
+      "id": 103,
+      "kind": "storm",
+      "rank": 0
+     }
+    ],
+    "equipped": [
+     100,
+     101,
+     102,
+     103
+    ],
+    "bestClaimed": {
+     "sheet": 0,
+     "sock": 1
+    },
+    "boostPrest": 0,
+    "starter": true,
+    "moonUntil": 0,
+    "vipUntil": 0
+   },
+   "expect": {
+    "catDamage": 628024791151.8424,
+    "fireRate": 10.005000000000003,
+    "captureChance": 0.95,
+    "pullPower": 124,
+    "pullOver": 24.16666666666669,
+    "doubleCatch": 0.08928150698763304,
+    "catch1": 0.8704375,
+    "catchBoss": 0.5135937500000001,
+    "critChance": 0.1,
+    "critMult": 3,
+    "incomeMult": 198389327949.1691,
+    "hp0": 1.5518840872766823e+68,
+    "hp3": 1.8622609047320185e+69,
+    "reward0": 1.8738219747868954e+58,
+    "reward2": 1.1242931848721371e+59,
+    "stonesFor": 909,
+    "attachMult": 2.9605999999999995,
+    "setMult": 1,
+    "squad0": 23405227916646.87,
+    "range": 400,
+    "mainKind": "storm",
+    "skinDmg": 2.6500000000000004,
+    "skinIncome": 1.7300000000000002,
+    "cost": [
+     1132552456430,
+     5748003,
+     2.708030156519298e+25
+    ],
+    "bossTime": 40,
+    "slots": [
+     4,
+     6
+    ]
+   }
+  }
+ ],
+ "fmts": [
+  [
+   0,
+   "0",
+   "0"
+  ],
+  [
+   5.5,
+   "5",
+   "5.5"
+  ],
+  [
+   99.123,
+   "99",
+   "99.12"
+  ],
+  [
+   999,
+   "999",
+   "999"
+  ],
+  [
+   1000,
+   "1.00K",
+   "1.00K"
+  ],
+  [
+   1234.5,
+   "1.23K",
+   "1.23K"
+  ],
+  [
+   98765,
+   "98.8K",
+   "98.8K"
+  ],
+  [
+   1500000,
+   "1.50M",
+   "1.50M"
+  ],
+  [
+   2250000000,
+   "2.25B",
+   "2.25B"
+  ],
+  [
+   7000000000000,
+   "7.00T",
+   "7.00T"
+  ],
+  [
+   3300000000000000,
+   "3.30aa",
+   "3.30aa"
+  ],
+  [
+   4400000000000000000,
+   "4.40ab",
+   "4.40ab"
+  ],
+  [
+   1e+40,
+   "10.0ai",
+   "10.0ai"
+  ],
+  [
+   1e+90,
+   "1.00az",
+   "1.00az"
+  ]
+ ]
+}
