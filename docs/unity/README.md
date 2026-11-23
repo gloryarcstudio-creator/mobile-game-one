@@ -17,7 +17,7 @@
 
 ## Первое открытие
 
-1. Установите **Unity 6 LTS** (6000.0.x) через Unity Hub с модулями **Android Build Support** (вместе с OpenJDK и Android SDK/NDK) и **iOS Build Support** (для iOS нужен Mac).
+1. Установите **Unity 6 LTS** не старше **6000.0.58f2** (в более ранних 6000.0.x уязвимость CVE-2025-59489: Google Play снимает такие сборки с публикации, а проект откажется собираться) через Unity Hub с модулями **Android Build Support** (вместе с OpenJDK и Android SDK/NDK) и **iOS Build Support** (для iOS нужен Mac).
 2. Unity Hub → **Add project from disk** → папка `unity/`. Если Hub предложит другую версию 6000.0.x — соглашайтесь.
 3. После импорта настройки применятся сами. Повторить вручную: меню **Cat Exorcist → Apply project settings**.
 4. Unity создаст `.meta`-файлы для всех ассетов — закоммитьте их, чтобы ссылки на ассеты не менялись между компьютерами.

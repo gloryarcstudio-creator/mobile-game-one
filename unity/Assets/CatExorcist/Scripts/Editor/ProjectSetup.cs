@@ -18,6 +18,8 @@ namespace CatExorcist.EditorTools
         public const string Product = "Cat Exorcist";
         public const string Version = "1.0.0";
         public const int TargetApi = 36;
+        /// <summary>Коды сборки ниже уже загружены в Google Play (1 и 2), повторно он их не примет.</summary>
+        public const int MinVersionCode = 3;
         public const string ScenePath = "Assets/CatExorcist/Scenes/Main.unity";
         const string IconPath = "Assets/CatExorcist/Branding/app-icon.png";
 
@@ -26,10 +28,18 @@ namespace CatExorcist.EditorTools
             EditorApplication.delayCall += () =>
             {
                 if (Pss.GetId(BuildTargetGroup.Android) != AppId) Apply();
-                else if ((int)PlayerSettings.Android.targetSdkVersion < TargetApi)
+                else
                 {
-                    PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)TargetApi;
-                    Debug.Log("Cat Exorcist: Android Target API Level set to " + TargetApi + " (Google Play requirement)");
+                    if ((int)PlayerSettings.Android.targetSdkVersion < TargetApi)
+                    {
+                        PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)TargetApi;
+                        Debug.Log("Cat Exorcist: Android Target API Level set to " + TargetApi + " (Google Play requirement)");
+                    }
+                    if (PlayerSettings.Android.bundleVersionCode < MinVersionCode)
+                    {
+                        PlayerSettings.Android.bundleVersionCode = MinVersionCode;
+                        Debug.Log("Cat Exorcist: Bundle Version Code set to " + MinVersionCode + " (lower codes are already used in Google Play)");
+                    }
                 }
             };
         }
@@ -65,7 +75,7 @@ namespace CatExorcist.EditorTools
             PlayerSettings.Android.renderOutsideSafeArea = true;
             PlayerSettings.Android.startInFullscreen = true;
             PlayerSettings.Android.forceInternetPermission = true;
-            if (PlayerSettings.Android.bundleVersionCode < 1) PlayerSettings.Android.bundleVersionCode = 1;
+            if (PlayerSettings.Android.bundleVersionCode < MinVersionCode) PlayerSettings.Android.bundleVersionCode = MinVersionCode;
             EditorUserBuildSettings.buildAppBundle = true;
             Pss.SetStripping(BuildTargetGroup.Android, ManagedStrippingLevel.Low);
 

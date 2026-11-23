@@ -9,6 +9,7 @@
 - [ ] Собрать AAB с ключом загрузки (`CE_KEYSTORE…`), включить Play App Signing.
 - [ ] Собрать Xcode-проект, подписать, Archive, загрузить в App Store Connect.
 - ✓ id `com.protekgames.catexorcist`, компания PROTEK s.r.o., портрет, IL2CPP, ARM64 + ARMv7, minSdk 24, iOS 13+, AAB.
+- [ ] Unity не старше 6000.0.58f2 (исправление CVE-2025-59489). Сборку уязвимым редактором Google Play снимает с публикации; проект сам останавливает такую сборку с ошибкой.
 - [ ] targetSdk 36: Player → Other Settings → Target API Level = API level 36 (Google Play требует 36+; ставится само при открытии проекта и сборке через меню Cat Exorcist). Unity 6000.0.46f1 или новее; если SDK 36 не установлен, Unity предложит скачать его при сборке — согласиться.
 
 ## 2. Реклама
