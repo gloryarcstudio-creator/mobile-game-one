@@ -182,6 +182,14 @@ namespace Unity.Notifications.iOS
 }
 
 // ---- Google Mobile Ads 11.6 (com.google.ads.mobile): только то, что использует AdMobAds.cs
+namespace GoogleMobileAds.Common
+{
+    public class MobileAdsEventExecutor
+    {
+        public static void Initialize() { }
+    }
+}
+
 namespace GoogleMobileAds.Api
 {
     public class InitializationStatus { }

@@ -18,8 +18,8 @@ namespace CatExorcist.EditorTools
         public const string Product = "Cat Exorcist";
         public const string Version = "1.0.0";
         public const int TargetApi = 36;
-        /// <summary>Коды сборки ниже уже загружены в Google Play (1 и 2), повторно он их не примет.</summary>
-        public const int MinVersionCode = 3;
+        /// <summary>Коды сборки ниже уже загружены в Google Play (1, 2 и 3), повторно он их не примет.</summary>
+        public const int MinVersionCode = 4;
         public const string ScenePath = "Assets/CatExorcist/Scenes/Main.unity";
         const string IconPath = "Assets/CatExorcist/Branding/app-icon.png";
 

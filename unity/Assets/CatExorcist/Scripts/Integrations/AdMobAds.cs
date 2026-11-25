@@ -60,7 +60,14 @@ namespace CatExorcist.Integrations
         public void Init(Action ready)
         {
             onReady = ready;
+            // Ответы SDK приходят не в главном потоке; плагин складывает их в очередь, которую разбирает его объект-исполнитель.
+            // Сам он создаётся только при первом обращении к MobileAds.Instance, то есть при MobileAds.Initialize, а мы вызываем
+            // её лишь после согласия. Без этой строки при первом запуске ответ о согласии так и оставался в очереди: окно согласия
+            // не открывалось, реклама и аналитика не включались (в ЕЭЗ — ни в одном запуске).
+            GoogleMobileAds.Common.MobileAdsEventExecutor.Initialize();
+#pragma warning disable CS0618 // флаг помечен устаревшим, но работает: все ответы SDK приходят в главном потоке Unity
             MobileAds.RaiseAdEventsOnUnityMainThread = true;
+#pragma warning restore CS0618
             if (Test && !Application.isEditor) Debug.Log("AdMob: test ads (Development Build or ad unit ids not set in SdkIds)");
             UpdateConsent();
             // согласие с прошлого запуска уже есть — реклама грузится сразу, не дожидаясь ответа сервера
