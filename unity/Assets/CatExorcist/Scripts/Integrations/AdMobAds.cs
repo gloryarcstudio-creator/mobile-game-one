@@ -62,26 +62,41 @@ namespace CatExorcist.Integrations
             onReady = ready;
             MobileAds.RaiseAdEventsOnUnityMainThread = true;
             if (Test && !Application.isEditor) Debug.Log("AdMob: test ads (Development Build or ad unit ids not set in SdkIds)");
+            UpdateConsent();
+            // согласие с прошлого запуска уже есть — реклама грузится сразу, не дожидаясь ответа сервера
+            if (ConsentInformation.CanRequestAds()) StartSdk();
+        }
+
+        int consentRetry;
+
+        void UpdateConsent()
+        {
             ConsentInformation.Update(new ConsentRequestParameters(), err =>
             {
                 if (err != null) Fail("UMP update", err.ErrorCode + " " + err.Message);
+                else if (lastError.StartsWith("UMP update")) lastError = "";
                 // окно согласия показывается только тем, кому оно нужно (ЕЭЗ/UK; на iOS — ещё ATT, если настроен IDFA explainer)
                 ConsentForm.LoadAndShowConsentFormIfRequired(formErr =>
                 {
-                    if (formErr != null) Fail("UMP form", formErr.ErrorCode + " " + formErr.Message);
+                    if (formErr != null && err == null) Fail("UMP form", formErr.ErrorCode + " " + formErr.Message); // ошибку запроса не затираем: причина в ней
                     bool again = readyFired;
                     StartSdk();
                     if (again) GameRoot.I?.OnConsentChanged(); // окно открылось уже после старта (согласие устарело)
+                    // сервер согласия не ответил (нет сети на старте) — без ответа реклама не включится, поэтому спрашиваем ещё: через 4, 8, 16, 32 с
+                    if (err != null && !initStarted && consentRetry < 4) { consentRetry++; Delay.Run((float)Math.Pow(2, consentRetry + 1), UpdateConsent); }
                 });
             });
-            // согласие с прошлого запуска уже есть — реклама грузится сразу, не дожидаясь ответа сервера
-            if (ConsentInformation.CanRequestAds()) StartSdk();
         }
 
         void StartSdk()
         {
             if (initStarted) { Ready(); return; }
-            if (!ConsentInformation.CanRequestAds()) { Fail("consent", "ads not allowed yet (" + ConsentInformation.ConsentStatus + ")"); Ready(); return; } // отказ или нет сети: игра идёт без рекламы
+            if (!ConsentInformation.CanRequestAds())
+            {
+                // отказ или нет сети: игра идёт без рекламы. Ошибку сервера согласия (она и есть причина) не затираем
+                if (!lastError.StartsWith("UMP")) Fail("consent", "ads not allowed yet (" + ConsentInformation.ConsentStatus + ")");
+                Ready(); return;
+            }
             initStarted = true;
             try
             {

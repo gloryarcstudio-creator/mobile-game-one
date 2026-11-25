@@ -74,6 +74,7 @@ namespace CatExorcist
             {
                 adsReady = true;
                 ApplyConsent();
+                ReportAdsDown();
                 if (hud != null) hud.SplashReady = true;
             });
             Services.Purchases.Init(Products.All, OnRestoredOrDeferred);
@@ -327,6 +328,23 @@ namespace CatExorcist
         public void OpenPanel(string id, string tab = null) => hud.OpenPanel(id, tab);
         public string Panel => hud != null ? hud.PanelId : null;
 
+        /// <summary>Состояние рекламы для аналитики: «consent=… init=…» и последняя ошибка (до 100 знаков, предел параметра Firebase).</summary>
+        static void AdDiag(IAdService ads, out string state, out string error)
+        {
+            var st = ads != null ? ads.Status ?? "" : "no ad service";
+            int i = st.IndexOf(" | ", StringComparison.Ordinal);
+            state = Cut(i < 0 ? st : st.Substring(0, i));
+            error = Cut(i < 0 ? "" : st.Substring(i + 3));
+        }
+        static string Cut(string s) => s.Length > 100 ? s.Substring(0, 100) : s;
+
+        /// <summary>Реклама не запустилась (нет ответа о согласии, не настроено сообщение в AdMob, нет сети) — раз за запуск пишем причину в аналитику.</summary>
+        void ReportAdsDown()
+        {
+            AdDiag(Services.Ads, out var state, out var error);
+            if (error.Length > 0 || state.Contains("init=no")) G.Track("ads_unavailable", "state", state, "error", error);
+        }
+
         public void ShowRewarded(string placement, string label, Action onReward)
         {
             var ads = Services.Ads;
@@ -336,7 +354,8 @@ namespace CatExorcist
                 if (Debug.isDebugBuild && ads != null) msg += "\n[" + ads.Name + "] " + ads.Status; // причина — только в Development Build
                 Toast(msg);
                 if (ads != null) Debug.Log("Ads not ready: " + ads.Status);
-                G.Track("ad_rewarded_not_ready", "placement", placement);
+                AdDiag(ads, out var state, out var error);
+                G.Track("ad_rewarded_not_ready", "placement", placement, "state", state, "error", error);
                 return;
             }
             lastAdLabel = label;
