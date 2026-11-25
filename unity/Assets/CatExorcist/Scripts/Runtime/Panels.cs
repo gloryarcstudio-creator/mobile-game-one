@@ -20,6 +20,29 @@ namespace CatExorcist
         readonly Dictionary<string, float> scrollPos = new Dictionary<string, float>();
         const int RoadPerPage = 12;
 
+        int diagTaps; float diagLast;
+
+        /// <summary>Скрытая диагностика: почему нет рекламы или окна согласия на конкретном устройстве. Текст заодно копируется в буфер обмена.</summary>
+        void DiagTap()
+        {
+            if (Time.unscaledTime - diagLast > 2f) diagTaps = 0;
+            diagLast = Time.unscaledTime;
+            if (++diagTaps < 5) return;
+            diagTaps = 0;
+            var ads = Services.Ads;
+            var lines = new List<string> { Application.identifier + " " + Application.version, "ads: " + (ads != null ? ads.Name : "none") };
+            var st = ads != null ? ads.Status ?? "" : "";
+            int cut = st.IndexOf(" | ", StringComparison.Ordinal);
+            lines.AddRange((cut < 0 ? st : st.Substring(0, cut)).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+            var err = cut < 0 ? "" : st.Substring(cut + 3);
+            for (int i = 0; i < err.Length && i < 200; i += 40) lines.Add(err.Substring(i, Math.Min(40, err.Length - i)));
+            try { GUIUtility.systemCopyBuffer = string.Join("\n", lines); } catch (Exception e) { Debug.LogException(e); }
+            var m = new Modal { Title = "Diagnostics" };
+            m.Lines.AddRange(lines);
+            m.Buttons.Add(new ModalButton("OK", "#8a7bd1", CloseModal));
+            Ask(m);
+        }
+
         public void OpenPanel(string id, string tab = null)
         {
             if (id == null) { ClosePanel(); return; }
@@ -955,6 +978,7 @@ namespace CatExorcist
             Ui.Button(r, 184, by, 136, 32, T("Удалить данные"), "#ff6b8a", AskDelete, 11);
             Ui.Text(r, T("Прогресс сохраняется на этом устройстве"), 180, 506, 300, 10, "#6b5f86");
             Ui.Text(r, T("Кот-экзорцист · версия ") + Application.version, 180, 526, 300, 10, "#6b5f86");
+            Ui.Hit(r, 80, 514, 200, 24, DiagTap); // пять касаний по версии — диагностика рекламы и согласия (работает и в релизной сборке)
             Ui.Text(r, T("Арт: Higgsfield, музыка и звуки созданы кодом"), 180, 542, 290, 9, "#9a8fb5");
         }
 
