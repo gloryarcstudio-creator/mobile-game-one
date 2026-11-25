@@ -25,7 +25,8 @@ namespace CatExorcist.Integrations
         public const string MaxRewarded = "REPLACE_ANDROID_REWARDED_AD_UNIT";
         public const string MaxInterstitial = "REPLACE_ANDROID_INTERSTITIAL_AD_UNIT";
 #endif
-        public const string TenjinApiKey = "REPLACE_TENJIN_SDK_KEY";
+        // ---- Tenjin: SDK Key из кабинета Tenjin (приложение Cat Exorcist)
+        public const string TenjinApiKey = "ZHBLDKVPKVYIL8HZSBPAB1VZWGSHXIQR";
 
         public static bool IsSet(string id) => !string.IsNullOrEmpty(id) && !id.StartsWith("REPLACE_");
     }
