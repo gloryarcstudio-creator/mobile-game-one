@@ -82,8 +82,9 @@ namespace CatExorcist.Integrations
                     bool again = readyFired;
                     StartSdk();
                     if (again) GameRoot.I?.OnConsentChanged(); // окно открылось уже после старта (согласие устарело)
-                    // сервер согласия не ответил (нет сети на старте) — без ответа реклама не включится, поэтому спрашиваем ещё: через 4, 8, 16, 32 с
-                    if (err != null && !initStarted && consentRetry < 4) { consentRetry++; Delay.Run((float)Math.Pow(2, consentRetry + 1), UpdateConsent); }
+                    // сервер согласия не ответил или окно не открылось (нет сети на старте, сбой загрузки формы) — без согласия реклама
+                    // не включится, поэтому пробуем ещё: через 4, 8, 16, 32 с
+                    if ((err != null || formErr != null) && !initStarted && consentRetry < 4) { consentRetry++; Delay.Run((float)Math.Pow(2, consentRetry + 1), UpdateConsent); }
                 });
             });
         }
