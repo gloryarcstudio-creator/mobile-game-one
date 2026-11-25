@@ -45,6 +45,15 @@ namespace CatExorcist
         void SetConsent(bool analytics, bool ads);
     }
 
+    /// <summary>Подробности последнего оплаченного показа, которых нет в AdRevenue: их заполняет рекламный сервис прямо перед
+    /// вызовом AdRevenue, а читают те приёмники, которым нужен «сырой» показ (Tenjin). Вне AdRevenue значения не актуальны.</summary>
+    public static class AdImpressionExtra
+    {
+        /// <summary>Сумма в том виде, в каком её отдал SDK (у AdMob — микроединицы валюты).</summary>
+        public static long ValueMicros;
+        public static string ResponseId = "", AdapterClass = "", Precision = "";
+    }
+
     public interface IRemoteConfig
     {
         void Init(Dictionary<string, object> defaults, Action onFetched);

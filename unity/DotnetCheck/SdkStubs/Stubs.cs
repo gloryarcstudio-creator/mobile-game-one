@@ -149,6 +149,7 @@ public abstract class BaseTenjin
     public abstract void SendEvent(string e);
     public abstract void Transaction(string productId, string currencyCode, int quantity, double unitPrice, string transactionId, string receipt, string signature);
     public abstract void SubscribeAppLovinImpressions();
+    public abstract void AdMobImpressionFromJSON(string json);
 }
 public static class Tenjin { public static BaseTenjin getInstance(string key) => null; }
 namespace Unity.Notifications.Android

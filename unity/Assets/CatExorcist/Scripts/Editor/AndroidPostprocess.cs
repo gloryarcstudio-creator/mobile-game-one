@@ -80,6 +80,29 @@ namespace CatExorcist.EditorTools
                 // сборку не ломаем: без флагов игра работает, только первые события уйдут до ответа в окне согласия
                 Debug.LogWarning("Cat Exorcist: consent defaults not written to AndroidManifest: " + e.Message);
             }
+            AddKeepRules(path);
+        }
+
+        const string KeepMarker = "# Cat Exorcist: SDK keep rules";
+
+        /// <summary>Правила для R8 (Publishing Settings → Minify): классы, которые SDK ищут по имени. Список из README Tenjin.
+        /// Без Minify файл не используется, поэтому дописываем всегда.</summary>
+        static void AddKeepRules(string path)
+        {
+            var file = Path.Combine(path, "proguard-unity.txt");
+            try
+            {
+                if (!File.Exists(file)) return;
+                if (File.ReadAllText(file).Contains(KeepMarker)) return;
+                File.AppendAllText(file, "\n" + KeepMarker + "\n"
+                    + "-keep class com.tenjin.** { *; }\n"
+                    + "-keep public class com.google.android.gms.ads.identifier.** { *; }\n"
+                    + "-keep public class com.google.android.gms.common.** { *; }\n"
+                    + "-keep public class com.android.installreferrer.** { *; }\n"
+                    + "-keep class * extends java.util.ListResourceBundle { protected java.lang.Object[][] getContents(); }\n"
+                    + "-keepattributes *Annotation*\n");
+            }
+            catch (System.Exception e) { Debug.LogWarning("Cat Exorcist: keep rules not added to proguard-unity.txt: " + e.Message); }
         }
     }
 }

@@ -210,9 +210,18 @@ namespace CatExorcist.Integrations
         void Revenue(ResponseInfo info, AdValue v, string format, string unit)
         {
             if (v == null) return;
-            string net = null;
-            try { net = info?.GetLoadedAdapterResponseInfo()?.AdSourceName; } catch (Exception e) { Debug.LogException(e); }
+            string net = null, adapter = null, responseId = null;
+            try
+            {
+                var loaded = info?.GetLoadedAdapterResponseInfo();
+                net = loaded?.AdSourceName; adapter = loaded?.AdapterClassName; responseId = info?.GetResponseId();
+            }
+            catch (Exception e) { Debug.LogException(e); }
             double value = v.Value / 1e6;
+            AdImpressionExtra.ValueMicros = v.Value;
+            AdImpressionExtra.ResponseId = responseId ?? "";
+            AdImpressionExtra.AdapterClass = adapter ?? "";
+            AdImpressionExtra.Precision = v.Precision.ToString();
             foreach (var a in Services.Analytics)
                 try { a.AdRevenue("AdMob", string.IsNullOrEmpty(net) ? "AdMob" : net, unit, format, lastPlacement, value, v.CurrencyCode); }
                 catch (Exception e) { Debug.LogException(e); }
