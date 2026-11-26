@@ -166,6 +166,7 @@ a.game:hover { transform: translateY(-4px); border-color: var(--ginger); color: 
 .ghero .icon { width: 96px; height: 96px; border-radius: 22px; box-shadow: 0 10px 30px #0007; }
 .ghero h1 { font-size: var(--step-4); font-weight: 800; margin-block: 16px; }
 .ghero .lead { font-size: var(--step-1); color: var(--muted); margin-bottom: 26px; max-width: 36ch; }
+.ghero .store-chips { margin-top: 18px; }
 .ghero .splash { border-radius: 28px; overflow: hidden; max-width: 380px; justify-self: center; border: 1px solid var(--ink-3);
   box-shadow: 0 30px 80px -20px #ff9a3c40; }
 @media (max-width: 820px) { .ghero .wrap { grid-template-columns: 1fr; } .ghero .splash { width: 100%; max-width: 420px; aspect-ratio: 1; object-fit: cover; object-position: 50% 58%; order: -1; } }

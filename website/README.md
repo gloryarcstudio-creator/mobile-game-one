@@ -31,4 +31,4 @@ Python 3 only, no packages.
 2. Copy `src/pages/games/cat-exorcist/index.html` to `src/pages/games/<slug>/index.html` and change the front matter (`path: /games/<slug>/`) and the text.
 3. Add an entry to `games.json` (`status`: `dev` or `live`). The card shows up on the home page and on /games/.
 4. Add a section for the game to `src/pages/privacy/index.html` if its data use differs.
-5. When the game is live in a store, add the official store badge linking to the real listing (no look-alike badges before that).
+5. When the game is live in a store, link the real listing from the game page with a plain site button ("Get it on Google Play", "Download on the App Store"), and set `status` to `live` in `games.json`. Only Google's and Apple's official badge files may replace the button; never draw look-alike badges, and never link a store before the listing is public.
