@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "453994156072",
+    "project_id": "cat-exorcist-android",
+    "storage_bucket": "cat-exorcist-android.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:453994156072:android:5688e4fae7bb2304e2251d",
+        "android_client_info": {
+          "package_name": "com.protekgames.catexorcist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdu6Yt4mAZCcRGOG-mw35yYVfDbPmtPaw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

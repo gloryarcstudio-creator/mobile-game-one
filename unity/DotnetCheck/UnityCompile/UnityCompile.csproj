@@ -1,0 +1,25 @@
+<!-- Проверка компиляции слоя Unity без редактора: собирает Scripts/ против справочных сборок UnityEngine.
+     Пути к сборкам: UnityRefs (модули UnityEngine), UnityUi (UnityEngine.UI.dll), UnityEditorDll (UnityEditor.dll).
+     dotnet build -p:UnityRefs=... -p:UnityUi=... -p:UnityEditorDll=... -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <NoWarn>CS0649;CS0169;CS0414;CS0162;CS8632</NoWarn>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DefineConstants>$(DefineConstants);UNITY_ANDROID;UNITY_2021_3_OR_NEWER;UNITY_EDITOR_CHECK</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Assets/CatExorcist/Scripts/Core/**/*.cs" />
+    <Compile Include="../../Assets/CatExorcist/Scripts/Runtime/**/*.cs" />
+    <Compile Include="../../Assets/CatExorcist/Scripts/Integrations/**/*.cs" />
+    <Compile Include="../../Assets/CatExorcist/Scripts/Editor/**/*.cs" Condition="'$(UnityEditorDll)' != ''" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="$(UnityRefs)/*.dll" Exclude="$(UnityRefs)/UnityEngine.UI.dll" />
+    <Reference Include="$(UnityUi)" />
+    <Reference Include="$(UnityEditorDll)" Condition="'$(UnityEditorDll)' != ''" />
+  </ItemGroup>
+</Project>
