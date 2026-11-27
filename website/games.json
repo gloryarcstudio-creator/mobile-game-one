@@ -1,0 +1,28 @@
+[
+  {
+    "slug": "cat-exorcist",
+    "name": "Cat Exorcist",
+    "tagline": "A ginger cat with a ghost vacuum cleans haunted houses, one room at a time.",
+    "art": "/games/cat-exorcist/media/key.webp",
+    "status": "live",
+    "status_label": "Out now on Android",
+    "chips": [
+      "iOS coming later",
+      "Idle action",
+      "14 languages"
+    ]
+  },
+  {
+    "slug": "last-ray",
+    "name": "The Last Ray",
+    "tagline": "A cozy deckbuilding roguelike: deliver the last letter before the sun goes down.",
+    "art": "/games/last-ray/media/key.webp",
+    "status": "dev",
+    "status_label": "In development",
+    "chips": [
+      "Android · iOS",
+      "Card roguelike",
+      "3 languages"
+    ]
+  }
+]
