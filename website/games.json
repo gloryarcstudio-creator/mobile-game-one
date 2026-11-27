@@ -11,5 +11,18 @@
       "Idle action",
       "14 languages"
     ]
+  },
+  {
+    "slug": "last-ray",
+    "name": "The Last Ray",
+    "tagline": "A cozy deckbuilding roguelike: deliver the last letter before the sun goes down.",
+    "art": "/games/last-ray/media/key.webp",
+    "status": "dev",
+    "status_label": "In development",
+    "chips": [
+      "Android · iOS",
+      "Card roguelike",
+      "3 languages"
+    ]
   }
 ]

@@ -197,6 +197,13 @@ a.game:hover { transform: translateY(-4px); border-color: var(--ginger); color: 
 .skins img { background: radial-gradient(circle at 50% 60%, #3a2c4d, var(--ink-2) 70%); border-radius: 16px; border: 1px solid var(--ink-3); }
 @media (max-width: 560px) { .skins { grid-template-columns: repeat(3, 1fr); } .skins img:nth-child(n+4) { display: none; } }
 
+.heroes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.heroes figure { margin: 0; background: radial-gradient(circle at 50% 45%, #3a2c4d, var(--ink-2) 72%); border: 1px solid var(--ink-3); border-radius: 16px; padding: 12px 10px 14px; text-align: center; }
+.heroes img { width: 78%; margin: 0 auto 8px; }
+.heroes figcaption { font-size: 0.9rem; color: var(--muted); line-height: 1.3; }
+.heroes figcaption b { display: block; font: 700 1rem/1.2 var(--display); color: var(--text); }
+@media (max-width: 560px) { .heroes { gap: 8px; } .heroes figure { padding: 8px 4px 10px; } .heroes figcaption { font-size: 0.72rem; } .heroes figcaption b { font-size: 0.82rem; } }
+
 /* reading pages */
 .doc { max-width: 760px; padding-block: clamp(32px, 6vw, 64px) 40px; }
 .doc h1 { font-size: var(--step-3); margin-bottom: 10px; }
